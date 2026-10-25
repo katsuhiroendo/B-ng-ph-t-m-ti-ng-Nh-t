@@ -12,12 +12,6 @@ Công cụ học phát âm hiragana và katakana dành cho người Việt. Bấ
 - Bật/tắt gợi âm Việt và romaji
 - Đánh dấu các chữ đã nghe
 
-## Luyện cao độ · アクセント (`accent.html`)
-
-Nhập từ hoặc câu bằng hiragana, katakana hoặc romaji. Trang hiển thị từng nhịp (mora) với cách đọc bằng chữ Việt, IPA và đường cao độ. Có thể sửa cao độ bằng cách nhấn vào đường cao độ hoặc dùng ký hiệu `/` (lên) và `\` (xuống), và nghe đọc đúng theo cao độ đã chọn.
-
-Giọng đọc của trang này được tạo bằng VOICEVOX: **VOICEVOX:冥鳴ひまり**, **VOICEVOX:玄野武宏**.
-
 ## Giọng đọc
 
 Những âm đã có bản ghi âm của người Nhật sẽ phát bằng giọng thật (thư mục `audio/`). Có thể chọn giữa giọng người thật và giọng máy ở mục **Giọng đọc**. Các âm chưa ghi âm dùng giọng tiếng Nhật có sẵn trên máy của bạn (Web Speech API). Giọng máy tốt nhất:
