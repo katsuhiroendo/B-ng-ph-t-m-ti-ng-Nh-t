@@ -1,0 +1,950 @@
+[
+ {
+  "id": "a",
+  "text": "あ",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "i",
+  "text": "い",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "u",
+  "text": "う",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "e",
+  "text": "え",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "o",
+  "text": "お",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "ka",
+  "text": "か",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "ki",
+  "text": "き",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "ku",
+  "text": "く",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "ke",
+  "text": "け",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "ko",
+  "text": "こ",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "sa",
+  "text": "さ",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "shi",
+  "text": "し",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "su",
+  "text": "す",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "se",
+  "text": "せ",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "so",
+  "text": "そ",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "ta",
+  "text": "た",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "chi",
+  "text": "ち",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "tsu",
+  "text": "つ",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "te",
+  "text": "て",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "to",
+  "text": "と",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "na",
+  "text": "な",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "ni",
+  "text": "に",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "nu",
+  "text": "ぬ",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "ne",
+  "text": "ね",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "no",
+  "text": "の",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "ha",
+  "text": "は",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "hi",
+  "text": "ひ",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "fu",
+  "text": "ふ",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "he",
+  "text": "へ",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "ho",
+  "text": "ほ",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "ma",
+  "text": "ま",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "mi",
+  "text": "み",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "mu",
+  "text": "む",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "me",
+  "text": "め",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "mo",
+  "text": "も",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "ya",
+  "text": "や",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "yu",
+  "text": "ゆ",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "yo",
+  "text": "よ",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "ra",
+  "text": "ら",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "ri",
+  "text": "り",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "ru",
+  "text": "る",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "re",
+  "text": "れ",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "ro",
+  "text": "ろ",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "wa",
+  "text": "わ",
+  "group": "清音",
+  "note": ""
+ },
+ {
+  "id": "n",
+  "text": "ん",
+  "group": "清音",
+  "note": "「ん」だけを短く"
+ },
+ {
+  "id": "ga",
+  "text": "が",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "gi",
+  "text": "ぎ",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "gu",
+  "text": "ぐ",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "ge",
+  "text": "げ",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "go",
+  "text": "ご",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "za",
+  "text": "ざ",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "ji",
+  "text": "じ",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "zu",
+  "text": "ず",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "ze",
+  "text": "ぜ",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "zo",
+  "text": "ぞ",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "da",
+  "text": "だ",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "de",
+  "text": "で",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "do",
+  "text": "ど",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "ba",
+  "text": "ば",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "bi",
+  "text": "び",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "bu",
+  "text": "ぶ",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "be",
+  "text": "べ",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "bo",
+  "text": "ぼ",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "pa",
+  "text": "ぱ",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "pi",
+  "text": "ぴ",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "pu",
+  "text": "ぷ",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "pe",
+  "text": "ぺ",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "po",
+  "text": "ぽ",
+  "group": "濁音・半濁音",
+  "note": ""
+ },
+ {
+  "id": "kya",
+  "text": "きゃ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "kyu",
+  "text": "きゅ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "kyo",
+  "text": "きょ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "sha",
+  "text": "しゃ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "shu",
+  "text": "しゅ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "sho",
+  "text": "しょ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "cha",
+  "text": "ちゃ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "chu",
+  "text": "ちゅ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "cho",
+  "text": "ちょ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "nya",
+  "text": "にゃ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "nyu",
+  "text": "にゅ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "nyo",
+  "text": "にょ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "hya",
+  "text": "ひゃ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "hyu",
+  "text": "ひゅ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "hyo",
+  "text": "ひょ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "mya",
+  "text": "みゃ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "myu",
+  "text": "みゅ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "myo",
+  "text": "みょ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "rya",
+  "text": "りゃ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "ryu",
+  "text": "りゅ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "ryo",
+  "text": "りょ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "gya",
+  "text": "ぎゃ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "gyu",
+  "text": "ぎゅ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "gyo",
+  "text": "ぎょ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "ja",
+  "text": "じゃ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "ju",
+  "text": "じゅ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "jo",
+  "text": "じょ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "bya",
+  "text": "びゃ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "byu",
+  "text": "びゅ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "byo",
+  "text": "びょ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "pya",
+  "text": "ぴゃ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "pyu",
+  "text": "ぴゅ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "pyo",
+  "text": "ぴょ",
+  "group": "拗音",
+  "note": ""
+ },
+ {
+  "id": "wi",
+  "text": "ウィ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "we",
+  "text": "ウェ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "wo",
+  "text": "ウォ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "ye",
+  "text": "イェ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "va",
+  "text": "ヴァ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "vi",
+  "text": "ヴィ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "vu",
+  "text": "ヴ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "ve",
+  "text": "ヴェ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "vo",
+  "text": "ヴォ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "she",
+  "text": "シェ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "je",
+  "text": "ジェ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "che",
+  "text": "チェ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "tsa",
+  "text": "ツァ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "tsi",
+  "text": "ツィ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "tse",
+  "text": "ツェ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "tso",
+  "text": "ツォ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "ti",
+  "text": "ティ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "tu",
+  "text": "トゥ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "di",
+  "text": "ディ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "du",
+  "text": "ドゥ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "tyu",
+  "text": "テュ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "dyu",
+  "text": "デュ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "fa",
+  "text": "ファ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "fi",
+  "text": "フィ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "fe",
+  "text": "フェ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "fo",
+  "text": "フォ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "fyu",
+  "text": "フュ",
+  "group": "外来語音",
+  "note": ""
+ },
+ {
+  "id": "w-kitte",
+  "text": "きって",
+  "group": "単語（ひらがな）",
+  "note": ""
+ },
+ {
+  "id": "w-gakkou",
+  "text": "がっこう",
+  "group": "単語（ひらがな）",
+  "note": ""
+ },
+ {
+  "id": "w-kippu",
+  "text": "きっぷ",
+  "group": "単語（ひらがな）",
+  "note": ""
+ },
+ {
+  "id": "w-okaasan",
+  "text": "おかあさん",
+  "group": "単語（ひらがな）",
+  "note": ""
+ },
+ {
+  "id": "w-oniisan",
+  "text": "おにいさん",
+  "group": "単語（ひらがな）",
+  "note": ""
+ },
+ {
+  "id": "w-kuuki",
+  "text": "くうき",
+  "group": "単語（ひらがな）",
+  "note": ""
+ },
+ {
+  "id": "w-sensei",
+  "text": "せんせい",
+  "group": "単語（ひらがな）",
+  "note": ""
+ },
+ {
+  "id": "w-otousan",
+  "text": "おとうさん",
+  "group": "単語（ひらがな）",
+  "note": ""
+ },
+ {
+  "id": "w-watashiwa",
+  "text": "わたしは",
+  "group": "単語（ひらがな）",
+  "note": "「は」は「わ」と読む"
+ },
+ {
+  "id": "w-konnichiwa",
+  "text": "こんにちは",
+  "group": "単語（ひらがな）",
+  "note": "「は」は「わ」と読む"
+ },
+ {
+  "id": "w-gakkoue",
+  "text": "がっこうへ",
+  "group": "単語（ひらがな）",
+  "note": "「へ」は「え」と読む"
+ },
+ {
+  "id": "w-hon-o-yomimasu",
+  "text": "ほんを よみます",
+  "group": "単語（ひらがな）",
+  "note": "「を」は「お」と読む"
+ },
+ {
+  "id": "w-mizu-o-nomimasu",
+  "text": "みずを のみます",
+  "group": "単語（ひらがな）",
+  "note": "「を」は「お」と読む"
+ },
+ {
+  "id": "w-shinbun",
+  "text": "しんぶん",
+  "group": "単語（ひらがな）",
+  "note": ""
+ },
+ {
+  "id": "w-ringo",
+  "text": "りんご",
+  "group": "単語（ひらがな）",
+  "note": ""
+ },
+ {
+  "id": "w-beddo",
+  "text": "ベッド",
+  "group": "単語（カタカナ）",
+  "note": ""
+ },
+ {
+  "id": "w-kappu",
+  "text": "カップ",
+  "group": "単語（カタカナ）",
+  "note": ""
+ },
+ {
+  "id": "w-sakkaa",
+  "text": "サッカー",
+  "group": "単語（カタカナ）",
+  "note": ""
+ },
+ {
+  "id": "w-koohii",
+  "text": "コーヒー",
+  "group": "単語（カタカナ）",
+  "note": ""
+ },
+ {
+  "id": "w-keeki",
+  "text": "ケーキ",
+  "group": "単語（カタカナ）",
+  "note": ""
+ },
+ {
+  "id": "w-nooto",
+  "text": "ノート",
+  "group": "単語（カタカナ）",
+  "note": ""
+ },
+ {
+  "id": "w-suupaa",
+  "text": "スーパー",
+  "group": "単語（カタカナ）",
+  "note": ""
+ },
+ {
+  "id": "w-pan",
+  "text": "パン",
+  "group": "単語（カタカナ）",
+  "note": ""
+ },
+ {
+  "id": "w-pen",
+  "text": "ペン",
+  "group": "単語（カタカナ）",
+  "note": ""
+ },
+ {
+  "id": "w-wain",
+  "text": "ワイン",
+  "group": "単語（カタカナ）",
+  "note": ""
+ },
+ {
+  "id": "w-fooku",
+  "text": "フォーク",
+  "group": "単語（カタカナ）",
+  "note": ""
+ },
+ {
+  "id": "w-paatii",
+  "text": "パーティー",
+  "group": "単語（カタカナ）",
+  "note": ""
+ },
+ {
+  "id": "w-chekku",
+  "text": "チェック",
+  "group": "単語（カタカナ）",
+  "note": ""
+ },
+ {
+  "id": "w-fairu",
+  "text": "ファイル",
+  "group": "単語（カタカナ）",
+  "note": ""
+ },
+ {
+  "id": "w-vaiorin",
+  "text": "ヴァイオリン",
+  "group": "単語（カタカナ）",
+  "note": ""
+ }
+]

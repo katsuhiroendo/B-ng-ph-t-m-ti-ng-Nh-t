@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>発音録音スタジオ</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Klee+One:wght@600&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+/* Layout: one focused card (current sound + record controls) above a compact grid of every item */
+:root{
+  --bg:#fbf5f3; --surface:#ffffff; --surface-2:#f6eeec; --ink:#1f2a27; --muted:#5f6c67; --line:#eadcd9;
+  --leaf:#1d6b55; --leaf-soft:#e2f1ea; --rec:#c93d66; --rec-soft:#fbe4eb; --warn:#9a6512;
+  --font-kana:"Klee One","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
+  --font-ui:"Noto Sans JP","Hiragino Sans","Yu Gothic UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#141a19; --surface:#1c2422; --surface-2:#232d2a; --ink:#ecf1ef; --muted:#a3b0ab; --line:#33403c;
+  --leaf:#5fc7a2; --leaf-soft:#1d3a31; --rec:#f2829f; --rec-soft:#432230; --warn:#e6b45e; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(40px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:980px;margin:0 auto;display:grid;gap:16px}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px}
+h1{margin:0;font-size:1.6rem;line-height:1.2}
+.sub{margin:4px 0 0;color:var(--muted);max-width:62ch}
+.count{font-variant-numeric:tabular-nums;color:var(--muted);white-space:nowrap}
+.count b{color:var(--leaf);font-size:1.2rem}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+summary{cursor:pointer;font-weight:700}
+details ul{margin:8px 0 0;padding-left:1.2em}
+details li{margin:2px 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:18px;align-items:center}
+@media (max-width:720px){.card{grid-template-columns:minmax(0,1fr)}}
+.now{text-align:center;display:grid;gap:4px}
+.grp{font-size:.8rem;color:var(--muted);letter-spacing:.05em}
+.big{font-family:var(--font-kana);font-size:clamp(3.2rem,11vw,6rem);line-height:1.15;margin:0;word-break:keep-all}
+.note{color:var(--warn);font-weight:700;min-height:1.6em}
+.fid{font-family:ui-monospace,Menlo,monospace;font-size:.8rem;color:var(--muted)}
+.ctrl{display:grid;gap:12px}
+.recbtn{font:inherit;font-size:1.1rem;font-weight:700;border:0;border-radius:999px;padding:16px;cursor:pointer;background:var(--rec);color:var(--surface);display:flex;justify-content:center;align-items:center;gap:10px}
+.recbtn .dot{width:14px;height:14px;border-radius:50%;background:var(--surface)}
+.recbtn.on{background:var(--ink)}
+.recbtn.on .dot{border-radius:3px;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.3}}
+.meter{height:10px;border-radius:999px;background:var(--surface-2);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--leaf);transition:width .05s}
+.meter i.hot{background:var(--rec)}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-weight:500;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:10px;padding:9px 14px;cursor:pointer}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--leaf);border-color:var(--leaf);color:var(--surface)}
+.status{font-size:.88rem;color:var(--muted);min-height:1.5em}
+.status.err{color:var(--rec)}
+label.opt{display:flex;gap:8px;align-items:center;font-size:.88rem;color:var(--muted)}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;display:grid;gap:14px}
+.list h2{margin:0;font-size:.85rem;color:var(--muted);letter-spacing:.06em}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{font-family:var(--font-kana);font-size:1.05rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:3px 9px;cursor:pointer;min-width:2.6em}
+.chip.done{background:var(--leaf-soft);border-color:var(--leaf);color:var(--leaf)}
+.chip.cur{outline:3px solid var(--rec);outline-offset:1px}
+.export{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+kbd{font-family:ui-monospace,Menlo,monospace;font-size:.8em;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--surface-2)}
+:focus-visible{outline:3px solid var(--leaf);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>発音録音スタジオ</h1>
+      <p class="sub">ベトナム人向けひらがな・カタカナ表の音声を録音するページです。表示された音を1つずつ録音し、最後にZIPで書き出してください。</p>
+    </div>
+    <div class="count">録音済み <b id="done">0</b> / <span id="total">0</span></div>
+  </header>
+
+  <details open>
+    <summary>録音のしかた（はじめにお読みください）</summary>
+    <ul>
+      <li>静かな部屋で、エアコン・換気扇・テレビを止めて録音します。</li>
+      <li>マイク（スマホ）と口の距離は15〜20cm。最初から最後まで同じ距離・同じ声の大きさで。</li>
+      <li>標準語で、はっきり・自然な速さで1回だけ読みます。伸ばしたり、語尾を上げたりしないでください。</li>
+      <li>単語は普通に話すときの読み方で。「わたしは」の「は」は「わ」、「がっこうへ」の「へ」は「え」と読みます。</li>
+      <li>録音ボタンを押して約0.5秒待ってから発音し、言い終わって約0.5秒後に停止します。前後の無音は後で自動的にカットします。</li>
+      <li>キーボード：<kbd>スペース</kbd> 録音開始／停止、<kbd>P</kbd> 再生、<kbd>←</kbd><kbd>→</kbd> 前／次。</li>
+      <li>録音はこのブラウザ内に自動保存されます。途中でやめても、同じ端末・同じブラウザで開けば続きから録音できます。</li>
+    </ul>
+  </details>
+
+  <section class="card" aria-live="polite">
+    <div class="now">
+      <div class="grp" id="grp"></div>
+      <p class="big" id="big" lang="ja"></p>
+      <div class="note" id="note"></div>
+      <div class="fid" id="fid"></div>
+    </div>
+    <div class="ctrl">
+      <button class="recbtn" id="rec" type="button"><span class="dot"></span><span id="recLabel">マイクを許可して開始</span></button>
+      <div class="meter" aria-hidden="true"><i id="lvl"></i></div>
+      <div class="row">
+        <button class="btn" id="prev" type="button">← 前へ</button>
+        <button class="btn" id="play" type="button" disabled>▶ 再生</button>
+        <button class="btn" id="del" type="button" disabled>この録音を消す</button>
+        <button class="btn" id="next" type="button">次へ →</button>
+      </div>
+      <label class="opt"><input type="checkbox" id="autoplay" checked> 停止後に自動で再生して確認する</label>
+      <label class="opt"><input type="checkbox" id="autonext"> 停止後に自動で次の音へ進む</label>
+      <div class="status" id="status"></div>
+    </div>
+  </section>
+
+  <section class="list" id="list"></section>
+
+  <section class="list">
+    <h2>書き出し</h2>
+    <p style="margin:0">すべて録音し終えたら（途中でも可）、ZIPファイルを書き出して送ってください。</p>
+    <div class="export">
+      <button class="btn primary" id="export" type="button">ZIPで書き出す</button>
+      <span class="status" id="exStatus"></span>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+const ITEMS=[{"id": "a", "text": "あ", "group": "清音", "note": ""}, {"id": "i", "text": "い", "group": "清音", "note": ""}, {"id": "u", "text": "う", "group": "清音", "note": ""}, {"id": "e", "text": "え", "group": "清音", "note": ""}, {"id": "o", "text": "お", "group": "清音", "note": ""}, {"id": "ka", "text": "か", "group": "清音", "note": ""}, {"id": "ki", "text": "き", "group": "清音", "note": ""}, {"id": "ku", "text": "く", "group": "清音", "note": ""}, {"id": "ke", "text": "け", "group": "清音", "note": ""}, {"id": "ko", "text": "こ", "group": "清音", "note": ""}, {"id": "sa", "text": "さ", "group": "清音", "note": ""}, {"id": "shi", "text": "し", "group": "清音", "note": ""}, {"id": "su", "text": "す", "group": "清音", "note": ""}, {"id": "se", "text": "せ", "group": "清音", "note": ""}, {"id": "so", "text": "そ", "group": "清音", "note": ""}, {"id": "ta", "text": "た", "group": "清音", "note": ""}, {"id": "chi", "text": "ち", "group": "清音", "note": ""}, {"id": "tsu", "text": "つ", "group": "清音", "note": ""}, {"id": "te", "text": "て", "group": "清音", "note": ""}, {"id": "to", "text": "と", "group": "清音", "note": ""}, {"id": "na", "text": "な", "group": "清音", "note": ""}, {"id": "ni", "text": "に", "group": "清音", "note": ""}, {"id": "nu", "text": "ぬ", "group": "清音", "note": ""}, {"id": "ne", "text": "ね", "group": "清音", "note": ""}, {"id": "no", "text": "の", "group": "清音", "note": ""}, {"id": "ha", "text": "は", "group": "清音", "note": ""}, {"id": "hi", "text": "ひ", "group": "清音", "note": ""}, {"id": "fu", "text": "ふ", "group": "清音", "note": ""}, {"id": "he", "text": "へ", "group": "清音", "note": ""}, {"id": "ho", "text": "ほ", "group": "清音", "note": ""}, {"id": "ma", "text": "ま", "group": "清音", "note": ""}, {"id": "mi", "text": "み", "group": "清音", "note": ""}, {"id": "mu", "text": "む", "group": "清音", "note": ""}, {"id": "me", "text": "め", "group": "清音", "note": ""}, {"id": "mo", "text": "も", "group": "清音", "note": ""}, {"id": "ya", "text": "や", "group": "清音", "note": ""}, {"id": "yu", "text": "ゆ", "group": "清音", "note": ""}, {"id": "yo", "text": "よ", "group": "清音", "note": ""}, {"id": "ra", "text": "ら", "group": "清音", "note": ""}, {"id": "ri", "text": "り", "group": "清音", "note": ""}, {"id": "ru", "text": "る", "group": "清音", "note": ""}, {"id": "re", "text": "れ", "group": "清音", "note": ""}, {"id": "ro", "text": "ろ", "group": "清音", "note": ""}, {"id": "wa", "text": "わ", "group": "清音", "note": ""}, {"id": "n", "text": "ん", "group": "清音", "note": "「ん」だけを短く"}, {"id": "ga", "text": "が", "group": "濁音・半濁音", "note": ""}, {"id": "gi", "text": "ぎ", "group": "濁音・半濁音", "note": ""}, {"id": "gu", "text": "ぐ", "group": "濁音・半濁音", "note": ""}, {"id": "ge", "text": "げ", "group": "濁音・半濁音", "note": ""}, {"id": "go", "text": "ご", "group": "濁音・半濁音", "note": ""}, {"id": "za", "text": "ざ", "group": "濁音・半濁音", "note": ""}, {"id": "ji", "text": "じ", "group": "濁音・半濁音", "note": ""}, {"id": "zu", "text": "ず", "group": "濁音・半濁音", "note": ""}, {"id": "ze", "text": "ぜ", "group": "濁音・半濁音", "note": ""}, {"id": "zo", "text": "ぞ", "group": "濁音・半濁音", "note": ""}, {"id": "da", "text": "だ", "group": "濁音・半濁音", "note": ""}, {"id": "de", "text": "で", "group": "濁音・半濁音", "note": ""}, {"id": "do", "text": "ど", "group": "濁音・半濁音", "note": ""}, {"id": "ba", "text": "ば", "group": "濁音・半濁音", "note": ""}, {"id": "bi", "text": "び", "group": "濁音・半濁音", "note": ""}, {"id": "bu", "text": "ぶ", "group": "濁音・半濁音", "note": ""}, {"id": "be", "text": "べ", "group": "濁音・半濁音", "note": ""}, {"id": "bo", "text": "ぼ", "group": "濁音・半濁音", "note": ""}, {"id": "pa", "text": "ぱ", "group": "濁音・半濁音", "note": ""}, {"id": "pi", "text": "ぴ", "group": "濁音・半濁音", "note": ""}, {"id": "pu", "text": "ぷ", "group": "濁音・半濁音", "note": ""}, {"id": "pe", "text": "ぺ", "group": "濁音・半濁音", "note": ""}, {"id": "po", "text": "ぽ", "group": "濁音・半濁音", "note": ""}, {"id": "kya", "text": "きゃ", "group": "拗音", "note": ""}, {"id": "kyu", "text": "きゅ", "group": "拗音", "note": ""}, {"id": "kyo", "text": "きょ", "group": "拗音", "note": ""}, {"id": "sha", "text": "しゃ", "group": "拗音", "note": ""}, {"id": "shu", "text": "しゅ", "group": "拗音", "note": ""}, {"id": "sho", "text": "しょ", "group": "拗音", "note": ""}, {"id": "cha", "text": "ちゃ", "group": "拗音", "note": ""}, {"id": "chu", "text": "ちゅ", "group": "拗音", "note": ""}, {"id": "cho", "text": "ちょ", "group": "拗音", "note": ""}, {"id": "nya", "text": "にゃ", "group": "拗音", "note": ""}, {"id": "nyu", "text": "にゅ", "group": "拗音", "note": ""}, {"id": "nyo", "text": "にょ", "group": "拗音", "note": ""}, {"id": "hya", "text": "ひゃ", "group": "拗音", "note": ""}, {"id": "hyu", "text": "ひゅ", "group": "拗音", "note": ""}, {"id": "hyo", "text": "ひょ", "group": "拗音", "note": ""}, {"id": "mya", "text": "みゃ", "group": "拗音", "note": ""}, {"id": "myu", "text": "みゅ", "group": "拗音", "note": ""}, {"id": "myo", "text": "みょ", "group": "拗音", "note": ""}, {"id": "rya", "text": "りゃ", "group": "拗音", "note": ""}, {"id": "ryu", "text": "りゅ", "group": "拗音", "note": ""}, {"id": "ryo", "text": "りょ", "group": "拗音", "note": ""}, {"id": "gya", "text": "ぎゃ", "group": "拗音", "note": ""}, {"id": "gyu", "text": "ぎゅ", "group": "拗音", "note": ""}, {"id": "gyo", "text": "ぎょ", "group": "拗音", "note": ""}, {"id": "ja", "text": "じゃ", "group": "拗音", "note": ""}, {"id": "ju", "text": "じゅ", "group": "拗音", "note": ""}, {"id": "jo", "text": "じょ", "group": "拗音", "note": ""}, {"id": "bya", "text": "びゃ", "group": "拗音", "note": ""}, {"id": "byu", "text": "びゅ", "group": "拗音", "note": ""}, {"id": "byo", "text": "びょ", "group": "拗音", "note": ""}, {"id": "pya", "text": "ぴゃ", "group": "拗音", "note": ""}, {"id": "pyu", "text": "ぴゅ", "group": "拗音", "note": ""}, {"id": "pyo", "text": "ぴょ", "group": "拗音", "note": ""}, {"id": "wi", "text": "ウィ", "group": "外来語音", "note": ""}, {"id": "we", "text": "ウェ", "group": "外来語音", "note": ""}, {"id": "wo", "text": "ウォ", "group": "外来語音", "note": ""}, {"id": "ye", "text": "イェ", "group": "外来語音", "note": ""}, {"id": "va", "text": "ヴァ", "group": "外来語音", "note": ""}, {"id": "vi", "text": "ヴィ", "group": "外来語音", "note": ""}, {"id": "vu", "text": "ヴ", "group": "外来語音", "note": ""}, {"id": "ve", "text": "ヴェ", "group": "外来語音", "note": ""}, {"id": "vo", "text": "ヴォ", "group": "外来語音", "note": ""}, {"id": "she", "text": "シェ", "group": "外来語音", "note": ""}, {"id": "je", "text": "ジェ", "group": "外来語音", "note": ""}, {"id": "che", "text": "チェ", "group": "外来語音", "note": ""}, {"id": "tsa", "text": "ツァ", "group": "外来語音", "note": ""}, {"id": "tsi", "text": "ツィ", "group": "外来語音", "note": ""}, {"id": "tse", "text": "ツェ", "group": "外来語音", "note": ""}, {"id": "tso", "text": "ツォ", "group": "外来語音", "note": ""}, {"id": "ti", "text": "ティ", "group": "外来語音", "note": ""}, {"id": "tu", "text": "トゥ", "group": "外来語音", "note": ""}, {"id": "di", "text": "ディ", "group": "外来語音", "note": ""}, {"id": "du", "text": "ドゥ", "group": "外来語音", "note": ""}, {"id": "tyu", "text": "テュ", "group": "外来語音", "note": ""}, {"id": "dyu", "text": "デュ", "group": "外来語音", "note": ""}, {"id": "fa", "text": "ファ", "group": "外来語音", "note": ""}, {"id": "fi", "text": "フィ", "group": "外来語音", "note": ""}, {"id": "fe", "text": "フェ", "group": "外来語音", "note": ""}, {"id": "fo", "text": "フォ", "group": "外来語音", "note": ""}, {"id": "fyu", "text": "フュ", "group": "外来語音", "note": ""}, {"id": "w-kitte", "text": "きって", "group": "単語（ひらがな）", "note": ""}, {"id": "w-gakkou", "text": "がっこう", "group": "単語（ひらがな）", "note": ""}, {"id": "w-kippu", "text": "きっぷ", "group": "単語（ひらがな）", "note": ""}, {"id": "w-okaasan", "text": "おかあさん", "group": "単語（ひらがな）", "note": ""}, {"id": "w-oniisan", "text": "おにいさん", "group": "単語（ひらがな）", "note": ""}, {"id": "w-kuuki", "text": "くうき", "group": "単語（ひらがな）", "note": ""}, {"id": "w-sensei", "text": "せんせい", "group": "単語（ひらがな）", "note": ""}, {"id": "w-otousan", "text": "おとうさん", "group": "単語（ひらがな）", "note": ""}, {"id": "w-watashiwa", "text": "わたしは", "group": "単語（ひらがな）", "note": "「は」は「わ」と読む"}, {"id": "w-konnichiwa", "text": "こんにちは", "group": "単語（ひらがな）", "note": "「は」は「わ」と読む"}, {"id": "w-gakkoue", "text": "がっこうへ", "group": "単語（ひらがな）", "note": "「へ」は「え」と読む"}, {"id": "w-hon-o-yomimasu", "text": "ほんを よみます", "group": "単語（ひらがな）", "note": "「を」は「お」と読む"}, {"id": "w-mizu-o-nomimasu", "text": "みずを のみます", "group": "単語（ひらがな）", "note": "「を」は「お」と読む"}, {"id": "w-shinbun", "text": "しんぶん", "group": "単語（ひらがな）", "note": ""}, {"id": "w-ringo", "text": "りんご", "group": "単語（ひらがな）", "note": ""}, {"id": "w-beddo", "text": "ベッド", "group": "単語（カタカナ）", "note": ""}, {"id": "w-kappu", "text": "カップ", "group": "単語（カタカナ）", "note": ""}, {"id": "w-sakkaa", "text": "サッカー", "group": "単語（カタカナ）", "note": ""}, {"id": "w-koohii", "text": "コーヒー", "group": "単語（カタカナ）", "note": ""}, {"id": "w-keeki", "text": "ケーキ", "group": "単語（カタカナ）", "note": ""}, {"id": "w-nooto", "text": "ノート", "group": "単語（カタカナ）", "note": ""}, {"id": "w-suupaa", "text": "スーパー", "group": "単語（カタカナ）", "note": ""}, {"id": "w-pan", "text": "パン", "group": "単語（カタカナ）", "note": ""}, {"id": "w-pen", "text": "ペン", "group": "単語（カタカナ）", "note": ""}, {"id": "w-wain", "text": "ワイン", "group": "単語（カタカナ）", "note": ""}, {"id": "w-fooku", "text": "フォーク", "group": "単語（カタカナ）", "note": ""}, {"id": "w-paatii", "text": "パーティー", "group": "単語（カタカナ）", "note": ""}, {"id": "w-chekku", "text": "チェック", "group": "単語（カタカナ）", "note": ""}, {"id": "w-fairu", "text": "ファイル", "group": "単語（カタカナ）", "note": ""}, {"id": "w-vaiorin", "text": "ヴァイオリン", "group": "単語（カタカナ）", "note": ""}];
+const $=id=>document.getElementById(id);
+$("total").textContent=ITEMS.length;
+let idx=0,stream=null,rec=null,chunks=[],ac=null,analyser=null,raf=0,recording=false;
+const store=new Map(); // id -> {blob,type}
+const player=new Audio();
+
+/* IndexedDB persistence (best effort) */
+let db=null;
+function openDB(){return new Promise(res=>{try{const r=indexedDB.open("kana-rec",1);r.onupgradeneeded=()=>r.result.createObjectStore("rec");r.onsuccess=()=>{db=r.result;res()};r.onerror=()=>res()}catch(e){res()}})}
+function dbPut(id,v){try{db&&db.transaction("rec","readwrite").objectStore("rec").put(v,id)}catch(e){}}
+function dbDel(id){try{db&&db.transaction("rec","readwrite").objectStore("rec").delete(id)}catch(e){}}
+function dbAll(){return new Promise(res=>{if(!db)return res();try{const tx=db.transaction("rec");const os=tx.objectStore("rec");const rq=os.openCursor();rq.onsuccess=()=>{const c=rq.result;if(c){store.set(c.key,c.value);c.continue()}else res()};rq.onerror=()=>res()}catch(e){res()}})}
+
+function status(t,err){const s=$("status");s.textContent=t||"";s.classList.toggle("err",!!err)}
+function extOf(type){return /mp4|m4a|aac/.test(type)?"m4a":/ogg/.test(type)?"ogg":/wav/.test(type)?"wav":"webm"}
+
+function render(){
+  const it=ITEMS[idx];
+  $("grp").textContent=it.group+"　"+(idx+1)+" / "+ITEMS.length;
+  $("big").textContent=it.text;
+  $("note").textContent=it.note;
+  $("fid").textContent="ファイル名: "+it.id;
+  const has=store.has(it.id);
+  $("play").disabled=!has;$("del").disabled=!has||recording;
+  $("prev").disabled=idx===0;$("next").disabled=idx===ITEMS.length-1;
+  $("done").textContent=ITEMS.filter(i=>store.has(i.id)).length;
+  document.querySelectorAll(".chip").forEach(c=>{c.classList.toggle("done",store.has(c.dataset.id));c.classList.toggle("cur",+c.dataset.i===idx)});
+  if(!recording)status(has?"録音済みです。やり直す場合はもう一度録音してください（上書きされます）。":"まだ録音していません。");
+}
+function buildList(){
+  const groups=[...new Set(ITEMS.map(i=>i.group))];
+  $("list").innerHTML="";
+  groups.forEach(g=>{
+    const sec=document.createElement("div");
+    sec.innerHTML=`<h2>${g}</h2><div class="chips"></div>`;
+    const box=sec.querySelector(".chips");
+    ITEMS.forEach((it,i)=>{if(it.group!==g)return;
+      const b=document.createElement("button");b.type="button";b.className="chip";b.lang="ja";b.textContent=it.text;b.dataset.id=it.id;b.dataset.i=i;
+      b.addEventListener("click",()=>{if(recording)return;idx=i;render();window.scrollTo({top:0,behavior:"smooth"})});
+      box.appendChild(b)});
+    $("list").appendChild(sec);
+  });
+}
+
+async function ensureMic(){
+  if(stream)return true;
+  if(!navigator.mediaDevices||!window.MediaRecorder){status("このブラウザは録音に対応していません。Chrome、Edge、Safari の最新版で開いてください。",true);return false}
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false,channelCount:1}});
+  }catch(e){status("マイクを使えません。ブラウザのアドレスバーでマイクの使用を許可してから、もう一度押してください。",true);return false}
+  try{ac=new (window.AudioContext||window.webkitAudioContext)();const src=ac.createMediaStreamSource(stream);analyser=ac.createAnalyser();analyser.fftSize=1024;src.connect(analyser)}catch(e){}
+  $("recLabel").textContent="録音開始";
+  return true;
+}
+function meter(){
+  if(!analyser)return;
+  const buf=new Float32Array(analyser.fftSize);
+  const tick=()=>{analyser.getFloatTimeDomainData(buf);let pk=0;for(const v of buf)pk=Math.max(pk,Math.abs(v));
+    const el=$("lvl");el.style.width=Math.min(100,pk*110)+"%";el.classList.toggle("hot",pk>0.95);
+    if(pk>0.98)status("音が大きすぎます（割れています）。少しマイクから離れてください。",true);
+    raf=requestAnimationFrame(tick)};
+  tick();
+}
+function pickType(){const c=["audio/webm;codecs=opus","audio/mp4","audio/ogg;codecs=opus","audio/webm"];for(const t of c){try{if(MediaRecorder.isTypeSupported(t))return t}catch(e){}}return ""}
+async function startRec(){
+  if(!await ensureMic())return;
+  if(ac&&ac.state==="suspended")await ac.resume();
+  player.pause();
+  const type=pickType();
+  rec=type?new MediaRecorder(stream,{mimeType:type}):new MediaRecorder(stream);
+  chunks=[];
+  rec.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+  rec.onstop=onStop;
+  rec.start();recording=true;
+  $("rec").classList.add("on");$("recLabel").textContent="停止";
+  status("録音中…「"+ITEMS[idx].text+"」と発音してください");
+  $("del").disabled=true;meter();
+}
+function stopRec(){if(rec&&rec.state!=="inactive")rec.stop()}
+function onStop(){
+  recording=false;cancelAnimationFrame(raf);$("lvl").style.width="0";
+  $("rec").classList.remove("on");$("recLabel").textContent="録音開始";
+  const type=(rec.mimeType||chunks[0]&&chunks[0].type||"audio/webm");
+  const blob=new Blob(chunks,{type});
+  const it=ITEMS[idx];
+  if(blob.size<2000){status("録音が短すぎます。もう一度録音してください。",true);render();return}
+  const v={blob,type};store.set(it.id,v);dbPut(it.id,v);
+  render();status("保存しました。");
+  const go=()=>{if($("autonext").checked&&idx<ITEMS.length-1){idx++;render()}};
+  if($("autoplay").checked){playCur(go)}else go();
+}
+function playCur(after){
+  const v=store.get(ITEMS[idx].id);if(!v)return;
+  player.src=URL.createObjectURL(v.blob);
+  player.onended=()=>{URL.revokeObjectURL(player.src);after&&after()};
+  player.play().catch(()=>after&&after());
+}
+
+$("rec").addEventListener("click",()=>recording?stopRec():startRec());
+$("play").addEventListener("click",()=>playCur());
+$("prev").addEventListener("click",()=>{if(recording)return;if(idx>0){idx--;render()}});
+$("next").addEventListener("click",()=>{if(recording)return;if(idx<ITEMS.length-1){idx++;render()}});
+$("del").addEventListener("click",()=>{const id=ITEMS[idx].id;store.delete(id);dbDel(id);render()});
+document.addEventListener("keydown",e=>{
+  if(e.target.closest&&e.target.closest("input,select,textarea"))return;
+  if(e.code==="Space"){e.preventDefault();recording?stopRec():startRec()}
+  else if(e.key==="ArrowRight"){$("next").click()}
+  else if(e.key==="ArrowLeft"){$("prev").click()}
+  else if(e.key==="p"||e.key==="P"){playCur()}
+});
+$("export").addEventListener("click",async()=>{
+  const ex=$("exStatus");
+  if(!store.size){ex.textContent="まだ録音がありません。";return}
+  if(!window.JSZip){ex.textContent="書き出し用の部品を読み込めませんでした。ネットにつながった状態で再読み込みしてください。";return}
+  ex.textContent="作成中…";
+  const zip=new JSZip();const missing=[];
+  ITEMS.forEach(it=>{const v=store.get(it.id);if(v)zip.file(it.id+"."+extOf(v.type),v.blob);else missing.push(it.id+"\t"+it.text)});
+  zip.file("_info.txt","録音数: "+(ITEMS.length-missing.length)+" / "+ITEMS.length+"\n作成日時: "+new Date().toLocaleString("ja-JP")+"\n\n未録音:\n"+missing.join("\n")+"\n");
+  const blob=await zip.generateAsync({type:"blob"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="kana-recordings.zip";document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+  ex.textContent="書き出しました（"+(ITEMS.length-missing.length)+"件）。ダウンロードされた kana-recordings.zip を送ってください。";
+});
+
+(async()=>{await openDB();await dbAll();buildList();
+  const first=ITEMS.findIndex(i=>!store.has(i.id));idx=first<0?0:first;render()})();
+</script>
+</body>
+</html>

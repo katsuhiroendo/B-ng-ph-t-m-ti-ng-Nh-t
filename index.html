@@ -75,6 +75,8 @@ select{background:var(--surface-2);border:1px solid var(--line);border-radius:8p
 .meta{display:grid;gap:6px}
 .hint{font-size:1.6rem;font-weight:700;color:var(--lotus)}
 .romaji{color:var(--muted);font-size:.9rem}
+.src{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--leaf);font-weight:600}
+.src:empty{display:none}
 .tip{font-size:.9rem;background:var(--surface-2);border-radius:10px;padding:8px 10px;text-align:left}
 .tip:empty{display:none}
 .replay{justify-self:center;font:inherit;font-weight:600;background:var(--lotus);color:var(--surface);border:0;border-radius:999px;padding:9px 18px;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
@@ -172,6 +174,7 @@ select{background:var(--surface-2);border:1px solid var(--line);border-radius:8p
       <div class="meta">
         <div class="hint" id="hint">a</div>
         <div class="romaji" id="ro">romaji: a</div>
+        <div class="src" id="src"></div>
         <div class="tip" id="tip"></div>
         <button class="replay" id="replay" type="button"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z"/></svg>Nghe lại</button>
       </div>
@@ -276,18 +279,18 @@ const GAIRAI={cols:["a","i","u","e","o"],
  [null,null,["フュ","phiư*","fyu"],null,null]
 ]};
 const SPECIAL=[
- {mark:"っ",title:"Âm ngắt (chữ tsu nhỏ)",text:"Ngắt một nhịp, không đọc thành “tsư”. Phụ âm sau được giữ lại một nhịp.",ex:[["きって","con tem"],["がっこう","trường học"],["きっぷ","vé tàu"]]},
- {mark:"ああ・いい・うう・えい・おう",title:"Nguyên âm dài",text:"Kéo dài hai nhịp. えい thường đọc thành ê dài, おう thành ô dài.",ex:[["おかあさん","mẹ"],["おにいさん","anh trai"],["くうき","không khí"],["せんせい","giáo viên"],["おとうさん","bố"]]},
- {mark:"は → oa,  へ → ê",title:"Khi là trợ từ",text:"は đọc “oa” (wa) khi là trợ từ chủ đề; へ đọc “ê” khi chỉ hướng.",ex:[["わたしは","tôi thì…"],["こんにちは","xin chào"],["がっこうへ","đến trường"]]},
- {mark:"を → ô",title:"Trợ từ tân ngữ",text:"を chỉ dùng làm trợ từ, đọc giống お (ô).",ex:[["ほんを よみます","đọc sách"],["みずを のみます","uống nước"]]},
- {mark:"ん",title:"Âm mũi thay đổi",text:"Trước m/b/p đọc gần “m”, trước n/t/d gần “n”, trước k/g gần “ng”.",ex:[["しんぶん","báo"],["せんせい","giáo viên"],["りんご","quả táo"]]}
+ {mark:"っ",title:"Âm ngắt (chữ tsu nhỏ)",text:"Ngắt một nhịp, không đọc thành “tsư”. Phụ âm sau được giữ lại một nhịp.",ex:[["きって","con tem","w-kitte"],["がっこう","trường học","w-gakkou"],["きっぷ","vé tàu","w-kippu"]]},
+ {mark:"ああ・いい・うう・えい・おう",title:"Nguyên âm dài",text:"Kéo dài hai nhịp. えい thường đọc thành ê dài, おう thành ô dài.",ex:[["おかあさん","mẹ","w-okaasan"],["おにいさん","anh trai","w-oniisan"],["くうき","không khí","w-kuuki"],["せんせい","giáo viên","w-sensei"],["おとうさん","bố","w-otousan"]]},
+ {mark:"は → oa,  へ → ê",title:"Khi là trợ từ",text:"は đọc “oa” (wa) khi là trợ từ chủ đề; へ đọc “ê” khi chỉ hướng.",ex:[["わたしは","tôi thì…","w-watashiwa"],["こんにちは","xin chào","w-konnichiwa"],["がっこうへ","đến trường","w-gakkoue"]]},
+ {mark:"を → ô",title:"Trợ từ tân ngữ",text:"を chỉ dùng làm trợ từ, đọc giống お (ô).",ex:[["ほんを よみます","đọc sách","w-hon-o-yomimasu"],["みずを のみます","uống nước","w-mizu-o-nomimasu"]]},
+ {mark:"ん",title:"Âm mũi thay đổi",text:"Trước m/b/p đọc gần “m”, trước n/t/d gần “n”, trước k/g gần “ng”.",ex:[["しんぶん","báo","w-shinbun"],["せんせい","giáo viên","w-sensei"],["りんご","quả táo","w-ringo"]]}
 ];
 const SPECIAL_KATA=[
- {mark:"ッ",title:"Âm ngắt (chữ tsu nhỏ)",text:"Ngắt một nhịp, không đọc thành “tsư”. Phụ âm sau được giữ lại một nhịp.",ex:[["ベッド","giường"],["カップ","cái cốc"],["サッカー","bóng đá"]]},
- {mark:"ー",title:"Dấu kéo dài",text:"Trong katakana, nguyên âm dài viết bằng dấu ー. Kéo dài nguyên âm đứng trước thêm một nhịp.",ex:[["コーヒー","cà phê"],["ケーキ","bánh ngọt"],["ノート","quyển vở"],["スーパー","siêu thị"]]},
- {mark:"ン",title:"Âm mũi thay đổi",text:"Trước m/b/p đọc gần “m”, trước n/t/d gần “n”, trước k/g gần “ng”.",ex:[["パン","bánh mì"],["ペン","cây bút"],["ワイン","rượu vang"]]},
- {mark:"ァ ィ ゥ ェ ォ",title:"Nguyên âm nhỏ (âm từ nước ngoài)",text:"Ghép với chữ đứng trước thành một nhịp để viết âm của từ nước ngoài.",ex:[["フォーク","cái nĩa"],["パーティー","bữa tiệc"],["チェック","kiểm tra"],["ファイル","tập tin"]]},
- {mark:"ヴ",title:"Âm v",text:"Dùng cho từ nước ngoài có âm v; người Nhật thường đọc gần như “b”.",ex:[["ヴァイオリン","đàn violin"]]}
+ {mark:"ッ",title:"Âm ngắt (chữ tsu nhỏ)",text:"Ngắt một nhịp, không đọc thành “tsư”. Phụ âm sau được giữ lại một nhịp.",ex:[["ベッド","giường","w-beddo"],["カップ","cái cốc","w-kappu"],["サッカー","bóng đá","w-sakkaa"]]},
+ {mark:"ー",title:"Dấu kéo dài",text:"Trong katakana, nguyên âm dài viết bằng dấu ー. Kéo dài nguyên âm đứng trước thêm một nhịp.",ex:[["コーヒー","cà phê","w-koohii"],["ケーキ","bánh ngọt","w-keeki"],["ノート","quyển vở","w-nooto"],["スーパー","siêu thị","w-suupaa"]]},
+ {mark:"ン",title:"Âm mũi thay đổi",text:"Trước m/b/p đọc gần “m”, trước n/t/d gần “n”, trước k/g gần “ng”.",ex:[["パン","bánh mì","w-pan"],["ペン","cây bút","w-pen"],["ワイン","rượu vang","w-wain"]]},
+ {mark:"ァ ィ ゥ ェ ォ",title:"Nguyên âm nhỏ (âm từ nước ngoài)",text:"Ghép với chữ đứng trước thành một nhịp để viết âm của từ nước ngoài.",ex:[["フォーク","cái nĩa","w-fooku"],["パーティー","bữa tiệc","w-paatii"],["チェック","kiểm tra","w-chekku"],["ファイル","tập tin","w-fairu"]]},
+ {mark:"ヴ",title:"Âm v",text:"Dùng cho từ nước ngoài có âm v; người Nhật thường đọc gần như “b”.",ex:[["ヴァイオリン","đàn violin","w-vaiorin"]]}
 ];
 let script="hira";try{script=JSON.parse(localStorage.getItem("hira_script"))==="kata"?"kata":"hira"}catch(e){}
 function K(t){return script==="kata"?t.replace(/[\u3041-\u3096]/g,c=>String.fromCharCode(c.charCodeAt(0)+0x60)):t}
@@ -341,21 +344,42 @@ function loadVoices(){
   sel.value=idx;voice=voices[idx];
 }
 if(synth){loadVoices();synth.onvoiceschanged=loadVoices;setTimeout(loadVoices,800)}
-document.getElementById("voice").addEventListener("change",e=>{voice=voices[+e.target.value];store.set("hira_voice",voice&&voice.name);speak(document.getElementById("big").dataset.say||"あ")});
+document.getElementById("voice").addEventListener("change",e=>{voice=voices[+e.target.value];store.set("hira_voice",voice&&voice.name);speak(document.getElementById("big").dataset.say||"あ",curId)});
 
 function utter(text){
   const u=new SpeechSynthesisUtterance(text);
   u.lang="ja-JP";if(voice)u.voice=voice;u.rate=rate;u.pitch=1;return u;
 }
-function speak(text){
-  if(!synth)return;
-  synth.cancel();
-  synth.speak(utter(text));
+/* Recorded audio (audio/manifest.json) is preferred; speech synthesis is the fallback */
+let manifest=null,curId="a",tok=0;
+const player=new Audio();player.preload="auto";
+try{fetch("audio/manifest.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{if(j&&Array.isArray(j.files)){manifest=new Set(j.files);setSrc(curId)}}).catch(()=>{})}catch(e){}
+function idOf(cell){return cell[2]==="wo (o)"?"o":cell[2].split(" ")[0]}
+function hasRec(id){return !!(id&&manifest&&manifest.has(id))}
+function setSrc(id){const el=document.getElementById("src");if(el)el.textContent=manifest?(hasRec(id)?"Giọng người thật":"Giọng máy"):""}
+function ttsOnce(say){return new Promise(res=>{if(!synth)return res();const u=utter(say);u.onend=res;u.onerror=res;synth.speak(u)})}
+function once(say,id){
+  setSrc(id);
+  if(!hasRec(id))return ttsOnce(say);
+  return new Promise(res=>{
+    player.onended=res;player.onerror=()=>ttsOnce(say).then(res);
+    player.src="audio/"+id+".mp3";
+    try{player.preservesPitch=true}catch(e){}
+    player.playbackRate=rate<0.7?0.75:1;
+    const p=player.play();if(p&&p.catch)p.catch(()=>ttsOnce(say).then(res));
+  });
 }
-function speakSeq(items,onEach){
-  if(!synth)return;
-  synth.cancel();
-  items.forEach((it,i)=>{const u=utter(it.say);u.onstart=()=>onEach&&onEach(it,i);synth.speak(u)});
+function stopAll(){tok++;try{synth&&synth.cancel()}catch(e){}try{player.pause()}catch(e){}}
+function speak(text,id){stopAll();curId=id||null;once(text,curId)}
+async function speakSeq(items,onEach){
+  stopAll();const t=tok;
+  for(let i=0;i<items.length;i++){
+    if(t!==tok)return;
+    onEach&&onEach(items[i],i);curId=items[i].id;
+    await once(items[i].say,items[i].id);
+    if(t!==tok)return;
+    await new Promise(r=>setTimeout(r,250));
+  }
 }
 
 /* ---------- Stage ---------- */
@@ -367,7 +391,7 @@ function show(kana,vi,ro,say,tipText){
   document.getElementById("ro").textContent=ro?("romaji: "+ro):"";
   document.getElementById("tip").textContent=tipText!=null?tipText:tipFor(vi||"");
 }
-document.getElementById("replay").addEventListener("click",()=>speak(big.dataset.say||big.textContent));
+document.getElementById("replay").addEventListener("click",()=>speak(big.dataset.say||big.textContent,curId));
 
 /* ---------- Grid ---------- */
 const panel=document.getElementById("panel");
@@ -398,11 +422,11 @@ function renderGrid(g){
       const dk=K(k);
       b.setAttribute("aria-label",dk+" , "+ro);
       b.innerHTML=`<span class="kk" lang="ja">${dk}</span><span class="vi">${vi.replace("*",'<span class="star">*</span>')}</span><span class="ro">${ro}</span>`;
-      b.addEventListener("click",()=>{markOn(b);lastCell=cell;show(dk,vi,ro);speak(dk);hear(k)});
+      b.addEventListener("click",()=>{markOn(b);lastCell=cell;show(dk,vi,ro);speak(dk,idOf(cell));hear(k)});
       grid.appendChild(b);btns.push(b);
     });
     rp.addEventListener("click",()=>{
-      const items=row.map((c,i)=>c&&{say:K(c[0]),c,b:btns[i]}).filter(Boolean);
+      const items=row.map((c,i)=>c&&{say:K(c[0]),id:idOf(c),c,b:btns[i]}).filter(Boolean);
       speakSeq(items,it=>{markOn(it.b);lastCell=it.c;show(K(it.c[0]),it.c[1],it.c[2]);hear(it.c[0])});
     });
   });
@@ -414,10 +438,10 @@ function renderSpecial(){
     const el=document.createElement("div");el.className="sp";
     el.innerHTML=`<div class="mark" lang="ja">${s.mark}</div><div><p><b>${s.title}.</b> ${s.text}</p><div class="ex"></div></div>`;
     const ex=el.querySelector(".ex");
-    s.ex.forEach(([jp,vi])=>{
+    s.ex.forEach(([jp,vi,wid])=>{
       const c=document.createElement("button");c.type="button";c.className="chip";
       c.innerHTML=`<span class="jp" lang="ja">${jp}</span><small>${vi}</small>`;
-      c.addEventListener("click",()=>{lastCell=null;show(jp,vi,"",jp,s.title+": "+s.text);speak(jp)});
+      c.addEventListener("click",()=>{lastCell=null;show(jp,vi,"",jp,s.title+": "+s.text);speak(jp,wid)});
       ex.appendChild(c);
     });
     wrap.appendChild(el);
@@ -445,7 +469,7 @@ GROUPS.forEach(g=>{
 document.querySelectorAll("#speed button").forEach(b=>{
   b.setAttribute("aria-pressed",String(+b.dataset.rate===rate));
   b.addEventListener("click",()=>{rate=+b.dataset.rate;store.set("hira_rate",rate);
-    document.querySelectorAll("#speed button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));speak(big.dataset.say||"あ")});
+    document.querySelectorAll("#speed button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));speak(big.dataset.say||"あ",curId)});
 });
 const vis=store.get("hira_vis",{vi:true,ro:true});
 function applyVis(){
@@ -459,10 +483,10 @@ function applyScript(){
   document.getElementById("h1jp").textContent=script==="kata"?"カタカナ":"ひらがな";
   document.querySelectorAll(".tab .jp").forEach(el=>el.textContent=K(el.dataset.raw));
   select(current?current.id:store.get("hira_tab","basic"));applyVis();
-  const c=lastCell||["あ","a","a"];show(K(c[0]),c[1],c[2]);
+  const c=lastCell||["あ","a","a"];show(K(c[0]),c[1],c[2]);curId=idOf(c);setSrc(curId);
 }
 document.querySelectorAll("#script button").forEach(b=>b.addEventListener("click",()=>{
-  script=b.dataset.s;store.set("hira_script",script);applyScript();speak(big.dataset.say);
+  script=b.dataset.s;store.set("hira_script",script);applyScript();speak(big.dataset.say,curId);
 }));
 applyScript();updateProgress();
 </script>
