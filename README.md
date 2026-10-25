@@ -5,6 +5,7 @@ Công cụ học phát âm hiragana và katakana dành cho người Việt. Bấ
 ## Tính năng
 
 - Chuyển đổi hiển thị giữa ひらがな và カタカナ (kèm ví dụ riêng cho katakana: ッ, ー, ン, ァィゥェォ, ヴ)
+- Bảng âm ngoại lai (ファ, ティ, ウィ, ヴァ, ツァ, シェ…) chỉ viết bằng katakana
 - Âm cơ bản, âm đục · bán đục, âm ghép và âm đặc biệt (っ, nguyên âm dài, trợ từ は・へ・を, ん)
 - Bấm ▶ đầu hàng để nghe cả hàng
 - 3 tốc độ đọc: Chậm, Vừa, Bình thường

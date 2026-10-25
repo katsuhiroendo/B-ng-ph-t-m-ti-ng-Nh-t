@@ -20,6 +20,7 @@ body{margin:0}
   --lotus:#c93d66; --lotus-soft:#fbe4eb;
   --river:#22678f; --river-soft:#e1eef6;
   --gold:#9a6512; --gold-soft:#f8ecd6;
+  --plum:#7a4a9e; --plum-soft:#efe5f6;
   --star:#c93d66;
   --font-kana:"Klee One","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
   --font-ui:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -30,6 +31,7 @@ body{margin:0}
   --lotus:#f2829f; --lotus-soft:#432230;
   --river:#7cbde3; --river-soft:#1c3443;
   --gold:#e6b45e; --gold-soft:#3d301a;
+  --plum:#c3a0e6; --plum-soft:#33284a;
   --star:#f2829f; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#141a19; --surface:#1c2422; --surface-2:#232d2a; --ink:#ecf1ef; --muted:#a3b0ab; --line:#33403c;
@@ -37,6 +39,7 @@ body{margin:0}
   --lotus:#f2829f; --lotus-soft:#432230;
   --river:#7cbde3; --river-soft:#1c3443;
   --gold:#e6b45e; --gold-soft:#3d301a;
+  --plum:#c3a0e6; --plum-soft:#33284a;
   --star:#f2829f; color-scheme:dark}
 
 *{box-sizing:border-box}
@@ -100,6 +103,8 @@ select{background:var(--surface-2);border:1px solid var(--line);border-radius:8p
 .k.on{background:var(--c);border-color:var(--c)}
 .k.on .kk,.k.on .vi,.k.on .ro{color:var(--surface)}
 .empty{border:1px dashed var(--line);border-radius:12px}
+.gnote{margin:0 0 12px;font-size:.88rem;color:var(--muted);background:var(--soft);border-radius:10px;padding:8px 12px;max-width:70ch}
+.gnote b{color:var(--c)}
 .hide-ro .ro{display:none}
 .hide-vi .vi{display:none}
 .star{color:var(--star)}
@@ -197,6 +202,11 @@ const TIPS={
  "phư":"Thổi nhẹ bằng hai môi, không dùng răng chạm môi như “ph” tiếng Việt.",
  "r":"Bật lưỡi nhẹ một lần lên vòm miệng, âm nằm giữa r, l và đ.",
  "n":"Âm mũi một nhịp riêng; thay đổi theo âm đứng sau (m, n hoặc ng).",
+ "v":"Âm v: người Nhật thường đọc gần như “b”; đọc “v” nhẹ cũng được hiểu.",
+ "ph":"Âm f: thổi nhẹ bằng hai môi, không chạm răng vào môi như “ph” tiếng Việt.",
+ "ts":"ts = t + x đọc liền một nhịp, như “ts” trong “cats”.",
+ "ch":"Không bật hơi mạnh; đọc nhẹ, gần “tr” không cong lưỡi.",
+ "x":"Âm gió mềm như “sh” nhẹ.",
  "dz":"dz đọc liền, không tách thành hai âm.","dj":"dj đọc liền, gần “gi” trong tiếng Anh “jeans”."
 };
 function tipFor(vi){
@@ -207,6 +217,11 @@ function tipFor(vi){
   if(b.startsWith("dz")) return TIPS.dz;
   if(b.startsWith("dj")) return TIPS.dj;
   if(b==="n") return TIPS.n;
+  if(b.startsWith("ph")) return TIPS.ph;
+  if(b.startsWith("ts")) return TIPS.ts;
+  if(b.startsWith("ch")) return TIPS.ch;
+  if(b.startsWith("v")) return TIPS.v;
+  if(b.startsWith("x")) return TIPS.x;
   return "";
 }
 // [kana, gợi âm Việt, romaji]
@@ -243,6 +258,23 @@ const YOON={cols:["ゃ ya","ゅ yu","ょ yo"],rows:[
  [["びゃ","bia","bya"],["びゅ","biư","byu"],["びょ","biô","byo"]],
  [["ぴゃ","pia","pya"],["ぴゅ","piư","pyu"],["ぴょ","piô","pyo"]]
 ]};
+const GAIRAI={cols:["a","i","u","e","o"],
+ note:"<b>Chỉ viết bằng katakana.</b> Dùng cho từ nước ngoài, ví dụ パーティー (bữa tiệc), フォーク (cái nĩa), ディズニー, ウェブ. Hai chữ ghép đọc liền thành một nhịp.",
+ rows:[
+ [null,["ウィ","uy","wi"],null,["ウェ","uê","we"],["ウォ","uô","wo"]],
+ [null,null,null,["イェ","iê","ye"],null],
+ [["ヴァ","va*","va"],["ヴィ","vi*","vi"],["ヴ","vư*","vu"],["ヴェ","vê*","ve"],["ヴォ","vô*","vo"]],
+ [null,null,null,["シェ","xê*","she"],null],
+ [null,null,null,["ジェ","djê*","je"],null],
+ [null,null,null,["チェ","chê*","che"],null],
+ [["ツァ","tsa*","tsa"],["ツィ","tsi*","tsi"],null,["ツェ","tsê*","tse"],["ツォ","tsô*","tso"]],
+ [null,["ティ","ti","ti"],["トゥ","tư","tu"],null,null],
+ [null,["ディ","đi","di"],["ドゥ","đư","du"],null,null],
+ [null,null,["テュ","tiư","tyu"],null,null],
+ [null,null,["デュ","điư","dyu"],null,null],
+ [["ファ","pha*","fa"],["フィ","phi*","fi"],null,["フェ","phê*","fe"],["フォ","phô*","fo"]],
+ [null,null,["フュ","phiư*","fyu"],null,null]
+]};
 const SPECIAL=[
  {mark:"っ",title:"Âm ngắt (chữ tsu nhỏ)",text:"Ngắt một nhịp, không đọc thành “tsư”. Phụ âm sau được giữ lại một nhịp.",ex:[["きって","con tem"],["がっこう","trường học"],["きっぷ","vé tàu"]]},
  {mark:"ああ・いい・うう・えい・おう",title:"Nguyên âm dài",text:"Kéo dài hai nhịp. えい thường đọc thành ê dài, おう thành ô dài.",ex:[["おかあさん","mẹ"],["おにいさん","anh trai"],["くうき","không khí"],["せんせい","giáo viên"],["おとうさん","bố"]]},
@@ -264,6 +296,7 @@ const GROUPS=[
  {id:"basic",label:"Âm cơ bản",jp:"あ",c:"--leaf",s:"--leaf-soft",data:BASIC},
  {id:"daku",label:"Âm đục · bán đục",jp:"が",c:"--lotus",s:"--lotus-soft",data:DAKU},
  {id:"yoon",label:"Âm ghép",jp:"きゃ",c:"--river",s:"--river-soft",data:YOON},
+ {id:"gairai",label:"Âm ngoại lai",jp:"ファ",c:"--plum",s:"--plum-soft",data:GAIRAI},
  {id:"special",label:"Âm đặc biệt",jp:"っ",c:"--gold",s:"--gold-soft"}
 ];
 
@@ -271,9 +304,9 @@ const GROUPS=[
 const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 let heard=new Set(store.get("hira_heard",[]));
-const TOTAL=[BASIC,DAKU,YOON].reduce((n,g)=>n+g.rows.flat().filter(Boolean).length,0);
+const TOTAL=[BASIC,DAKU,YOON,GAIRAI].reduce((n,g)=>n+g.rows.flat().filter(Boolean).length,0);
 function updateProgress(){
-  const all=new Set([BASIC,DAKU,YOON].flatMap(g=>g.rows.flat().filter(Boolean).map(x=>x[0])));
+  const all=new Set([BASIC,DAKU,YOON,GAIRAI].flatMap(g=>g.rows.flat().filter(Boolean).map(x=>x[0])));
   const n=[...heard].filter(k=>all.has(k)).length;
   document.getElementById("progress").innerHTML=`Đã nghe <b>${n}</b> / ${TOTAL} chữ`;
 }
@@ -396,6 +429,7 @@ function select(id){
   panel.style.setProperty("--c",`var(${g.c})`);panel.style.setProperty("--soft",`var(${g.s})`);
   document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t.dataset.id===g.id));
   panel.innerHTML="";
+  if(g.data&&g.data.note){const n=document.createElement("p");n.className="gnote";n.innerHTML=g.data.note;panel.appendChild(n)}
   panel.appendChild(g.id==="special"?renderSpecial():renderGrid(g));
   store.set("hira_tab",g.id);
 }
