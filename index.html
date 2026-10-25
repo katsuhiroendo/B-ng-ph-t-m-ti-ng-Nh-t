@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Bảng hiragana cho người Việt: bấm từng chữ để nghe phát âm tiếng Nhật.">
+<meta name="description" content="Bảng hiragana và katakana cho người Việt: bấm từng chữ để nghe phát âm tiếng Nhật.">
 <title>Bảng Hiragana Phát Âm</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,6 +55,7 @@ h1 .jp{font-family:var(--font-kana);color:var(--lotus);margin-right:.35em}
 select,input[type=range]{font:inherit;color:var(--ink)}
 select{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;max-width:260px;text-transform:none;letter-spacing:0;font-weight:500;font-size:.9rem}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button[lang=ja]{font-family:var(--font-kana);font-size:.95rem}
 .seg button{border:0;background:transparent;color:var(--ink);font:inherit;font-size:.85rem;padding:6px 12px;cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--leaf);color:var(--surface)}
 .warn{flex-basis:100%;margin:0;font-size:.85rem;color:var(--lotus);background:var(--lotus-soft);border-radius:8px;padding:8px 10px}
@@ -130,13 +131,19 @@ select{background:var(--surface-2);border:1px solid var(--line);border-radius:8p
 <div class="wrap">
   <header>
     <div>
-      <h1><span class="jp">ひらがな</span>Bảng phát âm tiếng Nhật</h1>
+      <h1><span class="jp" id="h1jp">ひらがな</span>Bảng phát âm tiếng Nhật</h1>
       <p class="sub">Bấm vào từng chữ để nghe giọng Nhật chuẩn. Phần chữ Việt chỉ là gợi âm gần đúng, đọc không thêm thanh điệu.</p>
     </div>
     <div class="progress" id="progress">Đã nghe <b>0</b> / 0 chữ</div>
   </header>
 
   <div class="controls">
+    <label>Chữ
+      <span class="seg" id="script">
+        <button type="button" data-s="hira" aria-pressed="true" lang="ja">ひらがな</button>
+        <button type="button" data-s="kata" aria-pressed="false" lang="ja">カタカナ</button>
+      </span>
+    </label>
     <label for="voice">Giọng đọc <select id="voice"><option>Đang tải giọng…</option></select></label>
     <label>Tốc độ
       <span class="seg" id="speed">
@@ -243,6 +250,16 @@ const SPECIAL=[
  {mark:"を → ô",title:"Trợ từ tân ngữ",text:"を chỉ dùng làm trợ từ, đọc giống お (ô).",ex:[["ほんを よみます","đọc sách"],["みずを のみます","uống nước"]]},
  {mark:"ん",title:"Âm mũi thay đổi",text:"Trước m/b/p đọc gần “m”, trước n/t/d gần “n”, trước k/g gần “ng”.",ex:[["しんぶん","báo"],["せんせい","giáo viên"],["りんご","quả táo"]]}
 ];
+const SPECIAL_KATA=[
+ {mark:"ッ",title:"Âm ngắt (chữ tsu nhỏ)",text:"Ngắt một nhịp, không đọc thành “tsư”. Phụ âm sau được giữ lại một nhịp.",ex:[["ベッド","giường"],["カップ","cái cốc"],["サッカー","bóng đá"]]},
+ {mark:"ー",title:"Dấu kéo dài",text:"Trong katakana, nguyên âm dài viết bằng dấu ー. Kéo dài nguyên âm đứng trước thêm một nhịp.",ex:[["コーヒー","cà phê"],["ケーキ","bánh ngọt"],["ノート","quyển vở"],["スーパー","siêu thị"]]},
+ {mark:"ン",title:"Âm mũi thay đổi",text:"Trước m/b/p đọc gần “m”, trước n/t/d gần “n”, trước k/g gần “ng”.",ex:[["パン","bánh mì"],["ペン","cây bút"],["ワイン","rượu vang"]]},
+ {mark:"ァ ィ ゥ ェ ォ",title:"Nguyên âm nhỏ (âm từ nước ngoài)",text:"Ghép với chữ đứng trước thành một nhịp để viết âm của từ nước ngoài.",ex:[["フォーク","cái nĩa"],["パーティー","bữa tiệc"],["チェック","kiểm tra"],["ファイル","tập tin"]]},
+ {mark:"ヴ",title:"Âm v",text:"Dùng cho từ nước ngoài có âm v; người Nhật thường đọc gần như “b”.",ex:[["ヴァイオリン","đàn violin"]]}
+];
+let script="hira";try{script=JSON.parse(localStorage.getItem("hira_script"))==="kata"?"kata":"hira"}catch(e){}
+function K(t){return script==="kata"?t.replace(/[\u3041-\u3096]/g,c=>String.fromCharCode(c.charCodeAt(0)+0x60)):t}
+let lastCell=null;
 const GROUPS=[
  {id:"basic",label:"Âm cơ bản",jp:"あ",c:"--leaf",s:"--leaf-soft",data:BASIC},
  {id:"daku",label:"Âm đục · bán đục",jp:"が",c:"--lotus",s:"--lotus-soft",data:DAKU},
@@ -345,28 +362,29 @@ function renderGrid(g){
       const [k,vi,ro]=cell;
       const b=document.createElement("button");
       b.type="button";b.className="k"+(heard.has(k)?" heard":"");
-      b.setAttribute("aria-label",k+" , "+ro);
-      b.innerHTML=`<span class="kk" lang="ja">${k}</span><span class="vi">${vi.replace("*",'<span class="star">*</span>')}</span><span class="ro">${ro}</span>`;
-      b.addEventListener("click",()=>{markOn(b);show(k,vi,ro);speak(k);hear(k)});
+      const dk=K(k);
+      b.setAttribute("aria-label",dk+" , "+ro);
+      b.innerHTML=`<span class="kk" lang="ja">${dk}</span><span class="vi">${vi.replace("*",'<span class="star">*</span>')}</span><span class="ro">${ro}</span>`;
+      b.addEventListener("click",()=>{markOn(b);lastCell=cell;show(dk,vi,ro);speak(dk);hear(k)});
       grid.appendChild(b);btns.push(b);
     });
     rp.addEventListener("click",()=>{
-      const items=row.map((c,i)=>c&&{say:c[0],c,b:btns[i]}).filter(Boolean);
-      speakSeq(items,it=>{markOn(it.b);show(it.c[0],it.c[1],it.c[2]);hear(it.c[0])});
+      const items=row.map((c,i)=>c&&{say:K(c[0]),c,b:btns[i]}).filter(Boolean);
+      speakSeq(items,it=>{markOn(it.b);lastCell=it.c;show(K(it.c[0]),it.c[1],it.c[2]);hear(it.c[0])});
     });
   });
   return grid;
 }
 function renderSpecial(){
   const wrap=document.createElement("div");wrap.className="special";
-  SPECIAL.forEach(s=>{
+  (script==="kata"?SPECIAL_KATA:SPECIAL).forEach(s=>{
     const el=document.createElement("div");el.className="sp";
     el.innerHTML=`<div class="mark" lang="ja">${s.mark}</div><div><p><b>${s.title}.</b> ${s.text}</p><div class="ex"></div></div>`;
     const ex=el.querySelector(".ex");
     s.ex.forEach(([jp,vi])=>{
       const c=document.createElement("button");c.type="button";c.className="chip";
       c.innerHTML=`<span class="jp" lang="ja">${jp}</span><small>${vi}</small>`;
-      c.addEventListener("click",()=>{show(jp,vi,"",jp,s.title+": "+s.text);speak(jp)});
+      c.addEventListener("click",()=>{lastCell=null;show(jp,vi,"",jp,s.title+": "+s.text);speak(jp)});
       ex.appendChild(c);
     });
     wrap.appendChild(el);
@@ -385,7 +403,7 @@ const tabs=document.getElementById("tabs");
 GROUPS.forEach(g=>{
   const t=document.createElement("button");t.className="tab";t.type="button";t.role="tab";t.dataset.id=g.id;
   t.style.setProperty("--c",`var(${g.c})`);
-  t.innerHTML=`<span class="jp" lang="ja">${g.jp}</span>${g.label}`;
+  t.innerHTML=`<span class="jp" lang="ja" data-raw="${g.jp}">${K(g.jp)}</span>${g.label}`;
   t.addEventListener("click",()=>select(g.id));tabs.appendChild(t);
 });
 
@@ -402,8 +420,17 @@ function applyVis(){
 }
 document.querySelectorAll("#show button").forEach(b=>b.addEventListener("click",()=>{vis[b.dataset.k]=!vis[b.dataset.k];store.set("hira_vis",vis);applyVis()}));
 
-select(store.get("hira_tab","basic"));applyVis();updateProgress();
-show("あ","a","a","あ","");
+function applyScript(){
+  document.querySelectorAll("#script button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.s===script)));
+  document.getElementById("h1jp").textContent=script==="kata"?"カタカナ":"ひらがな";
+  document.querySelectorAll(".tab .jp").forEach(el=>el.textContent=K(el.dataset.raw));
+  select(current?current.id:store.get("hira_tab","basic"));applyVis();
+  const c=lastCell||["あ","a","a"];show(K(c[0]),c[1],c[2]);
+}
+document.querySelectorAll("#script button").forEach(b=>b.addEventListener("click",()=>{
+  script=b.dataset.s;store.set("hira_script",script);applyScript();speak(big.dataset.say);
+}));
+applyScript();updateProgress();
 </script>
 </body>
 </html>
