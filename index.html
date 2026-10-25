@@ -351,35 +351,47 @@ function score(v){
   if(/haruka|ayumi|ichiro|sayaka/.test(n))s+=5;
   return s;
 }
+let manifest=null,recPicked=true,curId="a";
 function loadVoices(){
-  if(!synth){warn.hidden=false;warn.textContent="Trình duyệt này không hỗ trợ đọc giọng nói. Hãy mở bằng Chrome, Edge hoặc Safari bản mới.";return}
-  voices=synth.getVoices().filter(v=>/^ja([-_]|$)/i.test(v.lang)).sort((a,b)=>score(b)-score(a));
   const sel=document.getElementById("voice");
-  if(!voices.length){
-    sel.innerHTML='<option>Không tìm thấy giọng Nhật</option>';
+  voices=synth?synth.getVoices().filter(v=>/^ja([-_]|$)/i.test(v.lang)).sort((a,b)=>score(b)-score(a)):[];
+  const saved=store.get("hira_voice",null);
+  const nice=v=>v.name.replace(/Microsoft |Online |\(Natural\)| - Japanese \(Japan\)/g," ").replace(/\s+/g," ").trim();
+  let h="";
+  if(manifest)h+='<option value="rec">Giọng người thật (ghi âm) ★</option>';
+  if(voices.length)h+='<optgroup label="Giọng máy (tổng hợp)">'+voices.map((v,i)=>`<option value="${i}">${nice(v)}</option>`).join("")+'</optgroup>';
+  if(!h)h='<option>Không tìm thấy giọng Nhật</option>';
+  sel.innerHTML=h;
+  const vi=voices.findIndex(v=>v.name===saved);
+  if(manifest&&(saved===null||saved==="rec"||vi<0)){sel.value="rec";recPicked=true;voice=voices[0]||null}
+  else{recPicked=false;const i=Math.max(0,vi);if(voices.length)sel.value=i;voice=voices[i]||null}
+  if(!synth&&!manifest){warn.hidden=false;warn.textContent="Trình duyệt này không hỗ trợ đọc giọng nói. Hãy mở bằng Chrome, Edge hoặc Safari bản mới.";return}
+  if(!voices.length&&!manifest){
     warn.hidden=false;
     warn.textContent="Máy chưa có giọng tiếng Nhật. Trên Windows: Cài đặt › Thời gian và ngôn ngữ › Giọng nói › Thêm giọng “Japanese”. Trên điện thoại: thêm ngôn ngữ Nhật cho chuyển văn bản thành giọng nói. Giọng tốt nhất: Microsoft Nanami (Edge) hoặc Google 日本語 (Chrome).";
     return;
   }
   warn.hidden=true;
-  const saved=store.get("hira_voice",null);
-  sel.innerHTML=voices.map((v,i)=>`<option value="${i}">${v.name.replace(/Microsoft |Online |\(Natural\)| - Japanese \(Japan\)/g," ").replace(/\s+/g," ").trim()}${i===0?" ★":""}</option>`).join("");
-  let idx=Math.max(0,voices.findIndex(v=>v.name===saved));
-  sel.value=idx;voice=voices[idx];
+  if(typeof setSrc==="function")setSrc(curId);
 }
-if(synth){loadVoices();synth.onvoiceschanged=loadVoices;setTimeout(loadVoices,800)}
-document.getElementById("voice").addEventListener("change",e=>{voice=voices[+e.target.value];store.set("hira_voice",voice&&voice.name);speak(document.getElementById("big").dataset.say||"あ",curId)});
+loadVoices();if(synth){synth.onvoiceschanged=loadVoices;setTimeout(loadVoices,800)}
+document.getElementById("voice").addEventListener("change",e=>{
+  const v=e.target.value;
+  if(v==="rec"){recPicked=true;voice=voices[0]||null;store.set("hira_voice","rec")}
+  else{recPicked=false;voice=voices[+v];store.set("hira_voice",voice&&voice.name)}
+  speak(document.getElementById("big").dataset.say||"あ",curId);
+});
 
 function utter(text){
   const u=new SpeechSynthesisUtterance(text);
   u.lang="ja-JP";if(voice)u.voice=voice;u.rate=rate;u.pitch=1;return u;
 }
 /* Recorded audio (audio/manifest.json) is preferred; speech synthesis is the fallback */
-let manifest=null,curId="a",tok=0;
+let tok=0;
 const player=new Audio();player.preload="auto";
-try{fetch("audio/manifest.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{if(j&&Array.isArray(j.files)){manifest=new Set(j.files);setSrc(curId)}}).catch(()=>{})}catch(e){}
+try{fetch("audio/manifest.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{if(j&&Array.isArray(j.files)){manifest=new Set(j.files);loadVoices();setSrc(curId)}}).catch(()=>{})}catch(e){}
 function idOf(cell){return cell[2]==="wo (o)"?"o":cell[2].split(" ")[0]}
-function hasRec(id){return !!(id&&manifest&&manifest.has(id))}
+function hasRec(id){return !!(recPicked&&id&&manifest&&manifest.has(id))}
 function setSrc(id){const el=document.getElementById("src");if(el)el.textContent=manifest?(hasRec(id)?"Giọng người thật":"Giọng máy"):""}
 function ttsOnce(say){return new Promise(res=>{if(!synth)return res();const u=utter(say);u.onend=res;u.onerror=res;synth.speak(u)})}
 function once(say,id){
