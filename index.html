@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Bảng hiragana cho người Việt: bấm từng chữ để nghe phát âm tiếng Nhật.">
+<title>Bảng Hiragana Phát Âm</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Klee+One:wght@600&display=swap">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+body{margin:0}
+/* Layout: sticky "sân khấu" (big kana + hint) beside a tabbed kana grid; stacks on phones */
+:root{
+  --bg:#fbf5f3; --surface:#ffffff; --surface-2:#f6eeec; --ink:#1f2a27; --muted:#5f6c67; --line:#eadcd9;
+  --leaf:#1d6b55; --leaf-soft:#e2f1ea;
+  --lotus:#c93d66; --lotus-soft:#fbe4eb;
+  --river:#22678f; --river-soft:#e1eef6;
+  --gold:#9a6512; --gold-soft:#f8ecd6;
+  --star:#c93d66;
+  --font-kana:"Klee One","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
+  --font-ui:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141a19; --surface:#1c2422; --surface-2:#232d2a; --ink:#ecf1ef; --muted:#a3b0ab; --line:#33403c;
+  --leaf:#5fc7a2; --leaf-soft:#1d3a31;
+  --lotus:#f2829f; --lotus-soft:#432230;
+  --river:#7cbde3; --river-soft:#1c3443;
+  --gold:#e6b45e; --gold-soft:#3d301a;
+  --star:#f2829f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141a19; --surface:#1c2422; --surface-2:#232d2a; --ink:#ecf1ef; --muted:#a3b0ab; --line:#33403c;
+  --leaf:#5fc7a2; --leaf-soft:#1d3a31;
+  --lotus:#f2829f; --lotus-soft:#432230;
+  --river:#7cbde3; --river-soft:#1c3443;
+  --gold:#e6b45e; --gold-soft:#3d301a;
+  --star:#f2829f; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:18px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+h1{margin:0;font-size:clamp(1.5rem,3.4vw,2.2rem);line-height:1.15;text-wrap:balance;font-weight:700}
+h1 .jp{font-family:var(--font-kana);color:var(--lotus);margin-right:.35em}
+.sub{margin:4px 0 0;color:var(--muted);max-width:60ch}
+.progress{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.progress b{color:var(--leaf)}
+
+.controls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.controls label{font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:8px}
+select,input[type=range]{font:inherit;color:var(--ink)}
+select{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;max-width:260px;text-transform:none;letter-spacing:0;font-weight:500;font-size:.9rem}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--ink);font:inherit;font-size:.85rem;padding:6px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--leaf);color:var(--surface)}
+.warn{flex-basis:100%;margin:0;font-size:.85rem;color:var(--lotus);background:var(--lotus-soft);border-radius:8px;padding:8px 10px}
+
+.main{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.main{grid-template-columns:minmax(0,1fr)}}
+
+/* Stage */
+.stage{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;display:grid;gap:12px;text-align:center}
+@media (max-width:860px){.stage{position:static;grid-template-columns:auto 1fr;text-align:left;align-items:center;padding:14px 16px}}
+.big{font-family:var(--font-kana);font-size:clamp(4rem,10vw,7rem);line-height:1;color:var(--ink);margin:0;min-height:1em}
+.big.say{animation:pop .35s ease-out}
+@keyframes pop{0%{transform:scale(.88);color:var(--lotus)}100%{transform:scale(1)}}
+.meta{display:grid;gap:6px}
+.hint{font-size:1.6rem;font-weight:700;color:var(--lotus)}
+.romaji{color:var(--muted);font-size:.9rem}
+.tip{font-size:.9rem;background:var(--surface-2);border-radius:10px;padding:8px 10px;text-align:left}
+.tip:empty{display:none}
+.replay{justify-self:center;font:inherit;font-weight:600;background:var(--lotus);color:var(--surface);border:0;border-radius:999px;padding:9px 18px;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+@media (max-width:860px){.replay{justify-self:start}}
+.replay svg{width:16px;height:16px;fill:currentColor}
+
+/* Tabs */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tab{font:inherit;font-weight:600;font-size:.92rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.tab .jp{font-family:var(--font-kana);font-size:1.05rem}
+.tab[aria-selected="true"]{background:var(--c);border-color:var(--c);color:var(--surface)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;overflow-x:auto}
+
+.grid{display:grid;gap:6px;grid-template-columns:40px repeat(var(--cols),minmax(58px,1fr));min-width:0}
+.colhead{font-weight:700;color:var(--c);text-align:center;font-size:.85rem;padding:2px 0;text-transform:lowercase}
+.rowplay{border:0;background:transparent;color:var(--muted);cursor:pointer;border-radius:8px;display:grid;place-items:center}
+.rowplay:hover{color:var(--c);background:var(--soft)}
+.rowplay svg{width:18px;height:18px;fill:currentColor}
+.k{font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:8px 2px 6px;cursor:pointer;display:grid;justify-items:center;gap:1px;position:relative;transition:transform .12s,background .12s,border-color .12s}
+.k:hover{background:var(--soft);border-color:var(--c)}
+.k:active{transform:scale(.95)}
+.k .kk{font-family:var(--font-kana);font-size:clamp(1.5rem,3vw,2rem);line-height:1.15}
+.k .vi{font-size:.85rem;font-weight:600;color:var(--c)}
+.k .ro{font-size:.7rem;color:var(--muted)}
+.k.heard::after{content:"";position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--c);opacity:.55}
+.k.on{background:var(--c);border-color:var(--c)}
+.k.on .kk,.k.on .vi,.k.on .ro{color:var(--surface)}
+.empty{border:1px dashed var(--line);border-radius:12px}
+.hide-ro .ro{display:none}
+.hide-vi .vi{display:none}
+.star{color:var(--star)}
+.k.on .star{color:var(--surface)}
+
+/* Special */
+.special{display:grid;gap:10px}
+.sp{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:12px}
+@media (max-width:520px){.sp{grid-template-columns:minmax(0,1fr)}}
+.sp .mark{font-family:var(--font-kana);font-size:1.6rem;color:var(--c)}
+.sp p{margin:0 0 8px;font-size:.92rem}
+.ex{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:10px;padding:6px 10px;cursor:pointer;display:inline-flex;gap:8px;align-items:baseline}
+.chip:hover{border-color:var(--c);background:var(--soft)}
+.chip .jp{font-family:var(--font-kana);font-size:1.15rem}
+.chip small{color:var(--muted)}
+
+/* Notes */
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.note{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:.88rem}
+.note h3{margin:0 0 6px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--leaf)}
+.note p{margin:0}
+:focus-visible{outline:3px solid var(--river);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1><span class="jp">ひらがな</span>Bảng phát âm tiếng Nhật</h1>
+      <p class="sub">Bấm vào từng chữ để nghe giọng Nhật chuẩn. Phần chữ Việt chỉ là gợi âm gần đúng, đọc không thêm thanh điệu.</p>
+    </div>
+    <div class="progress" id="progress">Đã nghe <b>0</b> / 0 chữ</div>
+  </header>
+
+  <div class="controls">
+    <label for="voice">Giọng đọc <select id="voice"><option>Đang tải giọng…</option></select></label>
+    <label>Tốc độ
+      <span class="seg" id="speed">
+        <button type="button" data-rate="0.6" aria-pressed="false">Chậm</button>
+        <button type="button" data-rate="0.85" aria-pressed="true">Vừa</button>
+        <button type="button" data-rate="1" aria-pressed="false">Bình thường</button>
+      </span>
+    </label>
+    <label>Hiện
+      <span class="seg" id="show">
+        <button type="button" data-k="vi" aria-pressed="true">Gợi âm Việt</button>
+        <button type="button" data-k="ro" aria-pressed="true">Romaji</button>
+      </span>
+    </label>
+    <p class="warn" id="warn" hidden></p>
+  </div>
+
+  <div class="main">
+    <aside class="stage" aria-live="polite">
+      <p class="big" id="big">あ</p>
+      <div class="meta">
+        <div class="hint" id="hint">a</div>
+        <div class="romaji" id="ro">romaji: a</div>
+        <div class="tip" id="tip"></div>
+        <button class="replay" id="replay" type="button"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z"/></svg>Nghe lại</button>
+      </div>
+    </aside>
+
+    <section>
+      <div class="tabs" role="tablist" id="tabs"></div>
+      <div class="panel" id="panel"></div>
+    </section>
+  </div>
+
+  <div class="notes">
+    <div class="note"><h3>Cách đọc gợi âm</h3><p>Đây là gợi âm, không phải ký hiệu ngữ âm chuẩn. Luôn nghe giọng mẫu rồi bắt chước theo.</p></div>
+    <div class="note"><h3>Nguyên âm ư, âm r</h3><p><b>ư</b>: môi thả lỏng, không tròn môi. <b>r*</b>: bật lưỡi nhẹ một lần, không rung lưỡi như tiếng Việt miền Nam.</p></div>
+    <div class="note"><h3>Dấu <span class="star">*</span></h3><p>Không có âm Việt trùng hoàn toàn. Bấm vào chữ có dấu * để xem mẹo phát âm riêng.</p></div>
+  </div>
+</div>
+
+<script>
+const ICON_PLAY='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+const TIPS={
+ "xi":"Âm gió mềm, gần “si” nhưng lưỡi chạm nhẹ phía trước, không phải “xi” cứng.",
+ "xa":"Âm gió mềm như “sh” nhẹ.", "xư":"Âm gió mềm như “sh” nhẹ.", "xô":"Âm gió mềm như “sh” nhẹ.",
+ "chi":"Không bật hơi mạnh như “chi” tiếng Việt; đọc nhẹ, gần “tri” không cong lưỡi.",
+ "cha":"Không bật hơi mạnh.","chư":"Không bật hơi mạnh.","chô":"Không bật hơi mạnh.",
+ "tsư":"ts = t + x đọc liền một nhịp, như “ts” trong “cats”.",
+ "hi":"Hơi đi qua phần trước lưỡi, gần âm “khi” rất nhẹ.",
+ "phư":"Thổi nhẹ bằng hai môi, không dùng răng chạm môi như “ph” tiếng Việt.",
+ "r":"Bật lưỡi nhẹ một lần lên vòm miệng, âm nằm giữa r, l và đ.",
+ "n":"Âm mũi một nhịp riêng; thay đổi theo âm đứng sau (m, n hoặc ng).",
+ "dz":"dz đọc liền, không tách thành hai âm.","dj":"dj đọc liền, gần “gi” trong tiếng Anh “jeans”."
+};
+function tipFor(vi){
+  if(!vi.endsWith("*")) return "";
+  const b=vi.slice(0,-1);
+  if(TIPS[b]) return TIPS[b];
+  if(b.startsWith("r")) return TIPS.r;
+  if(b.startsWith("dz")) return TIPS.dz;
+  if(b.startsWith("dj")) return TIPS.dj;
+  if(b==="n") return TIPS.n;
+  return "";
+}
+// [kana, gợi âm Việt, romaji]
+const BASIC={cols:["a","i","u","e","o"],rows:[
+ [["あ","a","a"],["い","i","i"],["う","ư","u"],["え","ê","e"],["お","ô","o"]],
+ [["か","ca","ka"],["き","ki","ki"],["く","cư","ku"],["け","kê","ke"],["こ","cô","ko"]],
+ [["さ","xa","sa"],["し","xi*","shi"],["す","xư","su"],["せ","xê","se"],["そ","xô","so"]],
+ [["た","ta","ta"],["ち","chi*","chi"],["つ","tsư*","tsu"],["て","tê","te"],["と","tô","to"]],
+ [["な","na","na"],["に","ni","ni"],["ぬ","nư","nu"],["ね","nê","ne"],["の","nô","no"]],
+ [["は","ha","ha"],["ひ","hi*","hi"],["ふ","phư*","fu"],["へ","hê","he"],["ほ","hô","ho"]],
+ [["ま","ma","ma"],["み","mi","mi"],["む","mư","mu"],["め","mê","me"],["も","mô","mo"]],
+ [["や","ia","ya"],null,["ゆ","iư","yu"],null,["よ","iô","yo"]],
+ [["ら","ra*","ra"],["り","ri*","ri"],["る","rư*","ru"],["れ","rê*","re"],["ろ","rô*","ro"]],
+ [["わ","oa","wa"],null,null,null,["を","ô","wo (o)"]],
+ [["ん","n*","n"],null,null,null,null]
+]};
+const DAKU={cols:["a","i","u","e","o"],rows:[
+ [["が","ga","ga"],["ぎ","ghi","gi"],["ぐ","gư","gu"],["げ","ghê","ge"],["ご","gô","go"]],
+ [["ざ","dza*","za"],["じ","dji*","ji"],["ず","dzư*","zu"],["ぜ","dzê*","ze"],["ぞ","dzô*","zo"]],
+ [["だ","đa","da"],["ぢ","dji*","ji (di)"],["づ","dzư*","zu (du)"],["で","đê","de"],["ど","đô","do"]],
+ [["ば","ba","ba"],["び","bi","bi"],["ぶ","bư","bu"],["べ","bê","be"],["ぼ","bô","bo"]],
+ [["ぱ","pa","pa"],["ぴ","pi","pi"],["ぷ","pư","pu"],["ぺ","pê","pe"],["ぽ","pô","po"]]
+]};
+const YOON={cols:["ゃ ya","ゅ yu","ょ yo"],rows:[
+ [["きゃ","kia","kya"],["きゅ","kiư","kyu"],["きょ","kiô","kyo"]],
+ [["しゃ","xa*","sha"],["しゅ","xư*","shu"],["しょ","xô*","sho"]],
+ [["ちゃ","cha*","cha"],["ちゅ","chư*","chu"],["ちょ","chô*","cho"]],
+ [["にゃ","nha","nya"],["にゅ","như","nyu"],["にょ","nhô","nyo"]],
+ [["ひゃ","hia","hya"],["ひゅ","hiư","hyu"],["ひょ","hiô","hyo"]],
+ [["みゃ","mia","mya"],["みゅ","miư","myu"],["みょ","miô","myo"]],
+ [["りゃ","ria*","rya"],["りゅ","riư*","ryu"],["りょ","riô*","ryo"]],
+ [["ぎゃ","ghia","gya"],["ぎゅ","ghiư","gyu"],["ぎょ","ghiô","gyo"]],
+ [["じゃ","dja*","ja"],["じゅ","djư*","ju"],["じょ","djô*","jo"]],
+ [["びゃ","bia","bya"],["びゅ","biư","byu"],["びょ","biô","byo"]],
+ [["ぴゃ","pia","pya"],["ぴゅ","piư","pyu"],["ぴょ","piô","pyo"]]
+]};
+const SPECIAL=[
+ {mark:"っ",title:"Âm ngắt (chữ tsu nhỏ)",text:"Ngắt một nhịp, không đọc thành “tsư”. Phụ âm sau được giữ lại một nhịp.",ex:[["きって","con tem"],["がっこう","trường học"],["きっぷ","vé tàu"]]},
+ {mark:"ああ・いい・うう・えい・おう",title:"Nguyên âm dài",text:"Kéo dài hai nhịp. えい thường đọc thành ê dài, おう thành ô dài.",ex:[["おかあさん","mẹ"],["おにいさん","anh trai"],["くうき","không khí"],["せんせい","giáo viên"],["おとうさん","bố"]]},
+ {mark:"は → oa,  へ → ê",title:"Khi là trợ từ",text:"は đọc “oa” (wa) khi là trợ từ chủ đề; へ đọc “ê” khi chỉ hướng.",ex:[["わたしは","tôi thì…"],["こんにちは","xin chào"],["がっこうへ","đến trường"]]},
+ {mark:"を → ô",title:"Trợ từ tân ngữ",text:"を chỉ dùng làm trợ từ, đọc giống お (ô).",ex:[["ほんを よみます","đọc sách"],["みずを のみます","uống nước"]]},
+ {mark:"ん",title:"Âm mũi thay đổi",text:"Trước m/b/p đọc gần “m”, trước n/t/d gần “n”, trước k/g gần “ng”.",ex:[["しんぶん","báo"],["せんせい","giáo viên"],["りんご","quả táo"]]}
+];
+const GROUPS=[
+ {id:"basic",label:"Âm cơ bản",jp:"あ",c:"--leaf",s:"--leaf-soft",data:BASIC},
+ {id:"daku",label:"Âm đục · bán đục",jp:"が",c:"--lotus",s:"--lotus-soft",data:DAKU},
+ {id:"yoon",label:"Âm ghép",jp:"きゃ",c:"--river",s:"--river-soft",data:YOON},
+ {id:"special",label:"Âm đặc biệt",jp:"っ",c:"--gold",s:"--gold-soft"}
+];
+
+/* ---------- Storage (per-viewer convenience only) ---------- */
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+ set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let heard=new Set(store.get("hira_heard",[]));
+const TOTAL=[BASIC,DAKU,YOON].reduce((n,g)=>n+g.rows.flat().filter(Boolean).length,0);
+function updateProgress(){
+  const all=new Set([BASIC,DAKU,YOON].flatMap(g=>g.rows.flat().filter(Boolean).map(x=>x[0])));
+  const n=[...heard].filter(k=>all.has(k)).length;
+  document.getElementById("progress").innerHTML=`Đã nghe <b>${n}</b> / ${TOTAL} chữ`;
+}
+
+/* ---------- Speech ---------- */
+const synth=window.speechSynthesis;
+let voices=[],voice=null,rate=store.get("hira_rate",0.85);
+const warn=document.getElementById("warn");
+function score(v){
+  const n=v.name.toLowerCase();let s=0;
+  if(/natural|online|neural|premium|enhanced/.test(n))s+=50;
+  if(/nanami|keita|aoi|mayu|shiori|naoki/.test(n))s+=25;
+  if(/google/.test(n))s+=30;
+  if(/kyoko|o-ren|otoya|hattori/.test(n))s+=20;
+  if(/haruka|ayumi|ichiro|sayaka/.test(n))s+=5;
+  return s;
+}
+function loadVoices(){
+  if(!synth){warn.hidden=false;warn.textContent="Trình duyệt này không hỗ trợ đọc giọng nói. Hãy mở bằng Chrome, Edge hoặc Safari bản mới.";return}
+  voices=synth.getVoices().filter(v=>/^ja([-_]|$)/i.test(v.lang)).sort((a,b)=>score(b)-score(a));
+  const sel=document.getElementById("voice");
+  if(!voices.length){
+    sel.innerHTML='<option>Không tìm thấy giọng Nhật</option>';
+    warn.hidden=false;
+    warn.textContent="Máy chưa có giọng tiếng Nhật. Trên Windows: Cài đặt › Thời gian và ngôn ngữ › Giọng nói › Thêm giọng “Japanese”. Trên điện thoại: thêm ngôn ngữ Nhật cho chuyển văn bản thành giọng nói. Giọng tốt nhất: Microsoft Nanami (Edge) hoặc Google 日本語 (Chrome).";
+    return;
+  }
+  warn.hidden=true;
+  const saved=store.get("hira_voice",null);
+  sel.innerHTML=voices.map((v,i)=>`<option value="${i}">${v.name.replace(/Microsoft |Online |\(Natural\)| - Japanese \(Japan\)/g," ").replace(/\s+/g," ").trim()}${i===0?" ★":""}</option>`).join("");
+  let idx=Math.max(0,voices.findIndex(v=>v.name===saved));
+  sel.value=idx;voice=voices[idx];
+}
+if(synth){loadVoices();synth.onvoiceschanged=loadVoices;setTimeout(loadVoices,800)}
+document.getElementById("voice").addEventListener("change",e=>{voice=voices[+e.target.value];store.set("hira_voice",voice&&voice.name);speak(document.getElementById("big").dataset.say||"あ")});
+
+function utter(text){
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang="ja-JP";if(voice)u.voice=voice;u.rate=rate;u.pitch=1;return u;
+}
+function speak(text){
+  if(!synth)return;
+  synth.cancel();
+  synth.speak(utter(text));
+}
+function speakSeq(items,onEach){
+  if(!synth)return;
+  synth.cancel();
+  items.forEach((it,i)=>{const u=utter(it.say);u.onstart=()=>onEach&&onEach(it,i);synth.speak(u)});
+}
+
+/* ---------- Stage ---------- */
+const big=document.getElementById("big");
+function show(kana,vi,ro,say,tipText){
+  big.textContent=kana;big.dataset.say=say||kana;
+  big.classList.remove("say");void big.offsetWidth;big.classList.add("say");
+  document.getElementById("hint").innerHTML=vi?vi.replace("*",'<span class="star">*</span>'):"";
+  document.getElementById("ro").textContent=ro?("romaji: "+ro):"";
+  document.getElementById("tip").textContent=tipText!=null?tipText:tipFor(vi||"");
+}
+document.getElementById("replay").addEventListener("click",()=>speak(big.dataset.say||big.textContent));
+
+/* ---------- Grid ---------- */
+const panel=document.getElementById("panel");
+let current=null;
+function markOn(btn){
+  panel.querySelectorAll(".k.on").forEach(b=>b.classList.remove("on"));
+  if(btn){btn.classList.add("on");btn.classList.add("heard")}
+}
+function hear(kana){heard.add(kana);store.set("hira_heard",[...heard]);updateProgress()}
+
+function renderGrid(g){
+  const d=g.data;
+  const grid=document.createElement("div");
+  grid.className="grid";grid.style.setProperty("--cols",d.cols.length);
+  grid.appendChild(document.createElement("span"));
+  d.cols.forEach(c=>{const h=document.createElement("div");h.className="colhead";h.textContent=c;grid.appendChild(h)});
+  d.rows.forEach(row=>{
+    const rp=document.createElement("button");
+    rp.className="rowplay";rp.type="button";rp.innerHTML=ICON_PLAY;
+    const first=row.find(Boolean);rp.setAttribute("aria-label","Nghe cả hàng "+first[0]);rp.title="Nghe cả hàng";
+    const btns=[];
+    grid.appendChild(rp);
+    row.forEach(cell=>{
+      if(!cell){const e=document.createElement("div");e.className="empty";e.setAttribute("aria-hidden","true");grid.appendChild(e);btns.push(null);return}
+      const [k,vi,ro]=cell;
+      const b=document.createElement("button");
+      b.type="button";b.className="k"+(heard.has(k)?" heard":"");
+      b.setAttribute("aria-label",k+" , "+ro);
+      b.innerHTML=`<span class="kk" lang="ja">${k}</span><span class="vi">${vi.replace("*",'<span class="star">*</span>')}</span><span class="ro">${ro}</span>`;
+      b.addEventListener("click",()=>{markOn(b);show(k,vi,ro);speak(k);hear(k)});
+      grid.appendChild(b);btns.push(b);
+    });
+    rp.addEventListener("click",()=>{
+      const items=row.map((c,i)=>c&&{say:c[0],c,b:btns[i]}).filter(Boolean);
+      speakSeq(items,it=>{markOn(it.b);show(it.c[0],it.c[1],it.c[2]);hear(it.c[0])});
+    });
+  });
+  return grid;
+}
+function renderSpecial(){
+  const wrap=document.createElement("div");wrap.className="special";
+  SPECIAL.forEach(s=>{
+    const el=document.createElement("div");el.className="sp";
+    el.innerHTML=`<div class="mark" lang="ja">${s.mark}</div><div><p><b>${s.title}.</b> ${s.text}</p><div class="ex"></div></div>`;
+    const ex=el.querySelector(".ex");
+    s.ex.forEach(([jp,vi])=>{
+      const c=document.createElement("button");c.type="button";c.className="chip";
+      c.innerHTML=`<span class="jp" lang="ja">${jp}</span><small>${vi}</small>`;
+      c.addEventListener("click",()=>{show(jp,vi,"",jp,s.title+": "+s.text);speak(jp)});
+      ex.appendChild(c);
+    });
+    wrap.appendChild(el);
+  });
+  return wrap;
+}
+function select(id){
+  const g=GROUPS.find(x=>x.id===id)||GROUPS[0];current=g;
+  panel.style.setProperty("--c",`var(${g.c})`);panel.style.setProperty("--soft",`var(${g.s})`);
+  document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t.dataset.id===g.id));
+  panel.innerHTML="";
+  panel.appendChild(g.id==="special"?renderSpecial():renderGrid(g));
+  store.set("hira_tab",g.id);
+}
+const tabs=document.getElementById("tabs");
+GROUPS.forEach(g=>{
+  const t=document.createElement("button");t.className="tab";t.type="button";t.role="tab";t.dataset.id=g.id;
+  t.style.setProperty("--c",`var(${g.c})`);
+  t.innerHTML=`<span class="jp" lang="ja">${g.jp}</span>${g.label}`;
+  t.addEventListener("click",()=>select(g.id));tabs.appendChild(t);
+});
+
+/* ---------- Toggles ---------- */
+document.querySelectorAll("#speed button").forEach(b=>{
+  b.setAttribute("aria-pressed",String(+b.dataset.rate===rate));
+  b.addEventListener("click",()=>{rate=+b.dataset.rate;store.set("hira_rate",rate);
+    document.querySelectorAll("#speed button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));speak(big.dataset.say||"あ")});
+});
+const vis=store.get("hira_vis",{vi:true,ro:true});
+function applyVis(){
+  panel.classList.toggle("hide-vi",!vis.vi);panel.classList.toggle("hide-ro",!vis.ro);
+  document.querySelectorAll("#show button").forEach(b=>b.setAttribute("aria-pressed",String(vis[b.dataset.k])));
+}
+document.querySelectorAll("#show button").forEach(b=>b.addEventListener("click",()=>{vis[b.dataset.k]=!vis[b.dataset.k];store.set("hira_vis",vis);applyVis()}));
+
+select(store.get("hira_tab","basic"));applyVis();updateProgress();
+show("あ","a","a","あ","");
+</script>
+</body>
+</html>
