@@ -122,6 +122,16 @@ select{background:var(--surface-2);border:1px solid var(--line);border-radius:8p
 .chip{font:inherit;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:10px;padding:6px 10px;cursor:pointer;display:inline-flex;gap:8px;align-items:baseline}
 .chip:hover{border-color:var(--c);background:var(--soft)}
 .chip .jp{font-family:var(--font-kana);font-size:1.15rem}
+/* pitch line: top border = high, bottom border = low, side border = change */
+.acc{display:inline-flex;align-items:stretch}
+.acc .mo{padding:2px .04em;border-color:var(--c,var(--lotus))}
+.acc .hi{border-top:2px solid}
+.acc .lo{border-bottom:2px solid}
+.acc .turn{border-left:2px solid}
+.acc .sp{width:.5em}
+.big .acc .mo{border-width:4px;padding:4px .03em}
+.sp-head{margin:0 0 12px;font-size:.88rem;color:var(--muted);background:var(--soft);border-radius:10px;padding:8px 12px;max-width:70ch;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.sp-head .acc{font-family:var(--font-kana);font-size:1.2rem;color:var(--ink)}
 .chip small{color:var(--muted)}
 
 /* Notes */
@@ -292,6 +302,20 @@ const SPECIAL_KATA=[
  {mark:"ァ ィ ゥ ェ ォ",title:"Nguyên âm nhỏ (âm từ nước ngoài)",text:"Ghép với chữ đứng trước thành một nhịp để viết âm của từ nước ngoài.",ex:[["フォーク","cái nĩa","w-fooku"],["パーティー","bữa tiệc","w-paatii"],["チェック","kiểm tra","w-chekku"],["ファイル","tập tin","w-fairu"]]},
  {mark:"ヴ",title:"Âm v",text:"Dùng cho từ nước ngoài có âm v; người Nhật thường đọc gần như “b”.",ex:[["ヴァイオリン","đàn violin","w-vaiorin"]]}
 ];
+/* Pitch accent (Tokyo standard), one letter per mora: H = high, L = low */
+const ACC={"w-kitte":"LHH","w-gakkou":"LHHH","w-kippu":"LHH","w-okaasan":"LHLLL","w-oniisan":"LHLLL","w-kuuki":"HLL","w-sensei":"LHHL","w-otousan":"LHLLL","w-watashiwa":"LHHH","w-konnichiwa":"LHHHH","w-gakkoue":"LHHHH","w-hon-o-yomimasu":"HLLLHHL","w-mizu-o-nomimasu":"LHHLHHL","w-shinbun":"LHHH","w-ringo":"LHH",
+"w-beddo":"HLL","w-kappu":"HLL","w-sakkaa":"HLLL","w-koohii":"LHHL","w-keeki":"HLL","w-nooto":"HLL","w-suupaa":"HLLL","w-pan":"HL","w-pen":"HL","w-wain":"HLL","w-fooku":"HLL","w-paatii":"HLLL","w-chekku":"HLL","w-fairu":"HLL","w-vaiorin":"LHHHH"};
+function morae(t){const out=[];for(const ch of t){if(/[ぁぃぅぇぉゃゅょゎァィゥェォャュョヮ]/.test(ch)&&out.length&&out[out.length-1]!==" ")out[out.length-1]+=ch;else out.push(ch)}return out}
+function accHTML(t,pat){
+  if(!pat)return t;
+  const m=morae(t);let i=0,prev=null,h="";
+  for(const x of m){
+    if(x===" "){h+='<span class="sp"> </span>';prev=null;continue}
+    const p=pat[i++]||"L";const turn=prev&&prev!==p?" turn":"";
+    h+=`<span class="mo ${p==="H"?"hi":"lo"}${turn}">${x}</span>`;prev=p;
+  }
+  return `<span class="acc">${h}</span>`;
+}
 let script="hira";try{script=JSON.parse(localStorage.getItem("hira_script"))==="kata"?"kata":"hira"}catch(e){}
 function K(t){return script==="kata"?t.replace(/[\u3041-\u3096]/g,c=>String.fromCharCode(c.charCodeAt(0)+0x60)):t}
 let lastCell=null;
@@ -369,8 +393,23 @@ function once(say,id){
     const p=player.play();if(p&&p.catch)p.catch(()=>ttsOnce(say).then(res));
   });
 }
-function stopAll(){tok++;try{synth&&synth.cancel()}catch(e){}try{player.pause()}catch(e){}}
+function stopAll(){tok++;player.ontimeupdate=null;try{synth&&synth.cancel()}catch(e){}try{player.pause()}catch(e){}}
 function speak(text,id){stopAll();curId=id||null;once(text,curId)}
+function playRow(rid,items,onEach){
+  stopAll();const t=tok;let last=0;
+  onEach(items[0]);curId=items[0].id;setSrc(rid);
+  player.onended=()=>{player.ontimeupdate=null};
+  player.onerror=()=>{if(t===tok)speakSeq(items,onEach)};
+  player.ontimeupdate=()=>{
+    if(t!==tok)return;const d=player.duration;if(!d||!isFinite(d))return;
+    const i=Math.min(items.length-1,Math.floor(player.currentTime/d*items.length));
+    if(i!==last){last=i;onEach(items[i]);curId=items[i].id}
+  };
+  player.src="audio/"+rid+".mp3";
+  try{player.preservesPitch=true}catch(e){}
+  player.playbackRate=rate<0.7?0.75:1;
+  const p=player.play();if(p&&p.catch)p.catch(()=>{if(t===tok)speakSeq(items,onEach)});
+}
 async function speakSeq(items,onEach){
   stopAll();const t=tok;
   for(let i=0;i<items.length;i++){
@@ -427,21 +466,26 @@ function renderGrid(g){
     });
     rp.addEventListener("click",()=>{
       const items=row.map((c,i)=>c&&{say:K(c[0]),id:idOf(c),c,b:btns[i]}).filter(Boolean);
-      speakSeq(items,it=>{markOn(it.b);lastCell=it.c;show(K(it.c[0]),it.c[1],it.c[2]);hear(it.c[0])});
+      const each=it=>{markOn(it.b);lastCell=it.c;show(K(it.c[0]),it.c[1],it.c[2]);hear(it.c[0])};
+      const rid="row-"+idOf(first);
+      if(hasRec(rid))playRow(rid,items,each);else speakSeq(items,each);
     });
   });
   return grid;
 }
 function renderSpecial(){
   const wrap=document.createElement("div");wrap.className="special";
+  const head=document.createElement("p");head.className="sp-head";
+  head.innerHTML=accHTML("コーヒー","LHHL")+'<span>Đường kẻ <b>trên</b> = giọng <b>cao</b>, kẻ <b>dưới</b> = giọng <b>thấp</b>. Tiếng Nhật chỉ có cao và thấp, không có thanh điệu như tiếng Việt.</span>';
+  wrap.appendChild(head);
   (script==="kata"?SPECIAL_KATA:SPECIAL).forEach(s=>{
     const el=document.createElement("div");el.className="sp";
     el.innerHTML=`<div class="mark" lang="ja">${s.mark}</div><div><p><b>${s.title}.</b> ${s.text}</p><div class="ex"></div></div>`;
     const ex=el.querySelector(".ex");
     s.ex.forEach(([jp,vi,wid])=>{
       const c=document.createElement("button");c.type="button";c.className="chip";
-      c.innerHTML=`<span class="jp" lang="ja">${jp}</span><small>${vi}</small>`;
-      c.addEventListener("click",()=>{lastCell=null;show(jp,vi,"",jp,s.title+": "+s.text);speak(jp,wid)});
+      c.innerHTML=`<span class="jp" lang="ja">${accHTML(jp,ACC[wid])}</span><small>${vi}</small>`;
+      c.addEventListener("click",()=>{lastCell=null;show(jp,vi,"",jp,s.title+": "+s.text);big.innerHTML=accHTML(jp,ACC[wid]);speak(jp,wid)});
       ex.appendChild(c);
     });
     wrap.appendChild(el);
