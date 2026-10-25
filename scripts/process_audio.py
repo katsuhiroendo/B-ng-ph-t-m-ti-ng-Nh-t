@@ -4,12 +4,13 @@
 Usage:
     python3 scripts/process_audio.py kana-recordings.zip      # or a folder of files
 
-For each recording: high-pass at 80 Hz, trim leading/trailing silence,
+For each recording: high-pass at 80 Hz, trim leading/trailing silence
+(short clicks such as the record button are ignored),
 match loudness (mean -20 dB, peak capped at -1 dBFS), 10 ms fades,
 encode mono 44.1 kHz 64 kbps MP3. Existing mp3s are overwritten only for
 ids present in the input, so partial re-recordings can be merged in.
 """
-import json, re, shutil, subprocess, sys, tempfile, zipfile
+import array, json, math, re, subprocess, sys, tempfile, zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -18,11 +19,37 @@ LIST = json.loads((AUDIO / "list.json").read_text(encoding="utf-8"))
 KNOWN = {i["id"] for i in LIST}
 EXTS = {".webm", ".m4a", ".mp4", ".ogg", ".wav", ".mp3", ".aac"}
 
-TRIM = ("highpass=f=80,"
-        "silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.06,"
-        "areverse,"
-        "silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.10,"
-        "areverse")
+HPF = "highpass=f=80"
+
+def speech_bounds(wav):
+    """Return (start, end) seconds of the speech, ignoring clicks/blips shorter than 60 ms."""
+    r = subprocess.run(["ffmpeg", "-v", "error", "-i", str(wav), "-f", "s16le", "-ac", "1", "-ar", "16000", "-"], capture_output=True)
+    a = array.array("h", r.stdout)
+    hop, win = 160, 400  # 10 ms hop, 25 ms window
+    env = []
+    for k in range(0, max(0, len(a) - win), hop):
+        seg = a[k:k + win]
+        rms = math.sqrt(sum(v * v for v in seg) / win) / 32768
+        env.append(20 * math.log10(rms + 1e-9))
+    if not env:
+        return None
+    thr = max(env) - 32
+    segs, start = [], None
+    for i, e in enumerate(env + [-999]):
+        if e > thr and start is None: start = i
+        if e <= thr and start is not None:
+            segs.append([start, i]); start = None
+    merged = []
+    for sg in segs:  # join pieces closer than 120 ms (e.g. っ, word gaps)
+        if merged and sg[0] - merged[-1][1] <= 12: merged[-1][1] = sg[1]
+        else: merged.append(sg)
+    keep = [m for m in merged if m[1] - m[0] >= 6]
+    # drop an isolated short burst (<120 ms, >200 ms away from the voice) at either end
+    while len(keep) > 1 and keep[0][1] - keep[0][0] < 12 and keep[1][0] - keep[0][1] > 20: keep.pop(0)
+    while len(keep) > 1 and keep[-1][1] - keep[-1][0] < 12 and keep[-1][0] - keep[-2][1] > 20: keep.pop()
+    if not keep:
+        return None
+    return max(0.0, keep[0][0] * 0.01 - 0.04), keep[-1][1] * 0.01 + 0.025 + 0.08
 
 def run(cmd):
     return subprocess.run(cmd, capture_output=True, text=True)
@@ -38,10 +65,15 @@ def measure(path):
     return (float(mean.group(1)) if mean else None, float(peak.group(1)) if peak else None, secs)
 
 def process(src, out, tmpdir):
+    full = Path(tmpdir) / (out.stem + "_full.wav")
     trimmed = Path(tmpdir) / (out.stem + ".wav")
-    r = run(["ffmpeg", "-y", "-hide_banner", "-i", str(src), "-ac", "1", "-ar", "44100", "-af", TRIM, str(trimmed)])
+    r = run(["ffmpeg", "-y", "-hide_banner", "-i", str(src), "-ac", "1", "-ar", "44100", "-af", HPF, str(full)])
     if r.returncode != 0:
         return f"変換失敗: {r.stderr.strip().splitlines()[-1] if r.stderr else ''}"
+    b = speech_bounds(full)
+    if not b:
+        return "無音または短すぎ（録音し直し）"
+    run(["ffmpeg", "-y", "-hide_banner", "-i", str(full), "-af", f"atrim={b[0]:.3f}:{b[1]:.3f},asetpts=N/SR/TB", str(trimmed)])
     mean, peak, dur = measure(trimmed)
     if mean is None or dur < 0.12:
         return "無音または短すぎ（録音し直し）"
@@ -53,7 +85,7 @@ def process(src, out, tmpdir):
     if r.returncode != 0:
         return "mp3化失敗"
     warn = []
-    if peak > -0.3: warn.append("音割れの可能性")
+    if peak > -0.1: warn.append("音割れの可能性")
     if mean < -38: warn.append("録音レベルが低い")
     if dur > 3.5: warn.append(f"長すぎ {dur:.1f}秒")
     return "; ".join(warn) or None
