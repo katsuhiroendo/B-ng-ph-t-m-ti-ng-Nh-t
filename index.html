@@ -367,10 +367,13 @@ function loadVoices(){
   if(!h)h='<option>Không tìm thấy giọng Nhật</option>';
   sel.innerHTML=h;
   const vi=voices.findIndex(v=>v.name===saved);
+  const gi=voices.findIndex(v=>/^Google/i.test(v.name)); /* Chrome's "Google 日本語" is the default when available */
+  let ti=vi;
   if((saved==="rec"||saved==="ai")&&SRC[saved].set)mode=saved;
   else if(vi>=0&&saved!==null)mode="tts";
+  else if(gi>=0){mode="tts";ti=gi}
   else mode=SRC.rec.set?"rec":SRC.ai.set?"ai":"tts";
-  if(mode==="tts"){const i=Math.max(0,vi);if(voices.length)sel.value=i;voice=voices[i]||null}
+  if(mode==="tts"){const i=Math.max(0,ti);if(voices.length)sel.value=i;voice=voices[i]||null}
   else{sel.value=mode;voice=voices[0]||null}
   if(!synth&&!anyFiles()){warn.hidden=false;warn.textContent="Trình duyệt này không hỗ trợ đọc giọng nói. Hãy mở bằng Chrome, Edge hoặc Safari bản mới.";return}
   if(!voices.length&&!anyFiles()){
