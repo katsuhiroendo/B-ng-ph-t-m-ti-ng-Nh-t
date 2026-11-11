@@ -3,6 +3,7 @@
 
 Usage:
     python3 scripts/process_audio.py kana-recordings.zip      # or a folder of files
+    python3 scripts/process_audio.py --ai ai-tts.zip          # Google TTS files -> audio/ai/
 
 For each recording: high-pass at 80 Hz, trim leading/trailing silence
 (short clicks such as the record button are ignored),
@@ -91,9 +92,16 @@ def process(src, out, tmpdir):
     return "; ".join(warn) or None
 
 def main():
-    if len(sys.argv) != 2:
+    global AUDIO
+    args = sys.argv[1:]
+    ai = "--ai" in args
+    args = [a for a in args if a != "--ai"]
+    if len(args) != 1:
         sys.exit(__doc__)
-    src = Path(sys.argv[1])
+    src = Path(args[0])
+    if ai:
+        AUDIO = ROOT / "audio" / "ai"  # rows are not generated; the page joins single sounds instead
+    want = [i for i in LIST if not (ai and i["id"].startswith("row-"))]
     AUDIO.mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
         if src.suffix == ".zip":
@@ -115,8 +123,8 @@ def main():
             if msg: problems.append(f"{f.stem}: {msg}")
     have = sorted(p.stem for p in AUDIO.glob("*.mp3") if p.stem in KNOWN)
     (AUDIO / "manifest.json").write_text(json.dumps({"files": have}, ensure_ascii=False, indent=0) + "\n", encoding="utf-8")
-    missing = [f'{i["id"]}（{i["text"]}）' for i in LIST if i["id"] not in have]
-    print(f"処理: {done} 件 / 公開中の録音: {len(have)} / {len(LIST)}")
+    missing = [f'{i["id"]}（{i["text"]}）' for i in want if i["id"] not in have]
+    print(f"処理: {done} 件 / 公開中: {len(have)} / {len(want)}（{AUDIO.relative_to(ROOT)}）")
     if problems: print("要確認:\n  " + "\n  ".join(problems))
     if unknown: print("対象外のファイル: " + ", ".join(unknown))
     if missing: print(f"未録音 {len(missing)} 件: " + "、".join(missing[:40]) + (" …" if len(missing) > 40 else ""))

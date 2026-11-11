@@ -351,22 +351,29 @@ function score(v){
   if(/haruka|ayumi|ichiro|sayaka/.test(n))s+=5;
   return s;
 }
-let manifest=null,recPicked=true,curId="a";
+/* Audio sources: rec = native-speaker recordings (audio/), ai = Google neural TTS files (audio/ai/), tts = device voice */
+const SRC={rec:{dir:"audio/",set:null,label:"Giọng người thật",opt:"Giọng người thật (ghi âm) ★"},
+           ai:{dir:"audio/ai/",set:null,label:"Giọng AI",opt:"Giọng AI chất lượng cao (Google)"}};
+let mode="tts",curId="a";
+function anyFiles(){return !!(SRC.rec.set||SRC.ai.set)}
 function loadVoices(){
   const sel=document.getElementById("voice");
   voices=synth?synth.getVoices().filter(v=>/^ja([-_]|$)/i.test(v.lang)).sort((a,b)=>score(b)-score(a)):[];
   const saved=store.get("hira_voice",null);
   const nice=v=>v.name.replace(/Microsoft |Online |\(Natural\)| - Japanese \(Japan\)/g," ").replace(/\s+/g," ").trim();
   let h="";
-  if(manifest)h+='<option value="rec">Giọng người thật (ghi âm) ★</option>';
-  if(voices.length)h+='<optgroup label="Giọng máy (tổng hợp)">'+voices.map((v,i)=>`<option value="${i}">${nice(v)}</option>`).join("")+'</optgroup>';
+  for(const k of ["rec","ai"])if(SRC[k].set)h+=`<option value="${k}">${SRC[k].opt}</option>`;
+  if(voices.length)h+='<optgroup label="Giọng máy (trên thiết bị)">'+voices.map((v,i)=>`<option value="${i}">${nice(v)}</option>`).join("")+'</optgroup>';
   if(!h)h='<option>Không tìm thấy giọng Nhật</option>';
   sel.innerHTML=h;
   const vi=voices.findIndex(v=>v.name===saved);
-  if(manifest&&(saved===null||saved==="rec"||vi<0)){sel.value="rec";recPicked=true;voice=voices[0]||null}
-  else{recPicked=false;const i=Math.max(0,vi);if(voices.length)sel.value=i;voice=voices[i]||null}
-  if(!synth&&!manifest){warn.hidden=false;warn.textContent="Trình duyệt này không hỗ trợ đọc giọng nói. Hãy mở bằng Chrome, Edge hoặc Safari bản mới.";return}
-  if(!voices.length&&!manifest){
+  if((saved==="rec"||saved==="ai")&&SRC[saved].set)mode=saved;
+  else if(vi>=0&&saved!==null)mode="tts";
+  else mode=SRC.rec.set?"rec":SRC.ai.set?"ai":"tts";
+  if(mode==="tts"){const i=Math.max(0,vi);if(voices.length)sel.value=i;voice=voices[i]||null}
+  else{sel.value=mode;voice=voices[0]||null}
+  if(!synth&&!anyFiles()){warn.hidden=false;warn.textContent="Trình duyệt này không hỗ trợ đọc giọng nói. Hãy mở bằng Chrome, Edge hoặc Safari bản mới.";return}
+  if(!voices.length&&!anyFiles()){
     warn.hidden=false;
     warn.textContent="Máy chưa có giọng tiếng Nhật. Trên Windows: Cài đặt › Thời gian và ngôn ngữ › Giọng nói › Thêm giọng “Japanese”. Trên điện thoại: thêm ngôn ngữ Nhật cho chuyển văn bản thành giọng nói. Giọng tốt nhất: Microsoft Nanami (Edge) hoặc Google 日本語 (Chrome).";
     return;
@@ -377,8 +384,8 @@ function loadVoices(){
 loadVoices();if(synth){synth.onvoiceschanged=loadVoices;setTimeout(loadVoices,800)}
 document.getElementById("voice").addEventListener("change",e=>{
   const v=e.target.value;
-  if(v==="rec"){recPicked=true;voice=voices[0]||null;store.set("hira_voice","rec")}
-  else{recPicked=false;voice=voices[+v];store.set("hira_voice",voice&&voice.name)}
+  if(v==="rec"||v==="ai"){mode=v;voice=voices[0]||null;store.set("hira_voice",v)}
+  else{mode="tts";voice=voices[+v];store.set("hira_voice",voice&&voice.name)}
   speak(document.getElementById("big").dataset.say||"あ",curId);
 });
 
@@ -389,17 +396,18 @@ function utter(text){
 /* Recorded audio (audio/manifest.json) is preferred; speech synthesis is the fallback */
 let tok=0;
 const player=new Audio();player.preload="auto";
-try{fetch("audio/manifest.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{if(j&&Array.isArray(j.files)){manifest=new Set(j.files);loadVoices();setSrc(curId)}}).catch(()=>{})}catch(e){}
+for(const k of ["rec","ai"]){try{fetch(SRC[k].dir+"manifest.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{if(j&&Array.isArray(j.files)){SRC[k].set=new Set(j.files);loadVoices();setSrc(curId)}}).catch(()=>{})}catch(e){}}
 function idOf(cell){return cell[2]==="wo (o)"?"o":cell[2].split(" ")[0]}
-function hasRec(id){return !!(recPicked&&id&&manifest&&manifest.has(id))}
-function setSrc(id){const el=document.getElementById("src");if(el)el.textContent=manifest?(hasRec(id)?"Giọng người thật":"Giọng máy"):""}
+function hasRec(id){const m=SRC[mode];return !!(m&&m.set&&id&&m.set.has(id))}
+function fileOf(id){return SRC[mode].dir+id+".mp3"}
+function setSrc(id){const el=document.getElementById("src");if(el)el.textContent=anyFiles()?(hasRec(id)?SRC[mode].label:"Giọng máy"):""}
 function ttsOnce(say){return new Promise(res=>{if(!synth)return res();const u=utter(say);u.onend=res;u.onerror=res;synth.speak(u)})}
 function once(say,id){
   setSrc(id);
   if(!hasRec(id))return ttsOnce(say);
   return new Promise(res=>{
     player.onended=res;player.onerror=()=>ttsOnce(say).then(res);
-    player.src="audio/"+id+".mp3";
+    player.src=fileOf(id);
     try{player.preservesPitch=true}catch(e){}
     player.playbackRate=rate<0.7?0.75:1;
     const p=player.play();if(p&&p.catch)p.catch(()=>ttsOnce(say).then(res));
@@ -417,7 +425,7 @@ function playRow(rid,items,onEach){
     const i=Math.min(items.length-1,Math.floor(player.currentTime/d*items.length));
     if(i!==last){last=i;onEach(items[i]);curId=items[i].id}
   };
-  player.src="audio/"+rid+".mp3";
+  player.src=fileOf(rid);
   try{player.preservesPitch=true}catch(e){}
   player.playbackRate=rate<0.7?0.75:1;
   const p=player.play();if(p&&p.catch)p.catch(()=>{if(t===tok)speakSeq(items,onEach)});

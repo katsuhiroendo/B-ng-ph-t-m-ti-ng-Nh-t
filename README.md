@@ -14,7 +14,7 @@ Công cụ học phát âm hiragana và katakana dành cho người Việt. Bấ
 
 ## Giọng đọc
 
-Những âm đã có bản ghi âm của người Nhật sẽ phát bằng giọng thật (thư mục `audio/`). Có thể chọn giữa giọng người thật và giọng máy ở mục **Giọng đọc**. Các âm chưa ghi âm dùng giọng tiếng Nhật có sẵn trên máy của bạn (Web Speech API). Giọng máy tốt nhất:
+Những âm đã có bản ghi âm của người Nhật sẽ phát bằng giọng thật (thư mục `audio/`). Có thể chọn giọng người thật, giọng AI chất lượng cao (Google, khi đã có tệp trong `audio/ai/`) hoặc giọng máy trên thiết bị ở mục **Giọng đọc**. Các âm chưa ghi âm dùng giọng tiếng Nhật có sẵn trên máy của bạn (Web Speech API). Giọng máy tốt nhất:
 
 - Microsoft Edge: Microsoft Nanami Online (Natural)
 - Google Chrome: Google 日本語
@@ -29,3 +29,5 @@ Gợi âm bằng chữ Việt chỉ là âm gần đúng, không phải ký hi�
 ## Ghi âm (dành cho người Nhật)
 
 Trang ghi âm: `record.html`. Hướng dẫn chi tiết (tiếng Nhật): [RECORDING.md](RECORDING.md)
+
+Tạo giọng AI (tiếng Nhật): [TTS.md](TTS.md)
