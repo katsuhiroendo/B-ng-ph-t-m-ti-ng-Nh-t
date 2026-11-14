@@ -214,7 +214,7 @@ select{background:var(--surface-2);border:1px solid var(--line);border-radius:8p
       <span class="seg" id="show">
         <button type="button" data-k="vi" aria-pressed="true" data-i18n="hint">Gợi âm Việt</button>
         <button type="button" data-k="ro" aria-pressed="true" data-i18n="romaji">Romaji</button>
-        <button type="button" data-k="ill" aria-pressed="false" data-i18n="autoIll">Tự hiện thẻ minh họa</button>
+        <button type="button" data-k="ill" aria-pressed="true" data-i18n="autoIll">Tự hiện thẻ minh họa</button>
       </span>
     </label>
     <p class="warn" id="warn" hidden></p>
@@ -1095,7 +1095,7 @@ document.querySelectorAll("#speed button").forEach(b=>{
   b.addEventListener("click",()=>{rate=+b.dataset.rate;store.set("hira_rate",rate);
     document.querySelectorAll("#speed button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));speak(big.dataset.say||"あ",curId)});
 });
-const vis=Object.assign({vi:true,ro:true,ill:false},store.get("hira_vis",{})); /* ill: open the illustration card automatically (default off) */
+const vis=Object.assign({vi:true,ro:true,ill:true},store.get("hira_vis",{})); /* ill: open the illustration card automatically (default on) */
 function applyVis(){
   const hb=document.querySelector('#show [data-k="vi"]');if(hb)hb.hidden=LANG!=="vi";
   panel.classList.toggle("hide-vi",LANG!=="vi"||!vis.vi);panel.classList.toggle("hide-ro",!vis.ro);
