@@ -8,7 +8,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Klee+One:wght@600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;600;700&family=Klee+One:wght@600&display=swap">
 <style>
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 [hidden]{display:none!important}
@@ -23,7 +23,7 @@ body{margin:0}
   --plum:#7a4a9e; --plum-soft:#efe5f6;
   --star:#c93d66;
   --font-kana:"Klee One","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
-  --font-ui:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-ui:"Be Vietnam Pro","Noto Sans Thai",system-ui,-apple-system,"Segoe UI","Hiragino Sans","Yu Gothic UI",sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#141a19; --surface:#1c2422; --surface-2:#232d2a; --ink:#ecf1ef; --muted:#a3b0ab; --line:#33403c;
@@ -50,6 +50,12 @@ header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-be
 h1{margin:0;font-size:clamp(1.5rem,3.4vw,2.2rem);line-height:1.15;text-wrap:balance;font-weight:700}
 h1 .jp{font-family:var(--font-kana);color:var(--lotus);margin-right:.35em}
 .sub{margin:4px 0 0;color:var(--muted);max-width:60ch}
+.hdr-right{display:grid;gap:6px;justify-items:end}
+@media (max-width:600px){.hdr-right{justify-items:start}}
+.langsel{display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:600;color:var(--muted)}
+.langsel select{font-size:.9rem}
+html:lang(th) body{line-height:1.65}
+html:lang(th) .controls label,html:lang(ja) .controls label,html:lang(th) .note h3,html:lang(ja) .note h3{letter-spacing:0}
 .progress{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 .progress b{color:var(--leaf)}
 
@@ -148,31 +154,34 @@ select{background:var(--surface-2);border:1px solid var(--line);border-radius:8p
 <div class="wrap">
   <header>
     <div>
-      <h1><span class="jp" id="h1jp">ひらがな</span>Bảng phát âm tiếng Nhật</h1>
-      <p class="sub">Bấm vào từng chữ để nghe giọng Nhật chuẩn. Phần chữ Việt chỉ là gợi âm gần đúng, đọc không thêm thanh điệu.</p>
+      <h1><span class="jp" id="h1jp">ひらがな</span><span id="h1t">Bảng phát âm tiếng Nhật</span></h1>
+      <p class="sub" id="sub">Bấm vào từng chữ để nghe giọng Nhật chuẩn. Phần chữ Việt chỉ là gợi âm gần đúng, đọc không thêm thanh điệu.</p>
     </div>
-    <div class="progress" id="progress">Đã nghe <b>0</b> / 0 chữ</div>
+    <div class="hdr-right">
+      <label class="langsel" for="lang"><span data-i18n="lang">Ngôn ngữ</span> <select id="lang"></select></label>
+      <div class="progress" id="progress">Đã nghe <b>0</b> / 0 chữ</div>
+    </div>
   </header>
 
   <div class="controls">
-    <label>Chữ
+    <label><span data-i18n="script">Chữ</span>
       <span class="seg" id="script">
         <button type="button" data-s="hira" aria-pressed="true" lang="ja">ひらがな</button>
         <button type="button" data-s="kata" aria-pressed="false" lang="ja">カタカナ</button>
       </span>
     </label>
-    <label for="voice">Giọng đọc <select id="voice"><option>Đang tải giọng…</option></select></label>
-    <label>Tốc độ
+    <label for="voice"><span data-i18n="voice">Giọng đọc</span> <select id="voice"><option data-i18n="loading">Đang tải giọng…</option></select></label>
+    <label><span data-i18n="speed">Tốc độ</span>
       <span class="seg" id="speed">
-        <button type="button" data-rate="0.6" aria-pressed="false">Chậm</button>
-        <button type="button" data-rate="0.85" aria-pressed="true">Vừa</button>
-        <button type="button" data-rate="1" aria-pressed="false">Bình thường</button>
+        <button type="button" data-rate="0.6" aria-pressed="false" data-i18n="slow">Chậm</button>
+        <button type="button" data-rate="0.85" aria-pressed="true" data-i18n="mid">Vừa</button>
+        <button type="button" data-rate="1" aria-pressed="false" data-i18n="normal">Bình thường</button>
       </span>
     </label>
-    <label>Hiện
+    <label><span data-i18n="show">Hiện</span>
       <span class="seg" id="show">
-        <button type="button" data-k="vi" aria-pressed="true">Gợi âm Việt</button>
-        <button type="button" data-k="ro" aria-pressed="true">Romaji</button>
+        <button type="button" data-k="vi" aria-pressed="true" data-i18n="hint">Gợi âm Việt</button>
+        <button type="button" data-k="ro" aria-pressed="true" data-i18n="romaji">Romaji</button>
       </span>
     </label>
     <p class="warn" id="warn" hidden></p>
@@ -186,7 +195,7 @@ select{background:var(--surface-2);border:1px solid var(--line);border-radius:8p
         <div class="romaji" id="ro">romaji: a</div>
         <div class="src" id="src"></div>
         <div class="tip" id="tip"></div>
-        <button class="replay" id="replay" type="button"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z"/></svg>Nghe lại</button>
+        <button class="replay" id="replay" type="button"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4z"/></svg><span data-i18n="replay">Nghe lại</span></button>
       </div>
     </aside>
 
@@ -196,11 +205,7 @@ select{background:var(--surface-2);border:1px solid var(--line);border-radius:8p
     </section>
   </div>
 
-  <div class="notes">
-    <div class="note"><h3>Cách đọc gợi âm</h3><p>Đây là gợi âm, không phải ký hiệu ngữ âm chuẩn. Luôn nghe giọng mẫu rồi bắt chước theo.</p></div>
-    <div class="note"><h3>Nguyên âm ư, âm r</h3><p><b>ư</b>: môi thả lỏng, không tròn môi. <b>r*</b>: bật lưỡi nhẹ một lần, không rung lưỡi như tiếng Việt miền Nam.</p></div>
-    <div class="note"><h3>Dấu <span class="star">*</span></h3><p>Không có âm Việt trùng hoàn toàn. Bấm vào chữ có dấu * để xem mẹo phát âm riêng.</p></div>
-  </div>
+  <div class="notes" id="notes"></div>
 </div>
 
 <script>
@@ -222,8 +227,9 @@ const TIPS={
  "x":"Âm gió mềm như “sh” nhẹ.",
  "dz":"dz đọc liền, không tách thành hai âm.","dj":"dj đọc liền, gần “gi” trong tiếng Anh “jeans”."
 };
-function tipFor(vi){
+function tipFor(vi,ro){
   if(!vi.endsWith("*")) return "";
+  if(LANG!=="vi") return (T("tips")||{})[tipKey(ro)]||"";
   const b=vi.slice(0,-1);
   if(TIPS[b]) return TIPS[b];
   if(b.startsWith("r")) return TIPS.r;
@@ -272,7 +278,6 @@ const YOON={cols:["ゃ ya","ゅ yu","ょ yo"],rows:[
  [["ぴゃ","pia","pya"],["ぴゅ","piư","pyu"],["ぴょ","piô","pyo"]]
 ]};
 const GAIRAI={cols:["a","i","u","e","o"],
- note:"<b>Chỉ viết bằng katakana.</b> Dùng cho từ nước ngoài, ví dụ パーティー (bữa tiệc), フォーク (cái nĩa), ディズニー, ウェブ. Hai chữ ghép đọc liền thành một nhịp.",
  rows:[
  [null,["ウィ","uy","wi"],null,["ウェ","uê","we"],["ウォ","uô","wo"]],
  [null,null,null,["イェ","iê","ye"],null],
@@ -288,19 +293,21 @@ const GAIRAI={cols:["a","i","u","e","o"],
  [["ファ","pha*","fa"],["フィ","phi*","fi"],null,["フェ","phê*","fe"],["フォ","phô*","fo"]],
  [null,null,["フュ","phiư*","fyu"],null,null]
 ]};
+const WORD={"w-kitte":"きって","w-gakkou":"がっこう","w-kippu":"きっぷ","w-okaasan":"おかあさん","w-oniisan":"おにいさん","w-kuuki":"くうき","w-sensei":"せんせい","w-otousan":"おとうさん","w-watashiwa":"わたしは","w-konnichiwa":"こんにちは","w-gakkoue":"がっこうへ","w-hon-o-yomimasu":"ほんを よみます","w-mizu-o-nomimasu":"みずを のみます","w-shinbun":"しんぶん","w-ringo":"りんご",
+"w-beddo":"ベッド","w-kappu":"カップ","w-sakkaa":"サッカー","w-koohii":"コーヒー","w-keeki":"ケーキ","w-nooto":"ノート","w-suupaa":"スーパー","w-pan":"パン","w-pen":"ペン","w-wain":"ワイン","w-fooku":"フォーク","w-paatii":"パーティー","w-chekku":"チェック","w-fairu":"ファイル","w-vaiorin":"ヴァイオリン"};
 const SPECIAL=[
- {mark:"っ",title:"Âm ngắt (chữ tsu nhỏ)",text:"Ngắt một nhịp, không đọc thành “tsư”. Phụ âm sau được giữ lại một nhịp.",ex:[["きって","con tem","w-kitte"],["がっこう","trường học","w-gakkou"],["きっぷ","vé tàu","w-kippu"]]},
- {mark:"ああ・いい・うう・えい・おう",title:"Nguyên âm dài",text:"Kéo dài hai nhịp. えい thường đọc thành ê dài, おう thành ô dài.",ex:[["おかあさん","mẹ","w-okaasan"],["おにいさん","anh trai","w-oniisan"],["くうき","không khí","w-kuuki"],["せんせい","giáo viên","w-sensei"],["おとうさん","bố","w-otousan"]]},
- {mark:"は → oa,  へ → ê",title:"Khi là trợ từ",text:"は đọc “oa” (wa) khi là trợ từ chủ đề; へ đọc “ê” khi chỉ hướng.",ex:[["わたしは","tôi thì…","w-watashiwa"],["こんにちは","xin chào","w-konnichiwa"],["がっこうへ","đến trường","w-gakkoue"]]},
- {mark:"を → ô",title:"Trợ từ tân ngữ",text:"を chỉ dùng làm trợ từ, đọc giống お (ô).",ex:[["ほんを よみます","đọc sách","w-hon-o-yomimasu"],["みずを のみます","uống nước","w-mizu-o-nomimasu"]]},
- {mark:"ん",title:"Âm mũi thay đổi",text:"Trước m/b/p đọc gần “m”, trước n/t/d gần “n”, trước k/g gần “ng”.",ex:[["しんぶん","báo","w-shinbun"],["せんせい","giáo viên","w-sensei"],["りんご","quả táo","w-ringo"]]}
+ {key:"sokuon",mark:"っ",ex:["w-kitte","w-gakkou","w-kippu"]},
+ {key:"long",mark:"ああ・いい・うう・えい・おう",ex:["w-okaasan","w-oniisan","w-kuuki","w-sensei","w-otousan"]},
+ {key:"wa_e",ex:["w-watashiwa","w-konnichiwa","w-gakkoue"]},
+ {key:"wo",ex:["w-hon-o-yomimasu","w-mizu-o-nomimasu"]},
+ {key:"n",mark:"ん",ex:["w-shinbun","w-sensei","w-ringo"]}
 ];
 const SPECIAL_KATA=[
- {mark:"ッ",title:"Âm ngắt (chữ tsu nhỏ)",text:"Ngắt một nhịp, không đọc thành “tsư”. Phụ âm sau được giữ lại một nhịp.",ex:[["ベッド","giường","w-beddo"],["カップ","cái cốc","w-kappu"],["サッカー","bóng đá","w-sakkaa"]]},
- {mark:"ー",title:"Dấu kéo dài",text:"Trong katakana, nguyên âm dài viết bằng dấu ー. Kéo dài nguyên âm đứng trước thêm một nhịp.",ex:[["コーヒー","cà phê","w-koohii"],["ケーキ","bánh ngọt","w-keeki"],["ノート","quyển vở","w-nooto"],["スーパー","siêu thị","w-suupaa"]]},
- {mark:"ン",title:"Âm mũi thay đổi",text:"Trước m/b/p đọc gần “m”, trước n/t/d gần “n”, trước k/g gần “ng”.",ex:[["パン","bánh mì","w-pan"],["ペン","cây bút","w-pen"],["ワイン","rượu vang","w-wain"]]},
- {mark:"ァ ィ ゥ ェ ォ",title:"Nguyên âm nhỏ (âm từ nước ngoài)",text:"Ghép với chữ đứng trước thành một nhịp để viết âm của từ nước ngoài.",ex:[["フォーク","cái nĩa","w-fooku"],["パーティー","bữa tiệc","w-paatii"],["チェック","kiểm tra","w-chekku"],["ファイル","tập tin","w-fairu"]]},
- {mark:"ヴ",title:"Âm v",text:"Dùng cho từ nước ngoài có âm v; người Nhật thường đọc gần như “b”.",ex:[["ヴァイオリン","đàn violin","w-vaiorin"]]}
+ {key:"sokuon",mark:"ッ",ex:["w-beddo","w-kappu","w-sakkaa"]},
+ {key:"chouon",mark:"ー",ex:["w-koohii","w-keeki","w-nooto","w-suupaa"]},
+ {key:"n",mark:"ン",ex:["w-pan","w-pen","w-wain"]},
+ {key:"small",mark:"ァ ィ ゥ ェ ォ",ex:["w-fooku","w-paatii","w-chekku","w-fairu"]},
+ {key:"vu",mark:"ヴ",ex:["w-vaiorin"]}
 ];
 /* Pitch accent (Tokyo standard), one letter per mora: H = high, L = low */
 const ACC={"w-kitte":"LHH","w-gakkou":"LHHH","w-kippu":"LHH","w-okaasan":"LHLLL","w-oniisan":"LHLLL","w-kuuki":"HLL","w-sensei":"LHHL","w-otousan":"LHLLL","w-watashiwa":"LHHH","w-konnichiwa":"LHHHH","w-gakkoue":"LHHHH","w-hon-o-yomimasu":"HLLLHHL","w-mizu-o-nomimasu":"LHHLHHL","w-shinbun":"LHHH","w-ringo":"LHH",
@@ -320,22 +327,220 @@ let script="hira";try{script=JSON.parse(localStorage.getItem("hira_script"))==="
 function K(t){return script==="kata"?t.replace(/[\u3041-\u3096]/g,c=>String.fromCharCode(c.charCodeAt(0)+0x60)):t}
 let lastCell=null;
 const GROUPS=[
- {id:"basic",label:"Âm cơ bản",jp:"あ",c:"--leaf",s:"--leaf-soft",data:BASIC},
- {id:"daku",label:"Âm đục · bán đục",jp:"が",c:"--lotus",s:"--lotus-soft",data:DAKU},
- {id:"yoon",label:"Âm ghép",jp:"きゃ",c:"--river",s:"--river-soft",data:YOON},
- {id:"gairai",label:"Âm ngoại lai",jp:"ファ",c:"--plum",s:"--plum-soft",data:GAIRAI},
- {id:"special",label:"Âm đặc biệt",jp:"っ",c:"--gold",s:"--gold-soft"}
+ {id:"basic",jp:"あ",c:"--leaf",s:"--leaf-soft",data:BASIC},
+ {id:"daku",jp:"が",c:"--lotus",s:"--lotus-soft",data:DAKU},
+ {id:"yoon",jp:"きゃ",c:"--river",s:"--river-soft",data:YOON},
+ {id:"gairai",jp:"ファ",c:"--plum",s:"--plum-soft",data:GAIRAI},
+ {id:"special",jp:"っ",c:"--gold",s:"--gold-soft"}
 ];
 
 /* ---------- Storage (per-viewer convenience only) ---------- */
 const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+/* ---------- UI languages ---------- */
+const LANGS=[["vi","Tiếng Việt"],["en","English"],["ja","日本語"],["th","ไทย"],["ms","Bahasa Melayu"],["id","Bahasa Indonesia"]];
+const WIDS=["w-kitte","w-gakkou","w-kippu","w-okaasan","w-oniisan","w-kuuki","w-sensei","w-otousan","w-watashiwa","w-konnichiwa","w-gakkoue","w-hon-o-yomimasu","w-mizu-o-nomimasu","w-shinbun","w-ringo","w-beddo","w-kappu","w-sakkaa","w-koohii","w-keeki","w-nooto","w-suupaa","w-pan","w-pen","w-wain","w-fooku","w-paatii","w-chekku","w-fairu","w-vaiorin"];
+const I18N={
+vi:{title:"Bảng Hiragana Phát Âm",lang:"Ngôn ngữ",h1:"Bảng phát âm tiếng Nhật",
+ sub:"Bấm vào từng chữ để nghe giọng Nhật chuẩn. Phần chữ Việt chỉ là gợi âm gần đúng, đọc không thêm thanh điệu.",
+ progress:(n,t)=>`Đã nghe <b>${n}</b> / ${t} chữ`,
+ script:"Chữ",voice:"Giọng đọc",speed:"Tốc độ",show:"Hiện",slow:"Chậm",mid:"Vừa",normal:"Bình thường",hint:"Gợi âm Việt",romaji:"Romaji",
+ replay:"Nghe lại",loading:"Đang tải giọng…",noVoice:"Không tìm thấy giọng Nhật",
+ srcRec:"Giọng người thật",srcAI:"Giọng AI",srcTTS:"Giọng máy",optRec:"Giọng người thật (ghi âm) ★",optAI:"Giọng AI chất lượng cao (Google)",grpTTS:"Giọng máy (trên thiết bị)",
+ warnNoSynth:"Trình duyệt này không hỗ trợ đọc giọng nói. Hãy mở bằng Chrome, Edge hoặc Safari bản mới.",
+ warnNoJa:"Máy chưa có giọng tiếng Nhật. Trên Windows: Cài đặt › Thời gian và ngôn ngữ › Giọng nói › Thêm giọng “Japanese”. Trên điện thoại: thêm ngôn ngữ Nhật cho chuyển văn bản thành giọng nói. Giọng tốt nhất: Microsoft Nanami (Edge) hoặc Google 日本語 (Chrome).",
+ rowPlay:"Nghe cả hàng",tabs:{basic:"Âm cơ bản",daku:"Âm đục · bán đục",yoon:"Âm ghép",gairai:"Âm ngoại lai",special:"Âm đặc biệt"},
+ gairaiNote:"<b>Chỉ viết bằng katakana.</b> Dùng cho từ nước ngoài, ví dụ パーティー (bữa tiệc), フォーク (cái nĩa), ディズニー, ウェブ. Hai chữ ghép đọc liền thành một nhịp.",
+ accLegend:"Đường kẻ <b>trên</b> = giọng <b>cao</b>, kẻ <b>dưới</b> = giọng <b>thấp</b>. Tiếng Nhật chỉ có cao và thấp, không có thanh điệu như tiếng Việt.",
+ notes:[["Cách đọc gợi âm","Đây là gợi âm, không phải ký hiệu ngữ âm chuẩn. Luôn nghe giọng mẫu rồi bắt chước theo."],
+  ["Nguyên âm ư, âm r","<b>ư</b>: môi thả lỏng, không tròn môi. <b>r*</b>: bật lưỡi nhẹ một lần, không rung lưỡi như tiếng Việt miền Nam."],
+  ["Dấu <span class=\"star\">*</span>","Không có âm Việt trùng hoàn toàn. Bấm vào chữ có dấu * để xem mẹo phát âm riêng."]],
+ marks:{wa_e:"は → oa,  へ → ê",wo:"を → ô"},
+ sp:{sokuon:["Âm ngắt (chữ tsu nhỏ)","Ngắt một nhịp, không đọc thành “tsư”. Phụ âm sau được giữ lại một nhịp."],
+  long:["Nguyên âm dài","Kéo dài hai nhịp. えい thường đọc thành ê dài, おう thành ô dài."],
+  wa_e:["Khi là trợ từ","は đọc “oa” (wa) khi là trợ từ chủ đề; へ đọc “ê” khi chỉ hướng."],
+  wo:["Trợ từ tân ngữ","を chỉ dùng làm trợ từ, đọc giống お (ô)."],
+  n:["Âm mũi thay đổi","Trước m/b/p đọc gần “m”, trước n/t/d gần “n”, trước k/g gần “ng”."],
+  chouon:["Dấu kéo dài","Trong katakana, nguyên âm dài viết bằng dấu ー. Kéo dài nguyên âm đứng trước thêm một nhịp."],
+  small:["Nguyên âm nhỏ (âm từ nước ngoài)","Ghép với chữ đứng trước thành một nhịp để viết âm của từ nước ngoài."],
+  vu:["Âm v","Dùng cho từ nước ngoài có âm v; người Nhật thường đọc gần như “b”."]},
+ mean:["con tem","trường học","vé tàu","mẹ","anh trai","không khí","giáo viên","bố","tôi thì…","xin chào","đến trường","đọc sách","uống nước","báo","quả táo","giường","cái cốc","bóng đá","cà phê","bánh ngọt","quyển vở","siêu thị","bánh mì","cây bút","rượu vang","cái nĩa","bữa tiệc","kiểm tra","tập tin","đàn violin"]},
+
+en:{title:"Japanese Kana Pronunciation",lang:"Language",h1:"Japanese pronunciation chart",
+ sub:"Tap any letter to hear standard Japanese pronunciation. Romaji shows the spelling only, so copy the voice rather than the letters.",
+ progress:(n,t)=>`Heard <b>${n}</b> / ${t} sounds`,
+ script:"Script",voice:"Voice",speed:"Speed",show:"Show",slow:"Slow",mid:"Medium",normal:"Normal",romaji:"Romaji",
+ replay:"Play again",loading:"Loading voices…",noVoice:"No Japanese voice found",
+ srcRec:"Native speaker",srcAI:"AI voice",srcTTS:"Device voice",optRec:"Native speaker (recorded) ★",optAI:"High-quality AI voice (Google)",grpTTS:"Device voices",
+ warnNoSynth:"This browser cannot play speech. Please open the page in a recent version of Chrome, Edge or Safari.",
+ warnNoJa:"No Japanese voice is installed on this device. Windows: Settings › Time & language › Speech › Add voices › Japanese. Phones: add Japanese in the text-to-speech settings. Best voices: Microsoft Nanami (Edge) or Google 日本語 (Chrome).",
+ rowPlay:"Play the whole row",tabs:{basic:"Basic sounds",daku:"Voiced sounds",yoon:"Combined sounds",gairai:"Loanword sounds",special:"Special sounds"},
+ gairaiNote:"<b>Written in katakana only.</b> Used for words from other languages, e.g. パーティー (party), フォーク (fork), ディズニー (Disney), ウェブ (web). The two letters are said together as one beat.",
+ accLegend:"Line <b>above</b> = <b>high</b> pitch, line <b>below</b> = <b>low</b> pitch. Within a word, Japanese uses only high and low pitch.",
+ notes:[["Romaji","Romaji shows the spelling, not the exact sound. Always listen to the model voice and copy it."],
+  ["The vowel u and the r sound","<b>u</b>: lips relaxed, not rounded. <b>r</b>: one light tap of the tongue behind the upper teeth, not rolled."],
+  ["Tips","If a sound has a pronunciation tip, it appears under the large letter when you tap it."]],
+ marks:{wa_e:"は → wa,  へ → e",wo:"を → o"},
+ sp:{sokuon:["Pause (small tsu)","Hold a pause for one beat; do not say “tsu”. The next consonant is held for one beat."],
+  long:["Long vowels","Hold the vowel for two beats. えい is usually said as a long e, and おう as a long o."],
+  wa_e:["As particles","は is read “wa” as the topic particle; へ is read “e” when it shows direction."],
+  wo:["Object particle","を is used only as a particle and is read like お (o)."],
+  n:["Changing nasal sound","Before m/b/p it sounds like “m”, before n/t/d like “n”, and before k/g like “ng”."],
+  chouon:["Long-vowel mark","In katakana, a long vowel is written with ー. Hold the vowel before it for one more beat."],
+  small:["Small vowels (foreign sounds)","They join the letter before them to make one beat for sounds from other languages."],
+  vu:["The v sound","Used for foreign words with v; Japanese speakers usually say it close to “b”."]},
+ tips:{shi:"A soft sound between “s” and “sh”, made with the middle of the tongue.",sh:"A soft “sh”, with the lips not rounded.",ch:"A light “ch” without a strong puff of air.",
+  ts:"t and s said together in one beat, like “ts” in “cats”.",hi:"Air passes over the front of the tongue, close to the “h” in “huge”.",
+  f:"Blow gently between both lips; the teeth do not touch the lip.",r:"Tap the tongue once lightly behind the upper teeth; the sound is between r, l and d.",
+  n:"A nasal sound that takes a full beat; it changes to m, n or ng depending on the next sound.",dz:"Say dz together as one sound.",
+  j:"Like the “j” in “jeans”, said softly.",v:"Japanese speakers usually say it close to “b”; a light “v” is also understood."},
+ mean:["stamp","school","ticket","mother","older brother","air","teacher","father","as for me…","hello","to school","read a book","drink water","newspaper","apple","bed","cup","soccer","coffee","cake","notebook","supermarket","bread","pen","wine","fork","party","check","file","violin"]},
+
+ja:{title:"かな発音表",lang:"言語",h1:"日本語の発音表",
+ sub:"文字を押すと、標準的な日本語の発音を聞けます。ローマ字は綴りの目安なので、文字ではなく音声をまねてください。",
+ progress:(n,t)=>`聞いた音 <b>${n}</b> / ${t}`,
+ script:"文字",voice:"音声",speed:"速さ",show:"表示",slow:"ゆっくり",mid:"やや遅め",normal:"標準",romaji:"ローマ字",
+ replay:"もう一度",loading:"音声を読み込み中…",noVoice:"日本語の音声が見つかりません",
+ srcRec:"ネイティブの録音",srcAI:"AI音声",srcTTS:"端末の音声",optRec:"ネイティブの録音 ★",optAI:"高品質AI音声（Google）",grpTTS:"端末の音声",
+ warnNoSynth:"このブラウザは音声の読み上げに対応していません。最新版の Chrome、Edge、Safari で開いてください。",
+ warnNoJa:"この端末に日本語の音声が入っていません。Windows：設定 › 時刻と言語 › 音声 › 音声の追加 › 日本語。スマートフォン：テキスト読み上げの設定で日本語を追加してください。おすすめ：Microsoft Nanami（Edge）、Google 日本語（Chrome）。",
+ rowPlay:"行をまとめて再生",tabs:{basic:"清音",daku:"濁音・半濁音",yoon:"拗音",gairai:"外来語音",special:"特殊音"},
+ gairaiNote:"<b>カタカナでだけ書く音です。</b>外来語に使います。例：パーティー、フォーク、ディズニー、ウェブ。2文字を続けて1拍で読みます。",
+ accLegend:"上の線＝<b>高</b>、下の線＝<b>低</b>。日本語のアクセントは語の中の高低だけで、声調はありません。",
+ notes:[["ローマ字","ローマ字は綴りの目安で、正確な音ではありません。必ず音声を聞いてまねてください。"],
+  ["「う」と「ら行」","<b>う</b>：唇を丸めず、力を抜きます。<b>ら行</b>：舌先で上の歯の裏を1回軽くはじきます。巻き舌にはしません。"],
+  ["発音のコツ","コツがある音は、文字を押すと大きな文字の下に表示されます。"]],
+ marks:{wa_e:"は → わ,  へ → え",wo:"を → お"},
+ sp:{sokuon:["促音（小さい「っ」）","1拍分の間をとります。「つ」とは読みません。次の子音を1拍分ためます。"],
+  long:["長音","母音を2拍分のばします。「えい」はふつう「えー」、「おう」は「おー」と発音します。"],
+  wa_e:["助詞の「は」「へ」","主題を表す「は」は「わ」、方向を表す「へ」は「え」と読みます。"],
+  wo:["助詞の「を」","「を」は助詞にだけ使い、「お」と同じ音で読みます。"],
+  n:["撥音「ん」の変化","m・b・p の前では「m」、n・t・d の前では「n」、k・g の前では「ng」に近い音になります。"],
+  chouon:["長音記号「ー」","カタカナでは長音を「ー」で書きます。直前の母音を1拍のばします。"],
+  small:["小さい「ァィゥェォ」（外来語音）","前の文字と組み合わせて、外来語の音を1拍で表します。"],
+  vu:["「ヴ」","v の音を持つ外来語に使います。実際には「ブ」に近く発音されることが多いです。"]},
+ tips:{shi:"舌の中ほどを上あごに近づけて出す、やわらかい「シ」。s と sh の中間の音です。",sh:"唇を丸めずに出す、やわらかい sh の音。",ch:"息を強く出さない、軽い ch の音。",
+  ts:"t と s を続けて1拍で出す音。英語 cats の ts に近い音です。",hi:"舌の前の部分と上あごのすき間に息を通す音。英語 huge の h に近い音です。",
+  f:"上下の唇のすき間から軽く息を出します。歯は唇に当てません。",r:"舌先で上の歯の裏を1回軽くはじきます。r・l・d の中間の音です。",
+  n:"1拍分の長さを持つ鼻音。次の音によって m・n・ng に変わります。",dz:"dz を分けずに、1つの音として出します。",
+  j:"英語 jeans の j に近い音を、やわらかく出します。",v:"実際には「ブ」に近く発音されることが多く、軽い v でも通じます。"},
+ mean:["切手","学校","切符","お母さん","お兄さん","空気","先生","お父さん","私は","あいさつ","学校へ","本を読みます","水を飲みます","新聞","林檎","bed","cup","soccer","coffee","cake","note(book)","super(market)","pão（ポルトガル語）","pen","wine","fork","party","check","file","violin"]},
+
+th:{title:"ตารางออกเสียงคานะ",lang:"ภาษา",h1:"ตารางการออกเสียงภาษาญี่ปุ่น",
+ sub:"แตะที่ตัวอักษรเพื่อฟังการออกเสียงภาษาญี่ปุ่นมาตรฐาน โรมาจิเป็นเพียงการสะกด ให้ฟังเสียงตัวอย่างแล้วออกเสียงตาม",
+ progress:(n,t)=>`ฟังแล้ว <b>${n}</b> / ${t} เสียง`,
+ script:"ตัวอักษร",voice:"เสียงอ่าน",speed:"ความเร็ว",show:"แสดง",slow:"ช้า",mid:"ปานกลาง",normal:"ปกติ",romaji:"โรมาจิ",
+ replay:"ฟังอีกครั้ง",loading:"กำลังโหลดเสียง…",noVoice:"ไม่พบเสียงภาษาญี่ปุ่น",
+ srcRec:"เสียงเจ้าของภาษา",srcAI:"เสียง AI",srcTTS:"เสียงของอุปกรณ์",optRec:"เสียงเจ้าของภาษา (บันทึกเสียง) ★",optAI:"เสียง AI คุณภาพสูง (Google)",grpTTS:"เสียงของอุปกรณ์",
+ warnNoSynth:"เบราว์เซอร์นี้อ่านออกเสียงไม่ได้ กรุณาเปิดด้วย Chrome, Edge หรือ Safari เวอร์ชันล่าสุด",
+ warnNoJa:"อุปกรณ์นี้ยังไม่มีเสียงภาษาญี่ปุ่น Windows: การตั้งค่า › เวลาและภาษา › เสียงพูด › เพิ่มเสียง › ภาษาญี่ปุ่น โทรศัพท์: เพิ่มภาษาญี่ปุ่นในการตั้งค่าการอ่านออกเสียงข้อความ เสียงที่แนะนำ: Microsoft Nanami (Edge) หรือ Google 日本語 (Chrome)",
+ rowPlay:"ฟังทั้งแถว",tabs:{basic:"เสียงพื้นฐาน",daku:"เสียงขุ่น · กึ่งขุ่น",yoon:"เสียงควบ",gairai:"เสียงคำยืม",special:"เสียงพิเศษ"},
+ gairaiNote:"<b>เขียนด้วยคาตาคานะเท่านั้น</b> ใช้กับคำที่มาจากภาษาอื่น เช่น パーティー (ปาร์ตี้), フォーク (ส้อม), ディズニー (ดิสนีย์), ウェブ (เว็บ) อักษรสองตัวอ่านต่อกันเป็นหนึ่งจังหวะ",
+ accLegend:"เส้น<b>บน</b> = เสียง<b>สูง</b> เส้น<b>ล่าง</b> = เสียง<b>ต่ำ</b> ภาษาญี่ปุ่นมีเพียงระดับเสียงสูงและต่ำภายในคำ ไม่มีวรรณยุกต์แบบภาษาไทย",
+ notes:[["โรมาจิ","โรมาจิแสดงเพียงการสะกด ไม่ใช่เสียงที่ถูกต้องทั้งหมด ให้ฟังเสียงตัวอย่างแล้วเลียนแบบทุกครั้ง"],
+  ["สระ u และเสียง r","<b>u</b>: ปากผ่อนคลาย ไม่ห่อปาก <b>r</b>: แตะปลายลิ้นเบา ๆ หลังฟันบนหนึ่งครั้ง ไม่รัวลิ้น"],
+  ["เคล็ดลับ","เสียงที่มีเคล็ดลับการออกเสียง จะแสดงใต้ตัวอักษรใหญ่เมื่อแตะ"]],
+ marks:{wa_e:"は → wa,  へ → e",wo:"を → o"},
+ sp:{sokuon:["เสียงหยุด (tsu ตัวเล็ก)","หยุดหนึ่งจังหวะ ไม่ต้องออกเสียง “tsu” พยัญชนะถัดไปจะค้างไว้หนึ่งจังหวะ"],
+  long:["สระเสียงยาว","ลากเสียงสระสองจังหวะ えい มักออกเสียงเป็น e ยาว และ おう เป็น o ยาว"],
+  wa_e:["เมื่อเป็นคำช่วย","は อ่านว่า “wa” เมื่อเป็นคำช่วยบอกหัวเรื่อง และ へ อ่านว่า “e” เมื่อบอกทิศทาง"],
+  wo:["คำช่วยบอกกรรม","を ใช้เป็นคำช่วยเท่านั้น และอ่านเหมือน お (o)"],
+  n:["เสียงนาสิกที่เปลี่ยนไป","ก่อน m/b/p ออกเสียงคล้าย “m” ก่อน n/t/d คล้าย “n” และก่อน k/g คล้าย “ng”"],
+  chouon:["เครื่องหมายเสียงยาว","ในคาตาคานะ สระเสียงยาวเขียนด้วย ー ให้ลากเสียงสระข้างหน้าเพิ่มอีกหนึ่งจังหวะ"],
+  small:["สระตัวเล็ก (เสียงคำยืม)","รวมกับตัวอักษรข้างหน้าเป็นหนึ่งจังหวะ เพื่อเขียนเสียงของคำจากภาษาอื่น"],
+  vu:["เสียง v","ใช้กับคำยืมที่มีเสียง v คนญี่ปุ่นมักออกเสียงใกล้กับ “b”"]},
+ tips:{shi:"เสียงเบา ๆ ระหว่าง “s” กับ “sh” ใช้ลิ้นส่วนกลาง",sh:"เสียง “sh” เบา ๆ ไม่ห่อปาก",ch:"เสียง “ch” เบา ๆ ไม่พ่นลมแรง",
+  ts:"t กับ s ออกเสียงติดกันในหนึ่งจังหวะ เหมือน “ts” ในคำว่า “cats”",hi:"ลมผ่านระหว่างลิ้นส่วนหน้ากับเพดานปาก ใกล้กับ “h” ในคำว่า “huge”",
+  f:"เป่าลมเบา ๆ ระหว่างริมฝีปากทั้งสอง ฟันไม่แตะริมฝีปาก",r:"แตะปลายลิ้นเบา ๆ หลังฟันบนหนึ่งครั้ง เสียงอยู่ระหว่าง r, l และ d",
+  n:"เสียงนาสิกที่ยาวหนึ่งจังหวะ เปลี่ยนเป็น m, n หรือ ng ตามเสียงถัดไป",dz:"ออกเสียง dz ติดกันเป็นเสียงเดียว",
+  j:"คล้าย “j” ในคำว่า “jeans” ออกเสียงเบา ๆ",v:"คนญี่ปุ่นมักออกเสียงใกล้กับ “b” ออกเสียง “v” เบา ๆ ก็เข้าใจได้"},
+ mean:["แสตมป์","โรงเรียน","ตั๋ว","แม่","พี่ชาย","อากาศ","ครู","พ่อ","ส่วนฉัน…","สวัสดี","ไปโรงเรียน","อ่านหนังสือ","ดื่มน้ำ","หนังสือพิมพ์","แอปเปิล","เตียง","ถ้วย","ฟุตบอล","กาแฟ","เค้ก","สมุด","ซูเปอร์มาร์เก็ต","ขนมปัง","ปากกา","ไวน์","ส้อม","ปาร์ตี้","ตรวจสอบ","ไฟล์","ไวโอลิน"]},
+
+ms:{title:"Jadual Sebutan Kana",lang:"Bahasa",h1:"Jadual sebutan bahasa Jepun",
+ sub:"Tekan mana-mana huruf untuk mendengar sebutan bahasa Jepun standard. Romaji hanya menunjukkan ejaan, jadi tiru suaranya, bukan hurufnya.",
+ progress:(n,t)=>`Sudah didengar <b>${n}</b> / ${t} bunyi`,
+ script:"Tulisan",voice:"Suara",speed:"Kelajuan",show:"Papar",slow:"Perlahan",mid:"Sederhana",normal:"Biasa",romaji:"Romaji",
+ replay:"Dengar semula",loading:"Memuatkan suara…",noVoice:"Tiada suara bahasa Jepun",
+ srcRec:"Penutur asli",srcAI:"Suara AI",srcTTS:"Suara peranti",optRec:"Penutur asli (rakaman) ★",optAI:"Suara AI berkualiti tinggi (Google)",grpTTS:"Suara peranti",
+ warnNoSynth:"Pelayar ini tidak dapat memainkan suara. Sila buka dengan Chrome, Edge atau Safari versi terkini.",
+ warnNoJa:"Peranti ini belum mempunyai suara bahasa Jepun. Windows: Tetapan › Masa & bahasa › Pertuturan › Tambah suara › Jepun. Telefon: tambah bahasa Jepun dalam tetapan teks-ke-pertuturan. Suara terbaik: Microsoft Nanami (Edge) atau Google 日本語 (Chrome).",
+ rowPlay:"Dengar seluruh baris",tabs:{basic:"Bunyi asas",daku:"Bunyi bersuara",yoon:"Bunyi gabungan",gairai:"Bunyi kata pinjaman",special:"Bunyi khas"},
+ gairaiNote:"<b>Ditulis dalam katakana sahaja.</b> Digunakan untuk perkataan daripada bahasa lain, contohnya パーティー (parti), フォーク (garpu), ディズニー (Disney), ウェブ (web). Dua huruf itu disebut bersama dalam satu ketukan.",
+ accLegend:"Garis <b>atas</b> = nada <b>tinggi</b>, garis <b>bawah</b> = nada <b>rendah</b>. Dalam sesuatu perkataan, bahasa Jepun hanya menggunakan nada tinggi dan rendah.",
+ notes:[["Romaji","Romaji hanya menunjukkan ejaan, bukan bunyi yang tepat. Sentiasa dengar suara contoh dan tirunya."],
+  ["Vokal u dan bunyi r","<b>u</b>: bibir santai, tidak dibundarkan. <b>r</b>: ketuk hujung lidah sekali dengan ringan di belakang gigi atas, tidak digetarkan."],
+  ["Petua","Jika sesuatu bunyi ada petua sebutan, petua itu dipaparkan di bawah huruf besar apabila anda menekannya."]],
+ marks:{wa_e:"は → wa,  へ → e",wo:"を → o"},
+ sp:{sokuon:["Hentian (tsu kecil)","Berhenti selama satu ketukan; jangan sebut “tsu”. Konsonan seterusnya ditahan selama satu ketukan."],
+  long:["Vokal panjang","Panjangkan vokal selama dua ketukan. えい biasanya disebut sebagai e panjang, dan おう sebagai o panjang."],
+  wa_e:["Sebagai partikel","は dibaca “wa” sebagai partikel topik; へ dibaca “e” apabila menunjukkan arah."],
+  wo:["Partikel objek","を hanya digunakan sebagai partikel dan dibaca seperti お (o)."],
+  n:["Bunyi sengau yang berubah","Sebelum m/b/p bunyinya seperti “m”, sebelum n/t/d seperti “n”, dan sebelum k/g seperti “ng”."],
+  chouon:["Tanda vokal panjang","Dalam katakana, vokal panjang ditulis dengan ー. Panjangkan vokal sebelumnya satu ketukan lagi."],
+  small:["Vokal kecil (bunyi asing)","Digabungkan dengan huruf sebelumnya menjadi satu ketukan untuk bunyi daripada bahasa lain."],
+  vu:["Bunyi v","Digunakan untuk perkataan asing yang ada bunyi v; orang Jepun biasanya menyebutnya hampir seperti “b”."]},
+ tips:{shi:"Bunyi lembut antara “s” dan “sy”, dibuat dengan bahagian tengah lidah.",sh:"Bunyi “sy” yang lembut, bibir tidak dibundarkan.",ch:"Bunyi “c” yang ringan tanpa hembusan udara yang kuat.",
+  ts:"t dan s disebut bersama dalam satu ketukan, seperti “ts” dalam “cats”.",hi:"Udara melalui bahagian depan lidah, hampir seperti “h” dalam perkataan Inggeris “huge”.",
+  f:"Hembus perlahan di antara kedua-dua bibir; gigi tidak menyentuh bibir.",r:"Ketuk hujung lidah sekali dengan ringan di belakang gigi atas; bunyinya di antara r, l dan d.",
+  n:"Bunyi sengau sepanjang satu ketukan; berubah menjadi m, n atau ng mengikut bunyi seterusnya.",dz:"Sebut dz bersama sebagai satu bunyi.",
+  j:"Seperti “j” dalam “jalan”, disebut dengan lembut.",v:"Orang Jepun biasanya menyebutnya hampir seperti “b”; “v” yang ringan juga difahami."},
+ mean:["setem","sekolah","tiket","ibu","abang","udara","guru","bapa","saya pula…","helo","ke sekolah","membaca buku","minum air","surat khabar","epal","katil","cawan","bola sepak","kopi","kek","buku nota","pasar raya","roti","pen","wain","garpu","parti","semak","fail","biola"]},
+
+id:{title:"Tabel Pelafalan Kana",lang:"Bahasa",h1:"Tabel pelafalan bahasa Jepang",
+ sub:"Ketuk huruf mana saja untuk mendengar pelafalan bahasa Jepang standar. Romaji hanya menunjukkan ejaan, jadi tirukan suaranya, bukan hurufnya.",
+ progress:(n,t)=>`Sudah didengar <b>${n}</b> / ${t} bunyi`,
+ script:"Huruf",voice:"Suara",speed:"Kecepatan",show:"Tampilkan",slow:"Lambat",mid:"Sedang",normal:"Normal",romaji:"Romaji",
+ replay:"Dengar lagi",loading:"Memuat suara…",noVoice:"Suara bahasa Jepang tidak ditemukan",
+ srcRec:"Penutur asli",srcAI:"Suara AI",srcTTS:"Suara perangkat",optRec:"Penutur asli (rekaman) ★",optAI:"Suara AI berkualitas tinggi (Google)",grpTTS:"Suara perangkat",
+ warnNoSynth:"Peramban ini tidak dapat memutar suara. Silakan buka dengan Chrome, Edge, atau Safari versi terbaru.",
+ warnNoJa:"Perangkat ini belum memiliki suara bahasa Jepang. Windows: Pengaturan › Waktu & bahasa › Ucapan › Tambahkan suara › Jepang. Ponsel: tambahkan bahasa Jepang di pengaturan teks-ke-ucapan. Suara terbaik: Microsoft Nanami (Edge) atau Google 日本語 (Chrome).",
+ rowPlay:"Dengar satu baris",tabs:{basic:"Bunyi dasar",daku:"Bunyi bersuara",yoon:"Bunyi gabungan",gairai:"Bunyi kata serapan",special:"Bunyi khusus"},
+ gairaiNote:"<b>Hanya ditulis dengan katakana.</b> Dipakai untuk kata dari bahasa lain, misalnya パーティー (pesta), フォーク (garpu), ディズニー (Disney), ウェブ (web). Dua huruf itu dibaca bersambung dalam satu ketukan.",
+ accLegend:"Garis <b>atas</b> = nada <b>tinggi</b>, garis <b>bawah</b> = nada <b>rendah</b>. Di dalam kata, bahasa Jepang hanya memakai nada tinggi dan rendah.",
+ notes:[["Romaji","Romaji hanya menunjukkan ejaan, bukan bunyi yang tepat. Selalu dengarkan suara contoh lalu tirukan."],
+  ["Vokal u dan bunyi r","<b>u</b>: bibir rileks, tidak dibulatkan. <b>r</b>: sentuhkan ujung lidah sekali dengan ringan di belakang gigi atas, tidak digetarkan."],
+  ["Tips","Jika suatu bunyi punya tips pelafalan, tips itu muncul di bawah huruf besar saat Anda mengetuknya."]],
+ marks:{wa_e:"は → wa,  へ → e",wo:"を → o"},
+ sp:{sokuon:["Jeda (tsu kecil)","Berhenti selama satu ketukan; jangan ucapkan “tsu”. Konsonan berikutnya ditahan satu ketukan."],
+  long:["Vokal panjang","Panjangkan vokal selama dua ketukan. えい biasanya diucapkan e panjang, dan おう o panjang."],
+  wa_e:["Sebagai partikel","は dibaca “wa” sebagai partikel topik; へ dibaca “e” bila menunjukkan arah."],
+  wo:["Partikel objek","を hanya dipakai sebagai partikel dan dibaca seperti お (o)."],
+  n:["Bunyi sengau yang berubah","Sebelum m/b/p terdengar seperti “m”, sebelum n/t/d seperti “n”, dan sebelum k/g seperti “ng”."],
+  chouon:["Tanda vokal panjang","Dalam katakana, vokal panjang ditulis dengan ー. Panjangkan vokal sebelumnya satu ketukan lagi."],
+  small:["Vokal kecil (bunyi asing)","Digabung dengan huruf sebelumnya menjadi satu ketukan untuk bunyi dari bahasa lain."],
+  vu:["Bunyi v","Dipakai untuk kata asing yang memiliki bunyi v; orang Jepang biasanya mengucapkannya mirip “b”."]},
+ tips:{shi:"Bunyi lembut antara “s” dan “sy”, dibuat dengan bagian tengah lidah.",sh:"Bunyi “sy” yang lembut, bibir tidak dibulatkan.",ch:"Bunyi “c” yang ringan tanpa embusan napas yang kuat.",
+  ts:"t dan s diucapkan bersambung dalam satu ketukan, seperti “ts” pada “cats”.",hi:"Udara lewat di bagian depan lidah, mirip “h” pada kata Inggris “huge”.",
+  f:"Embuskan napas pelan di antara kedua bibir; gigi tidak menyentuh bibir.",r:"Sentuhkan ujung lidah sekali dengan ringan di belakang gigi atas; bunyinya di antara r, l, dan d.",
+  n:"Bunyi sengau sepanjang satu ketukan; berubah menjadi m, n, atau ng tergantung bunyi berikutnya.",dz:"Ucapkan dz bersambung sebagai satu bunyi.",
+  j:"Seperti “j” pada “jalan”, diucapkan dengan lembut.",v:"Orang Jepang biasanya mengucapkannya mirip “b”; “v” yang ringan juga dimengerti."},
+ mean:["perangko","sekolah","tiket","ibu","kakak laki-laki","udara","guru","ayah","saya…","halo","ke sekolah","membaca buku","minum air","koran","apel","tempat tidur","cangkir","sepak bola","kopi","kue","buku catatan","supermarket","roti","pulpen","anggur (minuman)","garpu","pesta","periksa","berkas","biola"]}
+};
+function pickLang(){
+  const ok=c=>LANGS.some(l=>l[0]===c);
+  const h=(location.hash||"").slice(1).toLowerCase();if(ok(h))return h;
+  try{const q=new URLSearchParams(location.search).get("lang");if(q&&ok(q.toLowerCase()))return q.toLowerCase()}catch(e){}
+  const s=store.get("hira_lang",null);if(s&&ok(s))return s;
+  for(const l of (navigator.languages||[navigator.language||""])){let c=String(l).toLowerCase().split("-")[0];if(c==="in")c="id";if(c==="zsm")c="ms";if(ok(c))return c}
+  return "vi";
+}
+let LANG="vi";
+const T=k=>(I18N[LANG]&&I18N[LANG][k]!==undefined)?I18N[LANG][k]:I18N.vi[k];
+function meanOf(wid){const i=WIDS.indexOf(wid);return i<0?"":T("mean")[i]}
+function tipKey(ro){
+  ro=(ro||"").split(" ")[0];
+  if(ro==="shi")return"shi";if(ro.startsWith("sh"))return"sh";if(ro.startsWith("ch"))return"ch";if(ro.startsWith("ts"))return"ts";
+  if(ro==="hi")return"hi";if(ro.startsWith("f"))return"f";if(ro.startsWith("r"))return"r";if(ro==="n")return"n";
+  if(ro.startsWith("z"))return"dz";if(ro.startsWith("j"))return"j";if(ro.startsWith("v"))return"v";return"";
+}
+
+LANG=pickLang();
 let heard=new Set(store.get("hira_heard",[]));
 const TOTAL=[BASIC,DAKU,YOON,GAIRAI].reduce((n,g)=>n+g.rows.flat().filter(Boolean).length,0);
 function updateProgress(){
   const all=new Set([BASIC,DAKU,YOON,GAIRAI].flatMap(g=>g.rows.flat().filter(Boolean).map(x=>x[0])));
   const n=[...heard].filter(k=>all.has(k)).length;
-  document.getElementById("progress").innerHTML=`Đã nghe <b>${n}</b> / ${TOTAL} chữ`;
+  document.getElementById("progress").innerHTML=T("progress")(n,TOTAL);
 }
 
 /* ---------- Speech ---------- */
@@ -352,8 +557,8 @@ function score(v){
   return s;
 }
 /* Audio sources: rec = native-speaker recordings (audio/), ai = Google neural TTS files (audio/ai/), tts = device voice */
-const SRC={rec:{dir:"audio/",set:null,label:"Giọng người thật",opt:"Giọng người thật (ghi âm) ★"},
-           ai:{dir:"audio/ai/",set:null,label:"Giọng AI",opt:"Giọng AI chất lượng cao (Google)"}};
+const SRC={rec:{dir:"audio/",set:null,label:"srcRec",opt:"optRec"},
+           ai:{dir:"audio/ai/",set:null,label:"srcAI",opt:"optAI"}};
 let mode="tts",curId="a";
 function anyFiles(){return !!(SRC.rec.set||SRC.ai.set)}
 function loadVoices(){
@@ -362,9 +567,9 @@ function loadVoices(){
   const saved=store.get("hira_voice",null);
   const nice=v=>v.name.replace(/Microsoft |Online |\(Natural\)| - Japanese \(Japan\)/g," ").replace(/\s+/g," ").trim();
   let h="";
-  for(const k of ["rec","ai"])if(SRC[k].set)h+=`<option value="${k}">${SRC[k].opt}</option>`;
-  if(voices.length)h+='<optgroup label="Giọng máy (trên thiết bị)">'+voices.map((v,i)=>`<option value="${i}">${nice(v)}</option>`).join("")+'</optgroup>';
-  if(!h)h='<option>Không tìm thấy giọng Nhật</option>';
+  for(const k of ["rec","ai"])if(SRC[k].set)h+=`<option value="${k}">${T(SRC[k].opt)}</option>`;
+  if(voices.length)h+='<optgroup label="'+T("grpTTS")+'">'+voices.map((v,i)=>`<option value="${i}">${nice(v)}</option>`).join("")+'</optgroup>';
+  if(!h)h='<option>'+T("noVoice")+'</option>';
   sel.innerHTML=h;
   const vi=voices.findIndex(v=>v.name===saved);
   const gi=voices.findIndex(v=>/^Google/i.test(v.name)); /* Chrome's "Google 日本語" is the default when available */
@@ -375,10 +580,10 @@ function loadVoices(){
   else mode=SRC.rec.set?"rec":SRC.ai.set?"ai":"tts";
   if(mode==="tts"){const i=Math.max(0,ti);if(voices.length)sel.value=i;voice=voices[i]||null}
   else{sel.value=mode;voice=voices[0]||null}
-  if(!synth&&!anyFiles()){warn.hidden=false;warn.textContent="Trình duyệt này không hỗ trợ đọc giọng nói. Hãy mở bằng Chrome, Edge hoặc Safari bản mới.";return}
+  if(!synth&&!anyFiles()){warn.hidden=false;warn.textContent=T("warnNoSynth");return}
   if(!voices.length&&!anyFiles()){
     warn.hidden=false;
-    warn.textContent="Máy chưa có giọng tiếng Nhật. Trên Windows: Cài đặt › Thời gian và ngôn ngữ › Giọng nói › Thêm giọng “Japanese”. Trên điện thoại: thêm ngôn ngữ Nhật cho chuyển văn bản thành giọng nói. Giọng tốt nhất: Microsoft Nanami (Edge) hoặc Google 日本語 (Chrome).";
+    warn.textContent=T("warnNoJa");
     return;
   }
   warn.hidden=true;
@@ -403,7 +608,7 @@ for(const k of ["rec","ai"]){try{fetch(SRC[k].dir+"manifest.json",{cache:"no-cac
 function idOf(cell){return cell[2]==="wo (o)"?"o":cell[2].split(" ")[0]}
 function hasRec(id){const m=SRC[mode];return !!(m&&m.set&&id&&m.set.has(id))}
 function fileOf(id){return SRC[mode].dir+id+".mp3"}
-function setSrc(id){const el=document.getElementById("src");if(el)el.textContent=anyFiles()?(hasRec(id)?SRC[mode].label:"Giọng máy"):""}
+function setSrc(id){const el=document.getElementById("src");if(el)el.textContent=anyFiles()?(hasRec(id)?T(SRC[mode].label):T("srcTTS")):""}
 function ttsOnce(say){return new Promise(res=>{if(!synth)return res();const u=utter(say);u.onend=res;u.onerror=res;synth.speak(u)})}
 function once(say,id){
   setSrc(id);
@@ -446,12 +651,14 @@ async function speakSeq(items,onEach){
 
 /* ---------- Stage ---------- */
 const big=document.getElementById("big");
-function show(kana,vi,ro,say,tipText){
+function show(kana,vi,ro,say,tipText,word){
   big.textContent=kana;big.dataset.say=say||kana;
   big.classList.remove("say");void big.offsetWidth;big.classList.add("say");
-  document.getElementById("hint").innerHTML=vi?vi.replace("*",'<span class="star">*</span>'):"";
-  document.getElementById("ro").textContent=ro?("romaji: "+ro):"";
-  document.getElementById("tip").textContent=tipText!=null?tipText:tipFor(vi||"");
+  const hint=document.getElementById("hint"),rl=document.getElementById("ro");
+  if(word){hint.textContent=vi||"";rl.textContent=""}
+  else if(LANG==="vi"){hint.innerHTML=vi?vi.replace("*",'<span class="star">*</span>'):"";rl.textContent=ro?("romaji: "+ro):""}
+  else{hint.textContent=ro||"";rl.textContent=""}
+  document.getElementById("tip").textContent=tipText!=null?tipText:tipFor(vi||"",ro);
 }
 document.getElementById("replay").addEventListener("click",()=>speak(big.dataset.say||big.textContent,curId));
 
@@ -473,7 +680,7 @@ function renderGrid(g){
   d.rows.forEach(row=>{
     const rp=document.createElement("button");
     rp.className="rowplay";rp.type="button";rp.innerHTML=ICON_PLAY;
-    const first=row.find(Boolean);rp.setAttribute("aria-label","Nghe cả hàng "+first[0]);rp.title="Nghe cả hàng";
+    const first=row.find(Boolean);rp.setAttribute("aria-label",T("rowPlay")+" "+first[0]);rp.title=T("rowPlay");
     const btns=[];
     grid.appendChild(rp);
     row.forEach(cell=>{
@@ -499,16 +706,17 @@ function renderGrid(g){
 function renderSpecial(){
   const wrap=document.createElement("div");wrap.className="special";
   const head=document.createElement("p");head.className="sp-head";
-  head.innerHTML=accHTML("コーヒー","LHHL")+'<span>Đường kẻ <b>trên</b> = giọng <b>cao</b>, kẻ <b>dưới</b> = giọng <b>thấp</b>. Tiếng Nhật chỉ có cao và thấp, không có thanh điệu như tiếng Việt.</span>';
+  head.innerHTML=accHTML("コーヒー","LHHL")+'<span>'+T("accLegend")+'</span>';
   wrap.appendChild(head);
   (script==="kata"?SPECIAL_KATA:SPECIAL).forEach(s=>{
     const el=document.createElement("div");el.className="sp";
-    el.innerHTML=`<div class="mark" lang="ja">${s.mark}</div><div><p><b>${s.title}.</b> ${s.text}</p><div class="ex"></div></div>`;
+    const [title,text]=T("sp")[s.key];const mark=s.mark||T("marks")[s.key];
+    el.innerHTML=`<div class="mark" lang="ja">${mark}</div><div><p><b>${title}.</b> ${text}</p><div class="ex"></div></div>`;
     const ex=el.querySelector(".ex");
-    s.ex.forEach(([jp,vi,wid])=>{
+    s.ex.forEach(wid=>{const jp=WORD[wid],vi=meanOf(wid);
       const c=document.createElement("button");c.type="button";c.className="chip";
       c.innerHTML=`<span class="jp" lang="ja">${accHTML(jp,ACC[wid])}</span><small>${vi}</small>`;
-      c.addEventListener("click",()=>{lastCell=null;show(jp,vi,"",jp,s.title+": "+s.text);big.innerHTML=accHTML(jp,ACC[wid]);speak(jp,wid)});
+      c.addEventListener("click",()=>{lastCell=null;show(jp,vi,"",jp,title+": "+text,true);big.innerHTML=accHTML(jp,ACC[wid]);speak(jp,wid)});
       ex.appendChild(c);
     });
     wrap.appendChild(el);
@@ -520,7 +728,7 @@ function select(id){
   panel.style.setProperty("--c",`var(${g.c})`);panel.style.setProperty("--soft",`var(${g.s})`);
   document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected",t.dataset.id===g.id));
   panel.innerHTML="";
-  if(g.data&&g.data.note){const n=document.createElement("p");n.className="gnote";n.innerHTML=g.data.note;panel.appendChild(n)}
+  if(g.id==="gairai"){const n=document.createElement("p");n.className="gnote";n.innerHTML=T("gairaiNote");panel.appendChild(n)}
   panel.appendChild(g.id==="special"?renderSpecial():renderGrid(g));
   store.set("hira_tab",g.id);
 }
@@ -528,7 +736,7 @@ const tabs=document.getElementById("tabs");
 GROUPS.forEach(g=>{
   const t=document.createElement("button");t.className="tab";t.type="button";t.role="tab";t.dataset.id=g.id;
   t.style.setProperty("--c",`var(${g.c})`);
-  t.innerHTML=`<span class="jp" lang="ja" data-raw="${g.jp}">${K(g.jp)}</span>${g.label}`;
+  t.innerHTML=`<span class="jp" lang="ja" data-raw="${g.jp}">${K(g.jp)}</span><span class="tl"></span>`;
   t.addEventListener("click",()=>select(g.id));tabs.appendChild(t);
 });
 
@@ -540,7 +748,8 @@ document.querySelectorAll("#speed button").forEach(b=>{
 });
 const vis=store.get("hira_vis",{vi:true,ro:true});
 function applyVis(){
-  panel.classList.toggle("hide-vi",!vis.vi);panel.classList.toggle("hide-ro",!vis.ro);
+  const hb=document.querySelector('#show [data-k="vi"]');if(hb)hb.hidden=LANG!=="vi";
+  panel.classList.toggle("hide-vi",LANG!=="vi"||!vis.vi);panel.classList.toggle("hide-ro",!vis.ro);
   document.querySelectorAll("#show button").forEach(b=>b.setAttribute("aria-pressed",String(vis[b.dataset.k])));
 }
 document.querySelectorAll("#show button").forEach(b=>b.addEventListener("click",()=>{vis[b.dataset.k]=!vis[b.dataset.k];store.set("hira_vis",vis);applyVis()}));
@@ -555,7 +764,19 @@ function applyScript(){
 document.querySelectorAll("#script button").forEach(b=>b.addEventListener("click",()=>{
   script=b.dataset.s;store.set("hira_script",script);applyScript();speak(big.dataset.say,curId);
 }));
-applyScript();updateProgress();
+function applyLang(){
+  document.documentElement.lang=LANG;document.title=T("title");
+  document.querySelectorAll("[data-i18n]").forEach(el=>{const v=T(el.dataset.i18n);if(typeof v==="string")el.textContent=v});
+  document.getElementById("h1t").textContent=T("h1");document.getElementById("sub").textContent=T("sub");
+  document.getElementById("notes").innerHTML=T("notes").map(([h,p])=>`<div class="note"><h3>${h}</h3><p>${p}</p></div>`).join("");
+  document.querySelectorAll(".tab").forEach(t=>t.querySelector(".tl").textContent=T("tabs")[t.dataset.id]);
+  document.getElementById("lang").value=LANG;
+  loadVoices();updateProgress();applyScript();
+}
+const langSel=document.getElementById("lang");
+langSel.innerHTML=LANGS.map(([c,n])=>`<option value="${c}" lang="${c}">${n}</option>`).join("");
+langSel.addEventListener("change",()=>{LANG=langSel.value;store.set("hira_lang",LANG);try{history.replaceState(null,"","#"+LANG)}catch(e){}applyLang()});
+applyLang();
 </script>
 </body>
 </html>

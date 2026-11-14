@@ -1,5 +1,7 @@
 # Bảng phát âm tiếng Nhật (ひらがな・カタカナ)
 
+**Ngôn ngữ / Language / 言語 / ภาษา / Bahasa:** [Tiếng Việt](https://katsuhiroendo.github.io/B-ng-ph-t-m-ti-ng-Nh-t/#vi) · [English](https://katsuhiroendo.github.io/B-ng-ph-t-m-ti-ng-Nh-t/#en) · [日本語](https://katsuhiroendo.github.io/B-ng-ph-t-m-ti-ng-Nh-t/#ja) · [ไทย](https://katsuhiroendo.github.io/B-ng-ph-t-m-ti-ng-Nh-t/#th) · [Bahasa Melayu](https://katsuhiroendo.github.io/B-ng-ph-t-m-ti-ng-Nh-t/#ms) · [Bahasa Indonesia](https://katsuhiroendo.github.io/B-ng-ph-t-m-ti-ng-Nh-t/#id)
+
 Công cụ học phát âm hiragana và katakana dành cho người Việt. Bấm vào từng chữ để nghe giọng đọc tiếng Nhật, kèm gợi âm bằng chữ Việt, romaji và mẹo phát âm.
 
 ## Tính năng
@@ -11,6 +13,7 @@ Công cụ học phát âm hiragana và katakana dành cho người Việt. Bấ
 - 3 tốc độ đọc: Chậm, Vừa, Bình thường
 - Bật/tắt gợi âm Việt và romaji
 - Đánh dấu các chữ đã nghe
+- Giao diện 6 ngôn ngữ: Tiếng Việt, English, 日本語, ไทย, Bahasa Melayu, Bahasa Indonesia
 
 ## Giọng đọc
 
@@ -31,3 +34,20 @@ Gợi âm bằng chữ Việt chỉ là âm gần đúng, không phải ký hi�
 Trang ghi âm: `record.html`. Hướng dẫn chi tiết (tiếng Nhật): [RECORDING.md](RECORDING.md)
 
 Tạo giọng AI (tiếng Nhật): [TTS.md](TTS.md)
+
+---
+
+## English
+A hiragana and katakana pronunciation chart. Tap any letter to hear it spoken by a native Japanese speaker, with romaji, pronunciation tips and pitch-accent lines for example words. Open: https://katsuhiroendo.github.io/B-ng-ph-t-m-ti-ng-Nh-t/#en
+
+## 日本語
+ひらがな・カタカナの発音表です。文字を押すと日本語ネイティブの録音が再生され、ローマ字、発音のコツ、単語のアクセント（高低）を確認できます。開く：https://katsuhiroendo.github.io/B-ng-ph-t-m-ti-ng-Nh-t/#ja
+
+## ไทย
+ตารางการออกเสียงฮิรางานะและคาตาคานะ แตะที่ตัวอักษรเพื่อฟังเสียงของเจ้าของภาษาญี่ปุ่น พร้อมโรมาจิ เคล็ดลับการออกเสียง และเส้นแสดงระดับเสียงสูงต่ำของคำตัวอย่าง เปิด: https://katsuhiroendo.github.io/B-ng-ph-t-m-ti-ng-Nh-t/#th
+
+## Bahasa Melayu
+Jadual sebutan hiragana dan katakana. Tekan mana-mana huruf untuk mendengar sebutan penutur asli Jepun, beserta romaji, petua sebutan dan garis nada untuk perkataan contoh. Buka: https://katsuhiroendo.github.io/B-ng-ph-t-m-ti-ng-Nh-t/#ms
+
+## Bahasa Indonesia
+Tabel pelafalan hiragana dan katakana. Ketuk huruf mana saja untuk mendengar suara penutur asli Jepang, lengkap dengan romaji, tips pelafalan, dan garis nada untuk kata contoh. Buka: https://katsuhiroendo.github.io/B-ng-ph-t-m-ti-ng-Nh-t/#id
