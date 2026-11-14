@@ -303,6 +303,8 @@ const GAIRAI={cols:["a","i","u","e","o"],
 ]};
 const WORD={"w-kitte":"きって","w-gakkou":"がっこう","w-kippu":"きっぷ","w-okaasan":"おかあさん","w-oniisan":"おにいさん","w-kuuki":"くうき","w-sensei":"せんせい","w-otousan":"おとうさん","w-watashiwa":"わたしは","w-konnichiwa":"こんにちは","w-gakkoue":"がっこうへ","w-hon-o-yomimasu":"ほんを よみます","w-mizu-o-nomimasu":"みずを のみます","w-shinbun":"しんぶん","w-ringo":"りんご",
 "w-beddo":"ベッド","w-kappu":"カップ","w-sakkaa":"サッカー","w-koohii":"コーヒー","w-keeki":"ケーキ","w-nooto":"ノート","w-suupaa":"スーパー","w-pan":"パン","w-pen":"ペン","w-wain":"ワイン","w-fooku":"フォーク","w-paatii":"パーティー","w-chekku":"チェック","w-fairu":"ファイル","w-vaiorin":"ヴァイオリン"};
+/* Text given to the device voice for words: kanji pins down the word, so homophones (切手 / 切って) get the right accent */
+const SAYW={"w-kitte":"切手","w-gakkou":"学校","w-kippu":"切符","w-okaasan":"お母さん","w-oniisan":"お兄さん","w-kuuki":"空気","w-sensei":"先生","w-otousan":"お父さん","w-watashiwa":"私は","w-gakkoue":"学校へ","w-hon-o-yomimasu":"本を読みます","w-mizu-o-nomimasu":"水を飲みます","w-shinbun":"新聞","w-ringo":"林檎"};
 const SPECIAL=[
  {key:"sokuon",mark:"っ",ex:["w-kitte","w-gakkou","w-kippu"]},
  {key:"long",mark:"ああ・いい・うう・えい・おう",ex:["w-okaasan","w-oniisan","w-kuuki","w-sensei","w-otousan"]},
@@ -729,7 +731,7 @@ function renderSpecial(){
     s.ex.forEach(wid=>{const jp=WORD[wid],vi=meanOf(wid);
       const c=document.createElement("button");c.type="button";c.className="chip";
       c.innerHTML=`<span class="jp" lang="ja">${accHTML(jp,ACC[wid])}</span><small>${vi}</small>`;
-      c.addEventListener("click",()=>{lastCell=null;show(jp,vi,wid.slice(2).replace(/-/g," "),jp,title,true);big.innerHTML=accHTML(jp,ACC[wid]);speak(jp,wid)});
+      c.addEventListener("click",()=>{const say=SAYW[wid]||jp;lastCell=null;show(jp,vi,wid.slice(2).replace(/-/g," "),say,title,true);big.innerHTML=accHTML(jp,ACC[wid]);speak(say,wid)});
       ex.appendChild(c);
     });
     wrap.appendChild(el);
