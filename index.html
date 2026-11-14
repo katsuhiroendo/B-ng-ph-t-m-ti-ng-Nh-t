@@ -821,14 +821,37 @@ id:{u:"Ucapkan い, pertahankan bibir datar, lalu tarik lidah ke belakang.",nn:"
  hi:"Letakkan lidah seperti saat mengucapkan い, lalu berbisik.",fu:"Embuskan napas pelan seperti meniup sup agar dingin, dengan bibir datar, lalu tambahkan う.",
  r:"Ucapkan “d” dengan sangat cepat dan ringan; ujung lidah menyentuh sekali saja.",y:"Mulai dari い lalu meluncur cepat ke あ: い→あ = や.",voiced:"Letakkan jari di leher; Anda seharusnya merasakan getaran."}
 };
+/* The notes name the あ-column kana (か, だ, や…); swap in the kana of the card being shown */
+let ID2K=null;
+function kanaOfId(id){
+  if(!ID2K){ID2K={};for(const c of [...BASIC.rows.flat(),...DAKU.rows.flat()].filter(Boolean))ID2K[{"wo (o)":"wo","ji (di)":"di","zu (du)":"du"}[c[2]]||c[2].split(" ")[0]]=c[0]}
+  return ID2K[id]||"";
+}
+const shiftK=(k,n)=>String.fromCharCode(k.charCodeAt(0)+n);
+const toKataK=t=>t.replace(/[\u3041-\u3096]/g,c=>String.fromCharCode(c.charCodeAt(0)+0x60));
+const VOWEL_OF={"や":"あ","ゆ":"う","よ":"お"};
+/* replace a kana only where it stands alone (not inside a word such as すばやく) */
+function swapLone(t,map){
+  const isK=c=>!!c&&/[\u3040-\u30ff]/.test(c);
+  return [...t].map((c,i,a)=>(map[c]&&!isK(a[i-1])&&!isK(a[i+1]))?map[c]:c).join("");
+}
+function fitKana(id,key,t){
+  if(!t)return t;const S=kanaOfId(id);if(!S)return t;
+  if(key==="g")return swapLone(t,{"か":shiftK(S,-1)});
+  if(key==="d")return swapLone(t,{"だ":S,"た":shiftK(S,-1)});
+  if(key==="b")return swapLone(t,{"ぱ":shiftK(S,1)});
+  if(key==="p")return swapLone(t,{"ば":shiftK(S,-1)});
+  if(key==="y"){const V=VOWEL_OF[S];return swapLone(t,{"あ":V,"や":S,"ア":toKataK(V),"ヤ":toKataK(S)})}
+  return t;
+}
 function noteFor(id){
   const L=NOTES[LANG]||NOTES.en,key=NKEY[id];if(!key||!L[key])return "";
-  const [ty,how,warn]=L[key];const ex=(EXTRA[LANG]||{})[id]||(EXTRA[LANG]||{})[key]||"";
+  const [ty,how0,warn0]=L[key],how=fitKana(id,key,how0),warn=fitKana(id,key,warn0);const ex=(EXTRA[LANG]||{})[id]||(EXTRA[LANG]||{})[key]||"";
   const pal=PAL.has(id)?" "+L.pal:"";
   return `<p class="ill-type"><b>[${IPA[id]||""}]</b> ${ty}</p>`+
     `<p><b>${L.lbl[0]}:</b> ${how}${pal}</p>`+
     `<p><b>${L.lbl[1]}:</b> ${warn}${ex?" "+ex:""}</p>`+
-    (()=>{const P=PRAC[LANG]||PRAC.en,t=[P[key],VOICED.has(key)?P.voiced:""].filter(Boolean).join(" ");return t?`<p class="ill-prac"><b>${L.lbl[2]}:</b> ${t}</p>`:""})();
+    (()=>{const P=PRAC[LANG]||PRAC.en,t=[fitKana(id,key,P[key]),VOICED.has(key)?P.voiced:""].filter(Boolean).join(" ");return t?`<p class="ill-prac"><b>${L.lbl[2]}:</b> ${t}</p>`:""})();
 }
 
 LANG=pickLang();
