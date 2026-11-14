@@ -208,6 +208,7 @@ select{background:var(--surface-2);border:1px solid var(--line);border-radius:8p
       <span class="seg" id="show">
         <button type="button" data-k="vi" aria-pressed="true" data-i18n="hint">Gợi âm Việt</button>
         <button type="button" data-k="ro" aria-pressed="true" data-i18n="romaji">Romaji</button>
+        <button type="button" data-k="ill" aria-pressed="true" data-i18n="autoIll">Tự hiện thẻ minh họa</button>
       </span>
     </label>
     <p class="warn" id="warn" hidden></p>
@@ -388,7 +389,7 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 const LANGS=[["vi","Tiếng Việt"],["en","English"],["ja","日本語"],["th","ไทย"],["ms","Bahasa Melayu"],["id","Bahasa Indonesia"]];
 const WIDS=["w-kitte","w-gakkou","w-kippu","w-okaasan","w-oniisan","w-kuuki","w-sensei","w-otousan","w-watashiwa","w-konnichiwa","w-gakkoue","w-hon-o-yomimasu","w-mizu-o-nomimasu","w-shinbun","w-ringo","w-beddo","w-kappu","w-sakkaa","w-koohii","w-keeki","w-nooto","w-suupaa","w-pan","w-pen","w-wain","w-fooku","w-paatii","w-chekku","w-fairu","w-vaiorin"];
 const I18N={
-vi:{illMouth:"Xem khẩu hình",illTongue:"Xem vị trí lưỡi",close:"Đóng",tyMouth:"KHẨU HÌNH MIỆNG",tyTongue:"MẶT CẮT KHOANG MIỆNG",noteN:"Ví dụ khi ん đứng trước m, b, p: hai môi khép lại. Trước các âm khác, khẩu hình sẽ thay đổi.",noteWo:"を đọc giống お, nên dùng chung hình của お.",title:"Bảng Hiragana Phát Âm",lang:"Ngôn ngữ",h1:"Bảng phát âm tiếng Nhật",
+vi:{autoIll:"Tự hiện thẻ minh họa",illMouth:"Xem khẩu hình",illTongue:"Xem vị trí lưỡi",close:"Đóng",tyMouth:"KHẨU HÌNH MIỆNG",tyTongue:"MẶT CẮT KHOANG MIỆNG",noteN:"Ví dụ khi ん đứng trước m, b, p: hai môi khép lại. Trước các âm khác, khẩu hình sẽ thay đổi.",noteWo:"を đọc giống お, nên dùng chung hình của お.",title:"Bảng Hiragana Phát Âm",lang:"Ngôn ngữ",h1:"Bảng phát âm tiếng Nhật",
  sub:"Bấm vào từng chữ để nghe giọng Nhật chuẩn. Phần chữ Việt chỉ là gợi âm gần đúng, đọc không thêm thanh điệu.",
  progress:(n,t)=>`Đã nghe <b>${n}</b> / ${t} chữ`,
  script:"Chữ",voice:"Giọng đọc",speed:"Tốc độ",show:"Hiện",slow:"Chậm",mid:"Vừa",normal:"Bình thường",hint:"Gợi âm Việt",romaji:"Romaji",
@@ -413,7 +414,7 @@ vi:{illMouth:"Xem khẩu hình",illTongue:"Xem vị trí lưỡi",close:"Đóng"
   vu:["Âm v","Dùng cho từ nước ngoài có âm v; người Nhật thường đọc gần như “b”."]},
  mean:["con tem","trường học","vé tàu","mẹ","anh trai","không khí","giáo viên","bố","tôi thì…","xin chào","đến trường","đọc sách","uống nước","báo","quả táo","giường","cái cốc","bóng đá","cà phê","bánh ngọt","quyển vở","siêu thị","bánh mì","cây bút","rượu vang","cái nĩa","bữa tiệc","kiểm tra","tập tin","đàn violin"]},
 
-en:{illMouth:"Mouth shape",illTongue:"Tongue position",close:"Close",tyMouth:"MOUTH SHAPE",tyTongue:"INSIDE THE MOUTH",noteN:"Example of ん before m, b or p: the lips close. Before other sounds the mouth shape changes.",noteWo:"を sounds the same as お, so it uses the お card.",title:"Japanese Kana Pronunciation",lang:"Language",h1:"Japanese pronunciation chart",
+en:{autoIll:"Auto-show card",illMouth:"Mouth shape",illTongue:"Tongue position",close:"Close",tyMouth:"MOUTH SHAPE",tyTongue:"INSIDE THE MOUTH",noteN:"Example of ん before m, b or p: the lips close. Before other sounds the mouth shape changes.",noteWo:"を sounds the same as お, so it uses the お card.",title:"Japanese Kana Pronunciation",lang:"Language",h1:"Japanese pronunciation chart",
  sub:"Tap any letter to hear standard Japanese pronunciation. Romaji shows the spelling only, so copy the voice rather than the letters.",
  progress:(n,t)=>`Heard <b>${n}</b> / ${t} sounds`,
  script:"Script",voice:"Voice",speed:"Speed",show:"Show",slow:"Slow",mid:"Medium",normal:"Normal",romaji:"Romaji",
@@ -443,7 +444,7 @@ en:{illMouth:"Mouth shape",illTongue:"Tongue position",close:"Close",tyMouth:"MO
   j:"Like the “j” in “jeans”, said softly.",v:"Japanese speakers usually say it close to “b”; a light “v” is also understood."},
  mean:["stamp","school","ticket","mother","older brother","air","teacher","father","as for me…","hello","to school","read a book","drink water","newspaper","apple","bed","cup","soccer","coffee","cake","notebook","supermarket","bread","pen","wine","fork","party","check","file","violin"]},
 
-ja:{illMouth:"口の形を見る",illTongue:"舌の位置を見る",close:"閉じる",tyMouth:"口の形",tyTongue:"口の中の断面",noteN:"m・b・p の前の「ん」の例（唇を閉じる）。ほかの音の前では口の形が変わります。",noteWo:"「を」は「お」と同じ音なので、「お」のカードを表示しています。",title:"かな発音表",lang:"言語",h1:"日本語の発音表",
+ja:{autoIll:"カードを自動表示",illMouth:"口の形を見る",illTongue:"舌の位置を見る",close:"閉じる",tyMouth:"口の形",tyTongue:"口の中の断面",noteN:"m・b・p の前の「ん」の例（唇を閉じる）。ほかの音の前では口の形が変わります。",noteWo:"「を」は「お」と同じ音なので、「お」のカードを表示しています。",title:"かな発音表",lang:"言語",h1:"日本語の発音表",
  sub:"文字を押すと、標準的な日本語の発音を聞けます。ローマ字は綴りの目安なので、文字ではなく音声をまねてください。",
  progress:(n,t)=>`聞いた音 <b>${n}</b> / ${t}`,
  script:"文字",voice:"音声",speed:"速さ",show:"表示",slow:"ゆっくり",mid:"やや遅め",normal:"標準",romaji:"ローマ字",
@@ -473,7 +474,7 @@ ja:{illMouth:"口の形を見る",illTongue:"舌の位置を見る",close:"閉�
   j:"英語 jeans の j に近い音を、やわらかく出します。",v:"実際には「ブ」に近く発音されることが多く、軽い v でも通じます。"},
  mean:["切手","学校","切符","お母さん","お兄さん","空気","先生","お父さん","私は","あいさつ","学校へ","本を読みます","水を飲みます","新聞","林檎","bed","cup","soccer","coffee","cake","note(book)","super(market)","pão（ポルトガル語）","pen","wine","fork","party","check","file","violin"]},
 
-th:{illMouth:"ดูรูปปาก",illTongue:"ดูตำแหน่งลิ้น",close:"ปิด",tyMouth:"รูปปาก",tyTongue:"ภาพตัดภายในช่องปาก",noteN:"ตัวอย่าง ん ก่อน m, b, p: ริมฝีปากปิด ก่อนเสียงอื่นรูปปากจะเปลี่ยนไป",noteWo:"を ออกเสียงเหมือน お จึงใช้ภาพของ お",title:"ตารางออกเสียงคานะ",lang:"ภาษา",h1:"ตารางการออกเสียงภาษาญี่ปุ่น",
+th:{autoIll:"แสดงภาพอัตโนมัติ",illMouth:"ดูรูปปาก",illTongue:"ดูตำแหน่งลิ้น",close:"ปิด",tyMouth:"รูปปาก",tyTongue:"ภาพตัดภายในช่องปาก",noteN:"ตัวอย่าง ん ก่อน m, b, p: ริมฝีปากปิด ก่อนเสียงอื่นรูปปากจะเปลี่ยนไป",noteWo:"を ออกเสียงเหมือน お จึงใช้ภาพของ お",title:"ตารางออกเสียงคานะ",lang:"ภาษา",h1:"ตารางการออกเสียงภาษาญี่ปุ่น",
  sub:"แตะที่ตัวอักษรเพื่อฟังการออกเสียงภาษาญี่ปุ่นมาตรฐาน โรมาจิเป็นเพียงการสะกด ให้ฟังเสียงตัวอย่างแล้วออกเสียงตาม",
  progress:(n,t)=>`ฟังแล้ว <b>${n}</b> / ${t} เสียง`,
  script:"ตัวอักษร",voice:"เสียงอ่าน",speed:"ความเร็ว",show:"แสดง",slow:"ช้า",mid:"ปานกลาง",normal:"ปกติ",romaji:"โรมาจิ",
@@ -503,7 +504,7 @@ th:{illMouth:"ดูรูปปาก",illTongue:"ดูตำแหน่ง�
   j:"คล้าย “j” ในคำว่า “jeans” ออกเสียงเบา ๆ",v:"คนญี่ปุ่นมักออกเสียงใกล้กับ “b” ออกเสียง “v” เบา ๆ ก็เข้าใจได้"},
  mean:["แสตมป์","โรงเรียน","ตั๋ว","แม่","พี่ชาย","อากาศ","ครู","พ่อ","ส่วนฉัน…","สวัสดี","ไปโรงเรียน","อ่านหนังสือ","ดื่มน้ำ","หนังสือพิมพ์","แอปเปิล","เตียง","ถ้วย","ฟุตบอล","กาแฟ","เค้ก","สมุด","ซูเปอร์มาร์เก็ต","ขนมปัง","ปากกา","ไวน์","ส้อม","ปาร์ตี้","ตรวจสอบ","ไฟล์","ไวโอลิน"]},
 
-ms:{illMouth:"Bentuk mulut",illTongue:"Kedudukan lidah",close:"Tutup",tyMouth:"BENTUK MULUT",tyTongue:"KERATAN RENTAS MULUT",noteN:"Contoh ん sebelum m, b atau p: bibir tertutup. Sebelum bunyi lain, bentuk mulut berubah.",noteWo:"を disebut sama seperti お, jadi kad お digunakan.",title:"Jadual Sebutan Kana",lang:"Bahasa",h1:"Jadual sebutan bahasa Jepun",
+ms:{autoIll:"Papar kad automatik",illMouth:"Bentuk mulut",illTongue:"Kedudukan lidah",close:"Tutup",tyMouth:"BENTUK MULUT",tyTongue:"KERATAN RENTAS MULUT",noteN:"Contoh ん sebelum m, b atau p: bibir tertutup. Sebelum bunyi lain, bentuk mulut berubah.",noteWo:"を disebut sama seperti お, jadi kad お digunakan.",title:"Jadual Sebutan Kana",lang:"Bahasa",h1:"Jadual sebutan bahasa Jepun",
  sub:"Tekan mana-mana huruf untuk mendengar sebutan bahasa Jepun standard. Romaji hanya menunjukkan ejaan, jadi tiru suaranya, bukan hurufnya.",
  progress:(n,t)=>`Sudah didengar <b>${n}</b> / ${t} bunyi`,
  script:"Tulisan",voice:"Suara",speed:"Kelajuan",show:"Papar",slow:"Perlahan",mid:"Sederhana",normal:"Biasa",romaji:"Romaji",
@@ -533,7 +534,7 @@ ms:{illMouth:"Bentuk mulut",illTongue:"Kedudukan lidah",close:"Tutup",tyMouth:"B
   j:"Seperti “j” dalam “jalan”, disebut dengan lembut.",v:"Orang Jepun biasanya menyebutnya hampir seperti “b”; “v” yang ringan juga difahami."},
  mean:["setem","sekolah","tiket","ibu","abang","udara","guru","bapa","saya pula…","helo","ke sekolah","membaca buku","minum air","surat khabar","epal","katil","cawan","bola sepak","kopi","kek","buku nota","pasar raya","roti","pen","wain","garpu","parti","semak","fail","biola"]},
 
-id:{illMouth:"Bentuk mulut",illTongue:"Posisi lidah",close:"Tutup",tyMouth:"BENTUK MULUT",tyTongue:"PENAMPANG RONGGA MULUT",noteN:"Contoh ん sebelum m, b, atau p: bibir tertutup. Sebelum bunyi lain, bentuk mulut berubah.",noteWo:"を diucapkan sama seperti お, jadi kartu お yang dipakai.",title:"Tabel Pelafalan Kana",lang:"Bahasa",h1:"Tabel pelafalan bahasa Jepang",
+id:{autoIll:"Tampilkan kartu otomatis",illMouth:"Bentuk mulut",illTongue:"Posisi lidah",close:"Tutup",tyMouth:"BENTUK MULUT",tyTongue:"PENAMPANG RONGGA MULUT",noteN:"Contoh ん sebelum m, b, atau p: bibir tertutup. Sebelum bunyi lain, bentuk mulut berubah.",noteWo:"を diucapkan sama seperti お, jadi kartu お yang dipakai.",title:"Tabel Pelafalan Kana",lang:"Bahasa",h1:"Tabel pelafalan bahasa Jepang",
  sub:"Ketuk huruf mana saja untuk mendengar pelafalan bahasa Jepang standar. Romaji hanya menunjukkan ejaan, jadi tirukan suaranya, bukan hurufnya.",
  progress:(n,t)=>`Sudah didengar <b>${n}</b> / ${t} bunyi`,
  script:"Huruf",voice:"Suara",speed:"Kecepatan",show:"Tampilkan",slow:"Lambat",mid:"Sedang",normal:"Normal",romaji:"Romaji",
@@ -766,7 +767,7 @@ function renderGrid(g){
       const dk=K(k);
       b.setAttribute("aria-label",dk+" , "+ro);
       b.innerHTML=`<span class="kk" lang="ja">${dk}</span><span class="vi">${vi.replace("*",'<span class="star">*</span>')}</span><span class="ro">${ro}</span>`;
-      b.addEventListener("click",()=>{markOn(b);lastCell=cell;show(dk,vi,ro);speak(dk,idOf(cell));hear(k)});
+      b.addEventListener("click",()=>{markOn(b);lastCell=cell;show(dk,vi,ro);speak(dk,idOf(cell));hear(k);if(vis.ill&&illCur)openIll()});
       grid.appendChild(b);btns.push(b);
     });
     rp.addEventListener("click",()=>{
@@ -821,7 +822,7 @@ document.querySelectorAll("#speed button").forEach(b=>{
   b.addEventListener("click",()=>{rate=+b.dataset.rate;store.set("hira_rate",rate);
     document.querySelectorAll("#speed button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));speak(big.dataset.say||"あ",curId)});
 });
-const vis=store.get("hira_vis",{vi:true,ro:true});
+const vis=Object.assign({vi:true,ro:true,ill:true},store.get("hira_vis",{})); /* ill: open the illustration card automatically (default on) */
 function applyVis(){
   const hb=document.querySelector('#show [data-k="vi"]');if(hb)hb.hidden=LANG!=="vi";
   panel.classList.toggle("hide-vi",LANG!=="vi"||!vis.vi);panel.classList.toggle("hide-ro",!vis.ro);
