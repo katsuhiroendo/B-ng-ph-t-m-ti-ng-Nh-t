@@ -13,6 +13,7 @@ Công cụ học phát âm hiragana và katakana dành cho người Việt. Bấ
 - 3 tốc độ đọc: Chậm, Vừa, Bình thường
 - Bật/tắt gợi âm Việt và romaji
 - Đánh dấu các chữ đã nghe
+- Thẻ minh họa khẩu hình (nguyên âm, ん) và mặt cắt khoang miệng (phụ âm) cho âm cơ bản, âm đục và bán đục
 - Giao diện 6 ngôn ngữ: Tiếng Việt, English, 日本語, ไทย, Bahasa Melayu, Bahasa Indonesia
 
 ## Giọng đọc
