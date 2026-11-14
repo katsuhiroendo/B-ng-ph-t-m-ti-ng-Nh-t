@@ -105,13 +105,18 @@ select{background:var(--surface-2);border:1px solid var(--line);border-radius:8p
 .ill::backdrop{background:rgb(10 14 13 / .82)}
 .ill[open]{display:grid;place-items:center}
 .ill-box{width:min(1100px,100% - 32px);max-height:calc(100% - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));display:grid;gap:12px;background:var(--surface);border-radius:18px;padding:14px;box-shadow:0 20px 60px rgb(0 0 0 / .35);overflow:auto}
-.ill-img{display:block;width:100%;height:auto;max-height:70vh;object-fit:contain;border-radius:12px;background:#fff}
+.ill-img{display:block;width:100%;height:auto;max-height:56vh;object-fit:contain;border-radius:12px;background:#fff}
 .ill-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 .ill-cap{display:flex;gap:12px;align-items:baseline;min-width:0}
 .ill-cap .kk{font-family:var(--font-kana);font-size:1.8rem;line-height:1}
 .ill-cap .ty{font-size:.8rem;font-weight:600;color:var(--leaf);letter-spacing:.04em}
-.ill-note{margin:0;font-size:.88rem;color:var(--muted)}
+.ill-note{display:grid;gap:6px;font-size:.92rem;line-height:1.6;background:var(--surface-2);border-radius:12px;padding:12px 14px;max-width:80ch}
 .ill-note:empty{display:none}
+.ill-note p{margin:0}
+.ill-note b{color:var(--ink)}
+.ill-note .ill-type{font-size:1rem;color:var(--leaf)}
+.ill-note .ill-type b{color:var(--leaf);font-size:1.1rem;margin-right:.3em}
+.ill-note .ill-extra{color:var(--muted);font-size:.85rem}
 .ill-x{font:inherit;font-weight:600;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:8px 16px;cursor:pointer}
 
 /* Tabs */
@@ -246,7 +251,7 @@ select{background:var(--surface-2);border:1px solid var(--line);border-radius:8p
           <button class="ill-x" id="illx" type="button" data-i18n="close">Đóng</button>
         </div>
       </div>
-      <p class="ill-note" id="illnote"></p>
+      <div class="ill-note" id="illnote"></div>
     </div>
   </dialog>
 </div>
@@ -582,6 +587,214 @@ function tipKey(ro){
   if(ro.startsWith("z"))return"dz";if(ro.startsWith("j"))return"j";if(ro.startsWith("v"))return"v";return"";
 }
 
+/* ---------- Pronunciation notes shown under the illustration card ---------- */
+/* card id -> note key; i-column cards also get the palatalisation sentence */
+const NKEY={a:"a",i:"i",u:"u",e:"e",o:"o",wo:"o",n:"nn",
+ ka:"k",ku:"k",ke:"k",ko:"k",ki:"k",ga:"g",gu:"g",ge:"g",go:"g",gi:"g",
+ sa:"s",su:"s",se:"s",so:"s",shi:"shi",za:"z",zu:"z",ze:"z",zo:"z",du:"z",ji:"ji",di:"ji",
+ ta:"t",te:"t",to:"t",chi:"chi",tsu:"tsu",da:"d",de:"d",do:"d",
+ na:"n",nu:"n",ne:"n",no:"n",ni:"ni",ha:"h",he:"h",ho:"h",hi:"hi",fu:"fu",
+ ma:"m",mu:"m",me:"m",mo:"m",mi:"m",ya:"y",yu:"y",yo:"y",ra:"r",ru:"r",re:"r",ro:"r",ri:"r",wa:"w",
+ ba:"b",bu:"b",be:"b",bo:"b",bi:"b",pa:"p",pu:"p",pe:"p",po:"p",pi:"p"};
+const PAL=new Set(["ki","gi","mi","ri","bi","pi"]);
+const IPA={a:"a",i:"i",u:"ɯ",e:"e",o:"o",wo:"o",n:"m",ka:"k",ki:"kʲ",ku:"k",ke:"k",ko:"k",sa:"s",shi:"ɕ",su:"s",se:"s",so:"s",ta:"t",chi:"tɕ",tsu:"ts",te:"t",to:"t",
+ na:"n",ni:"ɲ",nu:"n",ne:"n",no:"n",ha:"h",hi:"ç",fu:"ɸ",he:"h",ho:"h",ma:"m",mi:"mʲ",mu:"m",me:"m",mo:"m",ya:"j",yu:"j",yo:"j",
+ ra:"ɾ",ri:"ɾʲ",ru:"ɾ",re:"ɾ",ro:"ɾ",wa:"w",ga:"g",gi:"gʲ",gu:"g",ge:"g",go:"g",za:"dz",ji:"dʑ",zu:"dz",ze:"dz",zo:"dz",
+ da:"d",di:"dʑ",du:"dz",de:"d",do:"d",ba:"b",bi:"bʲ",bu:"b",be:"b",bo:"b",pa:"p",pi:"pʲ",pu:"p",pe:"p",po:"p"};
+/* NOTES[lang][key] = [type, how, caution]; EXTRA[lang][id or key] adds a learner-specific caution */
+const NOTES={
+en:{lbl:["How to say it","Watch out"],pal:"Before い the middle of the tongue rises toward the hard palate, so the consonant is softened [ʲ].",
+ a:["Open vowel","Open the mouth wide and keep the tongue low and relaxed.","Keep it short and clear; do not add a glide at the end."],
+ i:["Close front vowel","Spread the lips a little and raise the front of the tongue close to the hard palate.","Do not round the lips."],
+ u:["Close back unrounded vowel","Keep the lips relaxed and almost flat, and raise the back of the tongue.","Do not push the lips forward as in English “oo”."],
+ e:["Mid front vowel","Open the mouth a little less than for あ; the tongue is at the middle front.","A pure vowel: do not turn it into “ei”."],
+ o:["Mid back rounded vowel","Round the lips slightly and raise the back of the tongue halfway.","A pure vowel: do not turn it into “ou”."],
+ nn:["Moraic nasal (one full beat)","It takes one beat by itself. Before m, b or p the lips close as in the picture; before n, t or d the tongue touches behind the upper teeth; before k or g it is made at the back of the mouth.","Give it its full length; do not drop it."],
+ k:["Voiceless velar plosive","Press the back of the tongue against the soft palate (red circle), stop the air, then release it.","The vocal cords do not vibrate. A light puff of air is fine."],
+ g:["Voiced velar plosive","Same tongue position as か, but the vocal cords vibrate.","Keep the voicing from the start so it does not sound like か."],
+ s:["Voiceless alveolar fricative","Bring the tongue tip close to the ridge behind the upper teeth and let the air hiss through the narrow gap.","The tongue does not touch; there is no stop."],
+ shi:["Voiceless alveolo-palatal fricative","Raise the front of the tongue toward the area just behind the gum ridge; the air passes through a wider, softer gap than for す.","Softer than English “sh”, and the lips are not rounded."],
+ z:["Voiced alveolar affricate (often [z] between vowels)","Touch the tongue tip behind the upper teeth, then release it into a buzzing “z” with the vocal cords vibrating.","Keep ざ・ず・ぜ・ぞ apart from じゃ・じゅ・じょ and from や・ゆ・よ. づ sounds the same as ず."],
+ ji:["Voiced alveolo-palatal affricate","Same place as し, with a short contact before the friction; the vocal cords vibrate. ぢ sounds the same as じ.","Do not let it turn into や or ざ."],
+ t:["Voiceless alveolar plosive","Press the tongue tip against the back of the upper teeth and gum ridge, stop the air, then release.","Only た・て・と use [t]; ち and つ are different sounds."],
+ chi:["Voiceless alveolo-palatal affricate","Press the front of the tongue just behind the gum ridge, then release it softly into a し-like sound.","A light release without a strong puff of air."],
+ tsu:["Voiceless alveolar affricate","Start with the tongue tip touching behind the upper teeth as for t, then release straight into す.","It is neither ちゅ nor す. Practice: touch the tongue tip behind the teeth, then say す."],
+ d:["Voiced alveolar plosive","Same tongue position as た, but the vocal cords vibrate.","Keep the voicing so that だ does not sound like た."],
+ n:["Alveolar nasal","Touch the tongue tip behind the upper teeth and let the air out through the nose.","Air goes through the nose, so it must not sound like ら."],
+ ni:["Palatal nasal","Press the middle of the tongue against the hard palate, a little further back than for な, and let the air out through the nose.","Do not say it with the tongue tip as in な."],
+ h:["Voiceless glottal fricative","The air passes freely; the narrowing is between the vocal folds (circle in the picture).","Only soft breath, not a harsh scraping sound."],
+ hi:["Voiceless palatal fricative","Raise the middle of the tongue close to the hard palate and let the air rub through the gap.","It is neither the h of は nor し."],
+ fu:["Voiceless bilabial fricative","Bring both lips close together and blow gently between them.","The upper teeth do not touch the lower lip; it is not English f."],
+ m:["Bilabial nasal","Close both lips and let the air out through the nose.","Keep the lips fully closed until the vowel starts."],
+ b:["Voiced bilabial plosive","Close both lips, let the vocal cords vibrate, then open the lips.","Keep the voicing so it does not sound like ぱ."],
+ p:["Voiceless bilabial plosive","Close both lips, stop the air, then release it.","No voicing; do not let it turn into ば."],
+ y:["Palatal approximant","Raise the middle of the tongue toward the hard palate without touching it, then glide into the vowel.","No friction or buzz; it must not sound like じゃ or ざ."],
+ r:["Alveolar flap","Tap the tongue tip once, lightly and quickly, on the ridge behind the upper teeth.","Not rolled, not English r, and not a long l."],
+ w:["Labial-velar approximant","Raise the back of the tongue and bring the lips a little closer, then glide into あ.","Do not round or push the lips forward strongly."]},
+
+vi:{lbl:["Cách phát âm","Chú ý"],pal:"Trước い, giữa lưỡi nâng lên về phía ngạc cứng nên phụ âm được mềm hóa [ʲ].",
+ a:["Nguyên âm mở","Mở miệng rộng, lưỡi hạ thấp và thả lỏng.","Đọc ngắn, rõ; không thêm âm lướt ở cuối."],
+ i:["Nguyên âm trước, khép","Hơi kéo môi sang hai bên, nâng phần trước lưỡi lên gần ngạc cứng.","Không tròn môi."],
+ u:["Nguyên âm sau, khép, không tròn môi","Môi thả lỏng gần như dẹt, nâng phần sau lưỡi lên. Gần với “ư” tiếng Việt.","Không chu môi như “u” tiếng Việt."],
+ e:["Nguyên âm trước, nửa mở","Mở miệng ít hơn khi đọc あ; lưỡi ở vị trí giữa, phía trước.","Đọc như “ê” giữ nguyên, không chuyển thành “ây”."],
+ o:["Nguyên âm sau, tròn môi","Hơi tròn môi, nâng phần sau lưỡi lên vừa phải. Gần với “ô”.","Giữ nguyên âm, không chuyển thành “âu”."],
+ nn:["Âm mũi đứng riêng (một nhịp)","Tự nó chiếm một nhịp. Trước m, b, p hai môi khép như hình; trước n, t, d đầu lưỡi chạm sau răng trên; trước k, g âm được tạo ở phía sau miệng.","Giữ đủ độ dài một nhịp, không bỏ âm."],
+ k:["Âm tắc vô thanh ngạc mềm","Áp phần sau lưỡi vào ngạc mềm (vòng đỏ), chặn hơi rồi bật ra.","Dây thanh không rung. Bật hơi nhẹ cũng được."],
+ g:["Âm tắc hữu thanh ngạc mềm","Vị trí lưỡi giống か nhưng dây thanh rung.","Giữ rung dây thanh ngay từ đầu để không nghe thành か."],
+ s:["Âm xát vô thanh ở lợi","Đưa đầu lưỡi lại gần lợi sau răng trên, cho hơi xì qua khe hẹp.","Lưỡi không chạm, không có lúc chặn hơi."],
+ shi:["Âm xát vô thanh ngạc–lợi","Nâng phần trước lưỡi về phía ngay sau lợi; khe hơi rộng và mềm hơn khi đọc す.","Mềm hơn “s” cong lưỡi; không tròn môi."],
+ z:["Âm tắc xát hữu thanh ở lợi (giữa từ thường là [z])","Chạm đầu lưỡi sau răng trên rồi nhả ra thành tiếng “dz” có rung dây thanh.","Phân biệt rõ ざ・ず・ぜ・ぞ với じゃ・じゅ・じょ và với や・ゆ・よ. づ đọc giống ず."],
+ ji:["Âm tắc xát hữu thanh ngạc–lợi","Cùng vị trí với し, chạm nhẹ một chút trước khi xát; dây thanh rung. ぢ đọc giống じ.","Không đọc thành や hay ざ."],
+ t:["Âm tắc vô thanh ở lợi","Áp đầu lưỡi vào sau răng trên và lợi, chặn hơi rồi bật ra.","Chỉ た・て・と dùng [t]; ち và つ là âm khác."],
+ chi:["Âm tắc xát vô thanh ngạc–lợi","Áp phần trước lưỡi ngay sau lợi rồi nhả nhẹ thành âm giống し.","Bật nhẹ, không bật hơi mạnh; khác “tr” cong lưỡi."],
+ tsu:["Âm tắc xát vô thanh ở lợi","Bắt đầu với đầu lưỡi chạm sau răng trên như âm t, rồi nhả ngay thành す.","Không phải “chư”, cũng không phải “xư”. Cách tập: đặt đầu lưỡi sau răng rồi nói す."],
+ d:["Âm tắc hữu thanh ở lợi","Vị trí lưỡi giống た nhưng dây thanh rung.","Giữ rung dây thanh để だ không nghe thành た."],
+ n:["Âm mũi ở lợi","Chạm đầu lưỡi sau răng trên, cho hơi ra đằng mũi.","Hơi phải ra đằng mũi để không nghe thành ら."],
+ ni:["Âm mũi ngạc cứng","Áp giữa lưỡi vào ngạc cứng, lùi vào trong hơn な một chút, cho hơi ra đằng mũi. Gần với “nh” trong “nhà”.","Không dùng đầu lưỡi như khi đọc な."],
+ h:["Âm xát vô thanh thanh hầu","Hơi đi ra tự do; chỗ hẹp nằm giữa hai dây thanh (vòng tròn trong hình).","Chỉ là hơi thở nhẹ, không phải âm khàn như “kh”."],
+ hi:["Âm xát vô thanh ngạc cứng","Nâng giữa lưỡi lại gần ngạc cứng, cho hơi cọ qua khe hẹp.","Không phải “h” của は, cũng không phải し."],
+ fu:["Âm xát vô thanh hai môi","Đưa hai môi lại gần nhau và thổi nhẹ giữa hai môi.","Răng trên không chạm môi dưới; khác “ph” tiếng Việt."],
+ m:["Âm mũi hai môi","Khép hai môi, cho hơi ra đằng mũi.","Giữ môi khép kín cho đến khi bắt đầu nguyên âm."],
+ b:["Âm tắc hữu thanh hai môi","Khép hai môi, cho dây thanh rung rồi mở môi.","Giữ rung dây thanh để không nghe thành ぱ."],
+ p:["Âm tắc vô thanh hai môi","Khép hai môi, chặn hơi rồi bật ra.","Không rung dây thanh; không đọc thành ば."],
+ y:["Bán nguyên âm ngạc cứng","Nâng giữa lưỡi về phía ngạc cứng nhưng không chạm, rồi lướt sang nguyên âm.","Không có tiếng xát hay rung như じゃ hoặc ざ."],
+ r:["Âm vỗ ở lợi","Bật đầu lưỡi một lần, thật nhẹ và nhanh, vào lợi sau răng trên.","Không rung lưỡi, không đọc như “r” miền Bắc (giống “d”), cũng không phải “l”."],
+ w:["Bán nguyên âm môi–ngạc mềm","Nâng phần sau lưỡi, hai môi hơi khép lại rồi lướt sang あ. Gần với “oa”.","Không chu môi mạnh."]},
+
+ja:{lbl:["発音のしかた","注意"],pal:"イ段では、舌の中ほどが硬口蓋に向かって盛り上がるため、子音が口蓋化します [ʲ]。",
+ a:["広母音（非円唇）","口を大きく開け、舌を低く楽な位置に置きます。","短くはっきり発音し、最後に別の音を付け足しません。"],
+ i:["前舌狭母音（非円唇）","唇を軽く横に引き、舌の前部を硬口蓋に近づけます。","唇を丸めません。"],
+ u:["後舌狭母音（非円唇）","唇の力を抜いてほぼ平らにし、舌の後部を上げます。","英語の oo のように唇を突き出しません。"],
+ e:["前舌半狭母音（非円唇）","「あ」より口の開きを少し小さくし、舌を前寄りの中ほどに置きます。","単母音です。「エイ」のように二重母音にしません。"],
+ o:["後舌半狭母音（円唇）","唇を軽く丸め、舌の後部を中ほどまで上げます。","単母音です。「オウ」のように二重母音にしません。"],
+ nn:["撥音（1拍の鼻音）","それだけで1拍の長さを持ちます。m・b・p の前では図のように唇を閉じ、n・t・d の前では舌先が上の歯の裏に付き、k・g の前では口の奥で作られます。","1拍分の長さを保ち、落とさないようにします。"],
+ k:["無声軟口蓋破裂音","後舌を軟口蓋（赤丸）に付けて息を止め、一気に離します。","声帯は振動しません。軽い気息はあっても構いません。"],
+ g:["有声軟口蓋破裂音","舌の位置は「か」と同じで、声帯が振動します。","最初から声帯を振動させ、「か」に聞こえないようにします。"],
+ s:["無声歯茎摩擦音","舌先を上の歯茎に近づけ、狭いすき間から息を出します。","舌は付けず、閉鎖を作りません。"],
+ shi:["無声歯茎硬口蓋摩擦音","前舌を歯茎のすぐ後ろに向けて上げ、「す」より広くやわらかいすき間から息を出します。","英語の sh より柔らかく、唇は丸めません。"],
+ z:["有声歯茎破擦音（語中では [z] になることが多い）","舌先を上の歯の裏に付けてから離し、声帯を振動させて「ズ」と摩擦させます。","「ざ・ず・ぜ・ぞ」を「じゃ・じゅ・じょ」や「や・ゆ・よ」と区別します。「づ」は「ず」と同じ音です。"],
+ ji:["有声歯茎硬口蓋破擦音","「し」と同じ位置で、摩擦の前に短い閉鎖を作ります。声帯は振動します。「ぢ」は「じ」と同じ音です。","「や」や「ざ」に変わらないようにします。"],
+ t:["無声歯茎破裂音","舌先を上の歯の裏から歯茎に付けて息を止め、離します。","[t] になるのは「た・て・と」だけです。「ち・つ」は別の音です。"],
+ chi:["無声歯茎硬口蓋破擦音","前舌を歯茎のすぐ後ろに付け、「し」のような音へ柔らかく離します。","強い気息を伴わず、軽く離します。"],
+ tsu:["無声歯茎破擦音","t と同じく舌先を上の歯の裏に付けてから、そのまま「す」へ離します。","「ちゅ」や「す」にしません。練習：舌先を歯の裏に付けてから「す」と言います。"],
+ d:["有声歯茎破裂音","舌の位置は「た」と同じで、声帯が振動します。","声帯の振動を保ち、「だ」が「た」に聞こえないようにします。"],
+ n:["歯茎鼻音","舌先を上の歯の裏に付け、息を鼻から出します。","息を鼻に通し、「ら」に聞こえないようにします。"],
+ ni:["硬口蓋鼻音","「な」より少し奥で、舌の中ほどを硬口蓋に付け、息を鼻から出します。","「な」のように舌先で作りません。"],
+ h:["無声声門摩擦音","口の中に狭めはなく、声門（図の丸）で息が摩擦します。","やわらかい息の音で、強くこすれる音にしません。"],
+ hi:["無声硬口蓋摩擦音","舌の中ほどを硬口蓋に近づけ、すき間に息を通します。","「は」の h とも「し」とも違う音です。"],
+ fu:["無声両唇摩擦音","上下の唇を近づけ、そのすき間から軽く息を出します。","上の歯を下唇に当てません（英語の f とは違います）。"],
+ m:["両唇鼻音","唇を閉じ、息を鼻から出します。","母音が始まるまで唇をしっかり閉じます。"],
+ b:["有声両唇破裂音","唇を閉じ、声帯を振動させてから唇を開きます。","声帯の振動を保ち、「ぱ」に聞こえないようにします。"],
+ p:["無声両唇破裂音","唇を閉じて息を止め、一気に離します。","声帯は振動させず、「ば」にしません。"],
+ y:["硬口蓋接近音","舌の中ほどを硬口蓋に近づけ（付けずに）、母音へ移ります。","摩擦や閉鎖を作らず、「じゃ」や「ざ」に聞こえないようにします。"],
+ r:["歯茎弾き音","舌先で上の歯茎を1回、軽く素早くはじきます。","巻き舌にせず、英語の r や長い l にもしません。"],
+ w:["両唇軟口蓋接近音","後舌を上げ、唇を少し近づけてから「あ」へ移ります。","唇を強く丸めたり突き出したりしません。"]},
+
+th:{lbl:["วิธีออกเสียง","ข้อควรระวัง"],pal:"ก่อน い ลิ้นส่วนกลางยกขึ้นไปทางเพดานแข็ง พยัญชนะจึงนุ่มลง [ʲ]",
+ a:["สระเปิด","อ้าปากกว้าง ลิ้นวางต่ำและผ่อนคลาย","ออกเสียงสั้นและชัด ไม่เติมเสียงเลื่อนท้ายคำ"],
+ i:["สระหน้า ปิด","ยิ้มริมฝีปากเล็กน้อย ยกลิ้นส่วนหน้าขึ้นใกล้เพดานแข็ง","ไม่ห่อปาก"],
+ u:["สระหลัง ปิด ไม่ห่อปาก","ริมฝีปากผ่อนคลายเกือบแบน ยกลิ้นส่วนหลังขึ้น ใกล้กับเสียง อึ","ไม่ห่อปากยื่นออกไปเหมือน อุ"],
+ e:["สระหน้า ระดับกลาง","อ้าปากน้อยกว่า あ เล็กน้อย ลิ้นอยู่ตรงกลางค่อนไปข้างหน้า ใกล้กับ เอะ","เป็นสระเดี่ยว ไม่เปลี่ยนเป็น เอย"],
+ o:["สระหลัง ระดับกลาง ห่อปาก","ห่อปากเล็กน้อย ยกลิ้นส่วนหลังขึ้นครึ่งหนึ่ง ใกล้กับ โอะ","เป็นสระเดี่ยว ไม่เปลี่ยนเป็น โอว"],
+ nn:["เสียงนาสิกที่นับเป็นหนึ่งจังหวะ","ยาวหนึ่งจังหวะด้วยตัวเอง ก่อน m, b, p ริมฝีปากปิดเหมือนในภาพ ก่อน n, t, d ปลายลิ้นแตะหลังฟันบน ก่อน k, g เสียงเกิดที่ด้านในปาก","ออกเสียงให้ครบหนึ่งจังหวะ อย่าตัดทิ้ง"],
+ k:["เสียงกักไม่ก้อง ที่เพดานอ่อน","ยกลิ้นส่วนหลังแตะเพดานอ่อน (วงกลมแดง) กักลมไว้แล้วปล่อยออก","เส้นเสียงไม่สั่น จะมีลมพ่นเบา ๆ ก็ได้ (ระหว่าง ก กับ ค)"],
+ g:["เสียงกักก้อง ที่เพดานอ่อน","ตำแหน่งลิ้นเหมือน か แต่เส้นเสียงสั่น","ภาษาไทยไม่มีเสียงนี้ อย่าออกเป็น ก หรือ ค ให้เส้นเสียงสั่นตั้งแต่ต้น"],
+ s:["เสียงเสียดแทรกไม่ก้อง ที่ปุ่มเหงือก","ยกปลายลิ้นเข้าใกล้ปุ่มเหงือกหลังฟันบน ให้ลมเสียดผ่านช่องแคบ","ลิ้นไม่แตะ ไม่มีการกักลม"],
+ shi:["เสียงเสียดแทรกไม่ก้อง ที่หลังปุ่มเหงือก–เพดานแข็ง","ยกลิ้นส่วนหน้าไปทางหลังปุ่มเหงือก ช่องลมกว้างและนุ่มกว่า す","นุ่มกว่า sh ในภาษาอังกฤษ และไม่ห่อปาก"],
+ z:["เสียงกักเสียดแทรกก้อง ที่ปุ่มเหงือก (กลางคำมักเป็น [z])","แตะปลายลิ้นหลังฟันบนแล้วปล่อยเป็นเสียง ซ ที่เส้นเสียงสั่น","ภาษาไทยไม่มีเสียงนี้ อย่าออกเป็น ซ หรือ จ แยก ざ・ず・ぜ・ぞ ให้ต่างจาก じゃ・じゅ・じょ และ や・ゆ・よ づ ออกเสียงเหมือน ず"],
+ ji:["เสียงกักเสียดแทรกก้อง ที่หลังปุ่มเหงือก–เพดานแข็ง","ตำแหน่งเดียวกับ し แตะสั้น ๆ ก่อนเสียดแทรก เส้นเสียงสั่น ぢ ออกเสียงเหมือน じ","อย่าออกเป็น จ หรือ ช และอย่าเปลี่ยนเป็น や หรือ ざ"],
+ t:["เสียงกักไม่ก้อง ที่ปุ่มเหงือก","กดปลายลิ้นที่หลังฟันบนและปุ่มเหงือก กักลมแล้วปล่อย","มีเพียง た・て・と ที่ใช้ [t] ส่วน ち และ つ เป็นเสียงอื่น"],
+ chi:["เสียงกักเสียดแทรกไม่ก้อง ที่หลังปุ่มเหงือก–เพดานแข็ง","แตะลิ้นส่วนหน้าที่หลังปุ่มเหงือก แล้วปล่อยเบา ๆ เป็นเสียงคล้าย し ใกล้กับ จิ","ปล่อยเบา ๆ ไม่พ่นลมแรงแบบ ชิ"],
+ tsu:["เสียงกักเสียดแทรกไม่ก้อง ที่ปุ่มเหงือก","เริ่มด้วยปลายลิ้นแตะหลังฟันบนเหมือน t แล้วปล่อยเป็น す ทันที","ภาษาไทยไม่มีเสียงนี้ ไม่ใช่ ซึ หรือ จึ วิธีฝึก: แตะปลายลิ้นหลังฟันแล้วพูด す"],
+ d:["เสียงกักก้อง ที่ปุ่มเหงือก","ตำแหน่งลิ้นเหมือน た แต่เส้นเสียงสั่น ใกล้กับ ด","ให้เส้นเสียงสั่นเพื่อไม่ให้ だ ฟังเป็น た"],
+ n:["เสียงนาสิก ที่ปุ่มเหงือก","แตะปลายลิ้นหลังฟันบน ให้ลมออกทางจมูก","ลมต้องออกทางจมูก ไม่ให้ฟังเป็น ら"],
+ ni:["เสียงนาสิก ที่เพดานแข็ง","แตะลิ้นส่วนกลางกับเพดานแข็ง ลึกกว่า な เล็กน้อย ให้ลมออกทางจมูก","ไม่ใช้ปลายลิ้นเหมือน な"],
+ h:["เสียงเสียดแทรกไม่ก้อง ที่เส้นเสียง","ลมผ่านออกได้สะดวก จุดที่แคบอยู่ที่เส้นเสียง (วงกลมในภาพ)","เป็นเพียงลมหายใจเบา ๆ ไม่ใช่เสียงขูด"],
+ hi:["เสียงเสียดแทรกไม่ก้อง ที่เพดานแข็ง","ยกลิ้นส่วนกลางเข้าใกล้เพดานแข็ง ให้ลมเสียดผ่านช่องแคบ","ไม่ใช่ h ของ は และไม่ใช่ し"],
+ fu:["เสียงเสียดแทรกไม่ก้อง ที่ริมฝีปากทั้งสอง","เม้มริมฝีปากเข้าหากันเล็กน้อย แล้วเป่าลมเบา ๆ ระหว่างริมฝีปาก","ฟันบนไม่แตะริมฝีปากล่าง ไม่ใช่ ฟ"],
+ m:["เสียงนาสิก ที่ริมฝีปากทั้งสอง","ปิดริมฝีปาก ให้ลมออกทางจมูก","ปิดริมฝีปากสนิทจนกว่าจะเริ่มสระ"],
+ b:["เสียงกักก้อง ที่ริมฝีปากทั้งสอง","ปิดริมฝีปาก ให้เส้นเสียงสั่น แล้วเปิดปาก","ให้เส้นเสียงสั่นเพื่อไม่ให้ฟังเป็น ぱ"],
+ p:["เสียงกักไม่ก้อง ที่ริมฝีปากทั้งสอง","ปิดริมฝีปาก กักลมแล้วปล่อย (ระหว่าง ป กับ พ)","เส้นเสียงไม่สั่น อย่าเปลี่ยนเป็น ば"],
+ y:["เสียงเปิด (กึ่งสระ) ที่เพดานแข็ง","ยกลิ้นส่วนกลางเข้าใกล้เพดานแข็งโดยไม่แตะ แล้วเลื่อนไปที่สระ","ไม่มีเสียงเสียดหรือการแตะ ไม่ให้ฟังเป็น じゃ หรือ ざ"],
+ r:["เสียงลิ้นกระทบ ที่ปุ่มเหงือก","ตวัดปลายลิ้นแตะปุ่มเหงือกหลังฟันบนครั้งเดียว เบาและเร็ว","ไม่รัวลิ้น ไม่ใช่ r ภาษาอังกฤษ และอย่าเปลี่ยนเป็น ล"],
+ w:["เสียงเปิด (กึ่งสระ) ที่ริมฝีปาก–เพดานอ่อน","ยกลิ้นส่วนหลัง ริมฝีปากเข้าใกล้กันเล็กน้อย แล้วเลื่อนไปที่ あ","ไม่ห่อหรือยื่นริมฝีปากมาก"]},
+
+ms:{lbl:["Cara menyebut","Perhatian"],pal:"Sebelum い, bahagian tengah lidah naik ke arah lelangit keras, jadi konsonan menjadi lembut [ʲ].",
+ a:["Vokal terbuka","Buka mulut luas dan biarkan lidah rendah dan santai.","Sebut pendek dan jelas; jangan tambah bunyi luncuran di hujung."],
+ i:["Vokal depan sempit","Tarik bibir sedikit ke tepi dan naikkan bahagian depan lidah dekat lelangit keras.","Jangan bundarkan bibir."],
+ u:["Vokal belakang sempit tanpa bundaran","Bibir santai hampir rata, naikkan bahagian belakang lidah.","Jangan muncungkan bibir seperti “u” Melayu."],
+ e:["Vokal depan separuh sempit","Buka mulut kurang sedikit daripada あ; lidah di tengah depan.","Vokal tunggal: jangan jadikan “ei”."],
+ o:["Vokal belakang separuh sempit, bundar","Bundarkan bibir sedikit dan naikkan bahagian belakang lidah separuh.","Vokal tunggal: jangan jadikan “ou”."],
+ nn:["Bunyi sengau satu ketukan","Ia mengambil satu ketukan sendiri. Sebelum m, b, p bibir tertutup seperti dalam gambar; sebelum n, t, d hujung lidah menyentuh belakang gigi atas; sebelum k, g bunyi dibuat di bahagian belakang mulut.","Sebut sepanjang satu ketukan; jangan digugurkan."],
+ k:["Letupan velar tak bersuara","Tekan bahagian belakang lidah pada lelangit lembut (bulatan merah), tahan udara, kemudian lepaskan.","Pita suara tidak bergetar. Hembusan udara yang ringan tidak mengapa."],
+ g:["Letupan velar bersuara","Kedudukan lidah sama seperti か, tetapi pita suara bergetar.","Getarkan pita suara dari awal supaya tidak kedengaran seperti か."],
+ s:["Geseran alveolar tak bersuara","Dekatkan hujung lidah pada gusi di belakang gigi atas dan biarkan udara berdesir melalui celah sempit.","Lidah tidak menyentuh; tiada hentian."],
+ shi:["Geseran alveolo-palatal tak bersuara","Naikkan bahagian depan lidah ke arah belakang gusi; celah udara lebih luas dan lembut daripada す. Hampir seperti “sy”.","Lebih lembut daripada “sy”, dan bibir tidak dibundarkan."],
+ z:["Letusan-geseran alveolar bersuara (di tengah perkataan sering [z])","Sentuh hujung lidah di belakang gigi atas, kemudian lepaskan menjadi bunyi “z” dengan pita suara bergetar.","Bezakan ざ・ず・ぜ・ぞ daripada じゃ・じゅ・じょ dan や・ゆ・よ. づ disebut sama seperti ず."],
+ ji:["Letusan-geseran alveolo-palatal bersuara","Kedudukan sama seperti し, dengan sentuhan pendek sebelum geseran; pita suara bergetar. Hampir seperti “j” yang lembut. ぢ disebut sama seperti じ.","Jangan biarkan ia berubah menjadi や atau ざ."],
+ t:["Letupan alveolar tak bersuara","Tekan hujung lidah pada belakang gigi atas dan gusi, tahan udara, kemudian lepaskan.","Hanya た・て・と menggunakan [t]; ち dan つ ialah bunyi lain."],
+ chi:["Letusan-geseran alveolo-palatal tak bersuara","Tekan bahagian depan lidah di belakang gusi, kemudian lepaskan perlahan menjadi bunyi seperti し. Hampir seperti “ci”.","Lepaskan dengan ringan tanpa hembusan udara yang kuat."],
+ tsu:["Letusan-geseran alveolar tak bersuara","Mula dengan hujung lidah menyentuh belakang gigi atas seperti t, kemudian terus lepaskan menjadi す.","Bukan “cu” dan bukan “su”. Latihan: sentuh hujung lidah di belakang gigi, kemudian sebut す."],
+ d:["Letupan alveolar bersuara","Kedudukan lidah sama seperti た, tetapi pita suara bergetar.","Kekalkan getaran supaya だ tidak kedengaran seperti た."],
+ n:["Sengau alveolar","Sentuh hujung lidah di belakang gigi atas dan biarkan udara keluar melalui hidung.","Udara keluar melalui hidung, jadi jangan sampai kedengaran seperti ら."],
+ ni:["Sengau palatal","Tekan bahagian tengah lidah pada lelangit keras, sedikit ke dalam berbanding な, dan biarkan udara keluar melalui hidung. Hampir seperti “nya”.","Jangan gunakan hujung lidah seperti な."],
+ h:["Geseran glotis tak bersuara","Udara keluar dengan bebas; penyempitan berlaku di antara pita suara (bulatan dalam gambar).","Hanya hembusan nafas yang lembut, bukan bunyi kasar."],
+ hi:["Geseran palatal tak bersuara","Dekatkan bahagian tengah lidah pada lelangit keras dan biarkan udara bergeser melalui celah.","Bukan “h” dalam は dan bukan し."],
+ fu:["Geseran dua bibir tak bersuara","Rapatkan kedua-dua bibir sedikit dan hembus perlahan di antaranya.","Gigi atas tidak menyentuh bibir bawah; ini bukan “f”."],
+ m:["Sengau dua bibir","Tutup kedua-dua bibir dan biarkan udara keluar melalui hidung.","Tutup bibir rapat sehingga vokal bermula."],
+ b:["Letupan dua bibir bersuara","Tutup kedua-dua bibir, getarkan pita suara, kemudian buka bibir.","Kekalkan getaran supaya tidak kedengaran seperti ぱ."],
+ p:["Letupan dua bibir tak bersuara","Tutup kedua-dua bibir, tahan udara, kemudian lepaskan.","Tiada getaran; jangan jadikan ば."],
+ y:["Separuh vokal palatal","Naikkan bahagian tengah lidah ke arah lelangit keras tanpa menyentuh, kemudian luncur ke vokal.","Tiada geseran; jangan sampai kedengaran seperti じゃ atau ざ."],
+ r:["Bunyi kepak alveolar","Ketuk hujung lidah sekali, ringan dan cepat, pada gusi di belakang gigi atas.","Jangan getarkan lidah seperti “r” Melayu, dan bukan “l” yang panjang."],
+ w:["Separuh vokal bibir-velar","Naikkan bahagian belakang lidah dan rapatkan bibir sedikit, kemudian luncur ke あ.","Jangan bundarkan atau muncungkan bibir dengan kuat."]},
+
+id:{lbl:["Cara mengucapkan","Perhatian"],pal:"Sebelum い, bagian tengah lidah naik ke arah langit-langit keras, sehingga konsonan menjadi lunak [ʲ].",
+ a:["Vokal terbuka","Buka mulut lebar dan biarkan lidah rendah dan rileks.","Ucapkan pendek dan jelas; jangan tambahkan bunyi luncuran di akhir."],
+ i:["Vokal depan tertutup","Tarik bibir sedikit ke samping dan naikkan bagian depan lidah mendekati langit-langit keras.","Jangan bulatkan bibir."],
+ u:["Vokal belakang tertutup tanpa pembulatan","Bibir rileks hampir datar, naikkan bagian belakang lidah.","Jangan memonyongkan bibir seperti “u” bahasa Indonesia."],
+ e:["Vokal depan setengah tertutup","Buka mulut sedikit lebih kecil daripada あ; lidah di tengah depan.","Vokal tunggal: jangan menjadi “ei”."],
+ o:["Vokal belakang setengah tertutup, bulat","Bulatkan bibir sedikit dan naikkan bagian belakang lidah setengah.","Vokal tunggal: jangan menjadi “ou”."],
+ nn:["Bunyi nasal satu ketukan","Bunyi ini mengambil satu ketukan sendiri. Sebelum m, b, p bibir tertutup seperti pada gambar; sebelum n, t, d ujung lidah menyentuh belakang gigi atas; sebelum k, g bunyi dibuat di bagian belakang mulut.","Ucapkan selama satu ketukan penuh; jangan dihilangkan."],
+ k:["Bunyi letup velar tak bersuara","Tempelkan bagian belakang lidah ke langit-langit lunak (lingkaran merah), tahan udara, lalu lepaskan.","Pita suara tidak bergetar. Embusan napas yang ringan tidak apa-apa."],
+ g:["Bunyi letup velar bersuara","Posisi lidah sama dengan か, tetapi pita suara bergetar.","Getarkan pita suara sejak awal agar tidak terdengar seperti か."],
+ s:["Bunyi frikatif alveolar tak bersuara","Dekatkan ujung lidah ke gusi di belakang gigi atas dan biarkan udara berdesis melalui celah sempit.","Lidah tidak menyentuh; tidak ada hambatan."],
+ shi:["Bunyi frikatif alveolo-palatal tak bersuara","Naikkan bagian depan lidah ke arah belakang gusi; celah udara lebih lebar dan lembut daripada す. Mirip “sy”.","Lebih lembut daripada “sy”, dan bibir tidak dibulatkan."],
+ z:["Bunyi afrikat alveolar bersuara (di tengah kata sering [z])","Sentuhkan ujung lidah di belakang gigi atas, lalu lepaskan menjadi bunyi “z” dengan pita suara bergetar.","Bedakan ざ・ず・ぜ・ぞ dari じゃ・じゅ・じょ dan や・ゆ・よ. づ diucapkan sama seperti ず."],
+ ji:["Bunyi afrikat alveolo-palatal bersuara","Posisi sama dengan し, dengan sentuhan singkat sebelum gesekan; pita suara bergetar. Mirip “j” yang lembut. ぢ diucapkan sama seperti じ.","Jangan sampai berubah menjadi や atau ざ."],
+ t:["Bunyi letup alveolar tak bersuara","Tempelkan ujung lidah ke belakang gigi atas dan gusi, tahan udara, lalu lepaskan.","Hanya た・て・と yang memakai [t]; ち dan つ adalah bunyi lain."],
+ chi:["Bunyi afrikat alveolo-palatal tak bersuara","Tempelkan bagian depan lidah di belakang gusi, lalu lepaskan perlahan menjadi bunyi seperti し. Mirip “ci”.","Lepaskan dengan ringan tanpa embusan napas yang kuat."],
+ tsu:["Bunyi afrikat alveolar tak bersuara","Mulai dengan ujung lidah menyentuh belakang gigi atas seperti t, lalu langsung lepaskan menjadi す.","Bukan “cu” dan bukan “su”. Latihan: sentuhkan ujung lidah di belakang gigi, lalu ucapkan す."],
+ d:["Bunyi letup alveolar bersuara","Posisi lidah sama dengan た, tetapi pita suara bergetar.","Pertahankan getaran agar だ tidak terdengar seperti た."],
+ n:["Bunyi nasal alveolar","Sentuhkan ujung lidah di belakang gigi atas dan biarkan udara keluar lewat hidung.","Udara keluar lewat hidung, jadi jangan sampai terdengar seperti ら."],
+ ni:["Bunyi nasal palatal","Tempelkan bagian tengah lidah ke langit-langit keras, sedikit lebih ke dalam daripada な, dan biarkan udara keluar lewat hidung. Mirip “nya”.","Jangan memakai ujung lidah seperti な."],
+ h:["Bunyi frikatif glotal tak bersuara","Udara keluar dengan bebas; penyempitan terjadi di antara pita suara (lingkaran pada gambar).","Hanya embusan napas yang lembut, bukan bunyi kasar."],
+ hi:["Bunyi frikatif palatal tak bersuara","Dekatkan bagian tengah lidah ke langit-langit keras dan biarkan udara bergesek melalui celah.","Bukan “h” pada は dan bukan し."],
+ fu:["Bunyi frikatif bilabial tak bersuara","Dekatkan kedua bibir dan embuskan napas pelan di antaranya.","Gigi atas tidak menyentuh bibir bawah; ini bukan “f”."],
+ m:["Bunyi nasal bilabial","Tutup kedua bibir dan biarkan udara keluar lewat hidung.","Tutup bibir rapat sampai vokal dimulai."],
+ b:["Bunyi letup bilabial bersuara","Tutup kedua bibir, getarkan pita suara, lalu buka bibir.","Pertahankan getaran agar tidak terdengar seperti ぱ."],
+ p:["Bunyi letup bilabial tak bersuara","Tutup kedua bibir, tahan udara, lalu lepaskan.","Tanpa getaran; jangan berubah menjadi ば."],
+ y:["Semivokal palatal","Naikkan bagian tengah lidah ke arah langit-langit keras tanpa menyentuh, lalu meluncur ke vokal.","Tanpa gesekan; jangan sampai terdengar seperti じゃ atau ざ."],
+ r:["Bunyi sentuh (flap) alveolar","Sentuhkan ujung lidah sekali, ringan dan cepat, ke gusi di belakang gigi atas.","Jangan digetarkan seperti “r” bahasa Indonesia, dan bukan “l” yang panjang."],
+ w:["Semivokal bilabial-velar","Naikkan bagian belakang lidah dan dekatkan bibir sedikit, lalu meluncur ke あ.","Jangan membulatkan atau memonyongkan bibir dengan kuat."]}
+};
+/* learner-specific cautions, appended after the general one */
+const EXTRA={
+vi:{su:"Trong “ます”, す đọc nhẹ nhưng vẫn phải có; đừng đọc thành “mất”.",
+ y:"Người miền Bắc dễ đọc や・ゆ・よ thành ざ・ず・ぞ; hãy để lưỡi không chạm.",
+ z:"Người miền Nam dễ đọc ざ・ず・ぞ thành や・ゆ・よ; hãy chạm đầu lưỡi trước khi nhả.",
+ n:"Người miền Bắc dễ lẫn n và l; khi đọc な行 hãy để hơi ra đằng mũi.",
+ r:"Người miền Bắc dễ lẫn ら行 với な行 (l và n): ら là bật lưỡi một lần, hơi không ra đằng mũi."},
+th:{}, ms:{}, id:{}, en:{}, ja:{}
+};
+function noteFor(id){
+  const L=NOTES[LANG]||NOTES.en,key=NKEY[id];if(!key||!L[key])return "";
+  const [ty,how,warn]=L[key];const ex=(EXTRA[LANG]||{})[id]||(EXTRA[LANG]||{})[key]||"";
+  const pal=PAL.has(id)?" "+L.pal:"";
+  return `<p class="ill-type"><b>[${IPA[id]||""}]</b> ${ty}</p>`+
+    `<p><b>${L.lbl[0]}:</b> ${how}${pal}</p>`+
+    `<p><b>${L.lbl[1]}:</b> ${warn}${ex?" "+ex:""}</p>`;
+}
+
 LANG=pickLang();
 let heard=new Set(store.get("hira_heard",[]));
 const TOTAL=[BASIC,DAKU,YOON,GAIRAI].reduce((n,g)=>n+g.rows.flat().filter(Boolean).length,0);
@@ -713,9 +926,10 @@ function openIll(){
   img.src="illus/"+file+".webp";img.alt=T(ILLUS[illCur]==="mouth"?"tyMouth":"tyTongue")+": "+big.textContent;
   document.getElementById("illkk").textContent=big.textContent;
   document.getElementById("illty").textContent=T(ILLUS[illCur]==="mouth"?"tyMouth":"tyTongue");
-  document.getElementById("illnote").textContent=illCur==="n"?T("noteN"):illCur==="wo"?T("noteWo"):"";
+  fillIllNote();
   try{dlg.showModal()}catch(e){dlg.setAttribute("open","")}
 }
+function fillIllNote(){if(!illCur)return;document.getElementById("illnote").innerHTML=noteFor(illCur)+(illCur==="wo"?'<p class="ill-extra">'+T("noteWo")+'</p>':"")}
 function closeIll(){const d=document.getElementById("ill");try{d.close()}catch(e){d.removeAttribute("open")}}
 document.getElementById("illbtn").addEventListener("click",openIll);
 document.getElementById("illx").addEventListener("click",closeIll);
@@ -848,6 +1062,7 @@ function applyLang(){
   document.querySelectorAll(".tab").forEach(t=>t.querySelector(".tl").textContent=T("tabs")[t.dataset.id]);
   document.getElementById("lang").value=LANG;
   loadVoices();updateProgress();applyScript();updateIllBtn();
+  if(document.getElementById("ill").open)fillIllNote();
 }
 const langSel=document.getElementById("lang");
 langSel.innerHTML=LANGS.map(([c,n])=>`<option value="${c}" lang="${c}">${n}</option>`).join("");
