@@ -109,6 +109,14 @@ select{background:var(--surface-2);border:1px solid var(--line);border-radius:8p
 .ill-imgs figure{margin:0;display:grid;gap:4px;min-width:0}
 .ill-img{display:block;width:100%;height:auto;max-height:40vh;object-fit:contain;border-radius:10px;background:#fff;border:1px solid var(--line)}
 .ill-imgs figcaption{font-size:.8rem;font-weight:600;color:var(--leaf);text-align:center}
+.ill-anim{grid-template-columns:minmax(0,1fr);justify-items:center}
+.anim-fig{width:min(100%,760px)}
+.anim-fig .ill-img{max-height:46vh}
+.anim-cap{font-size:.95rem!important}
+.anim-ctl{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
+.anim-btn{font:inherit;font-weight:600;border:1px solid var(--leaf);background:var(--leaf-soft);color:var(--leaf);border-radius:999px;padding:7px 14px;cursor:pointer;min-width:7.5em}
+.anim-ctl .seg button{font-size:.85rem}
+.anim-note{margin:0;font-size:.82rem;color:var(--muted);text-align:center;max-width:60ch}
 .ill-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 .ill-cap{display:flex;gap:12px;align-items:baseline;min-width:0}
 .ill-cap .kk{font-family:var(--font-kana);font-size:1.8rem;line-height:1}
@@ -398,7 +406,7 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.
 const LANGS=[["vi","Tiếng Việt"],["en","English"],["ja","日本語"],["th","ไทย"],["ms","Bahasa Melayu"],["id","Bahasa Indonesia"]];
 const WIDS=["w-kitte","w-gakkou","w-kippu","w-okaasan","w-oniisan","w-kuuki","w-sensei","w-otousan","w-watashiwa","w-konnichiwa","w-gakkoue","w-hon-o-yomimasu","w-mizu-o-nomimasu","w-shinbun","w-ringo","w-beddo","w-kappu","w-sakkaa","w-koohii","w-keeki","w-nooto","w-suupaa","w-pan","w-pen","w-wain","w-fooku","w-paatii","w-chekku","w-fairu","w-vaiorin"];
 const I18N={
-vi:{labCons:"Phụ âm",labVow:"Nguyên âm",autoIll:"Tự hiện thẻ minh họa",illMouth:"Xem khẩu hình",illTongue:"Xem vị trí lưỡi",close:"Đóng",tyMouth:"KHẨU HÌNH MIỆNG",tyTongue:"MẶT CẮT KHOANG MIỆNG",noteN:"Ví dụ khi ん đứng trước m, b, p: hai môi khép lại. Trước các âm khác, khẩu hình sẽ thay đổi.",noteWo:"を đọc giống お, nên dùng chung hình của お.",title:"Bảng Hiragana Phát Âm",lang:"Ngôn ngữ",h1:"Bảng phát âm tiếng Nhật",
+vi:{animPlay:"Phát",animPause:"Dừng",noteAffr:"Thực tế âm này gồm 3 bước: chặn hơi → xát → nguyên âm. Ở đây chỉ hiển thị 2 bước.",labCons:"Phụ âm",labVow:"Nguyên âm",autoIll:"Tự hiện thẻ minh họa",illMouth:"Xem khẩu hình",illTongue:"Xem vị trí lưỡi",close:"Đóng",tyMouth:"KHẨU HÌNH MIỆNG",tyTongue:"MẶT CẮT KHOANG MIỆNG",noteN:"Ví dụ khi ん đứng trước m, b, p: hai môi khép lại. Trước các âm khác, khẩu hình sẽ thay đổi.",noteWo:"を đọc giống お, nên dùng chung hình của お.",title:"Bảng Hiragana Phát Âm",lang:"Ngôn ngữ",h1:"Bảng phát âm tiếng Nhật",
  sub:"Bấm vào từng chữ để nghe giọng Nhật chuẩn. Phần chữ Việt chỉ là gợi âm gần đúng, đọc không thêm thanh điệu.",
  progress:(n,t)=>`Đã nghe <b>${n}</b> / ${t} chữ`,
  script:"Chữ",voice:"Giọng đọc",speed:"Tốc độ",show:"Hiện",slow:"Chậm",mid:"Vừa",normal:"Bình thường",hint:"Gợi âm Việt",romaji:"Romaji",
@@ -423,7 +431,7 @@ vi:{labCons:"Phụ âm",labVow:"Nguyên âm",autoIll:"Tự hiện thẻ minh h�
   vu:["Âm v","Dùng cho từ nước ngoài có âm v; người Nhật thường đọc gần như “b”."]},
  mean:["con tem","trường học","vé tàu","mẹ","anh trai","không khí","giáo viên","bố","tôi thì…","xin chào","đến trường","đọc sách","uống nước","báo","quả táo","giường","cái cốc","bóng đá","cà phê","bánh ngọt","quyển vở","siêu thị","bánh mì","cây bút","rượu vang","cái nĩa","bữa tiệc","kiểm tra","tập tin","đàn violin"]},
 
-en:{labCons:"Consonant",labVow:"Vowel",autoIll:"Auto-show card",illMouth:"Mouth shape",illTongue:"Tongue position",close:"Close",tyMouth:"MOUTH SHAPE",tyTongue:"INSIDE THE MOUTH",noteN:"Example of ん before m, b or p: the lips close. Before other sounds the mouth shape changes.",noteWo:"を sounds the same as お, so it uses the お card.",title:"Japanese Kana Pronunciation",lang:"Language",h1:"Japanese pronunciation chart",
+en:{animPlay:"Play",animPause:"Pause",noteAffr:"This sound really has three stages: closure → friction → vowel. Only two are shown here.",labCons:"Consonant",labVow:"Vowel",autoIll:"Auto-show card",illMouth:"Mouth shape",illTongue:"Tongue position",close:"Close",tyMouth:"MOUTH SHAPE",tyTongue:"INSIDE THE MOUTH",noteN:"Example of ん before m, b or p: the lips close. Before other sounds the mouth shape changes.",noteWo:"を sounds the same as お, so it uses the お card.",title:"Japanese Kana Pronunciation",lang:"Language",h1:"Japanese pronunciation chart",
  sub:"Tap any letter to hear standard Japanese pronunciation. Romaji shows the spelling only, so copy the voice rather than the letters.",
  progress:(n,t)=>`Heard <b>${n}</b> / ${t} sounds`,
  script:"Script",voice:"Voice",speed:"Speed",show:"Show",slow:"Slow",mid:"Medium",normal:"Normal",romaji:"Romaji",
@@ -453,7 +461,7 @@ en:{labCons:"Consonant",labVow:"Vowel",autoIll:"Auto-show card",illMouth:"Mouth 
   j:"Like the “j” in “jeans”, said softly.",v:"Japanese speakers usually say it close to “b”; a light “v” is also understood."},
  mean:["stamp","school","ticket","mother","older brother","air","teacher","father","as for me…","hello","to school","read a book","drink water","newspaper","apple","bed","cup","soccer","coffee","cake","notebook","supermarket","bread","pen","wine","fork","party","check","file","violin"]},
 
-ja:{labCons:"子音",labVow:"母音",autoIll:"カードを自動表示",illMouth:"口の形を見る",illTongue:"舌の位置を見る",close:"閉じる",tyMouth:"口の形",tyTongue:"口の中の断面",noteN:"m・b・p の前の「ん」の例（唇を閉じる）。ほかの音の前では口の形が変わります。",noteWo:"「を」は「お」と同じ音なので、「お」のカードを表示しています。",title:"かな発音表",lang:"言語",h1:"日本語の発音表",
+ja:{animPlay:"再生",animPause:"停止",noteAffr:"破擦音は実際には「閉鎖→摩擦→母音」の3段階です。ここでは2段階で示しています。",labCons:"子音",labVow:"母音",autoIll:"カードを自動表示",illMouth:"口の形を見る",illTongue:"舌の位置を見る",close:"閉じる",tyMouth:"口の形",tyTongue:"口の中の断面",noteN:"m・b・p の前の「ん」の例（唇を閉じる）。ほかの音の前では口の形が変わります。",noteWo:"「を」は「お」と同じ音なので、「お」のカードを表示しています。",title:"かな発音表",lang:"言語",h1:"日本語の発音表",
  sub:"文字を押すと、標準的な日本語の発音を聞けます。ローマ字は綴りの目安なので、文字ではなく音声をまねてください。",
  progress:(n,t)=>`聞いた音 <b>${n}</b> / ${t}`,
  script:"文字",voice:"音声",speed:"速さ",show:"表示",slow:"ゆっくり",mid:"やや遅め",normal:"標準",romaji:"ローマ字",
@@ -483,7 +491,7 @@ ja:{labCons:"子音",labVow:"母音",autoIll:"カードを自動表示",illMouth
   j:"「ち」と同じ舌の構えで、声帯を振動させてやわらかく出します（ち＋声＝じ）。",v:"実際には「ブ」に近く発音されることが多く、軽い v でも通じます。"},
  mean:["切手","学校","切符","お母さん","お兄さん","空気","先生","お父さん","私は","あいさつ","学校へ","本を読みます","水を飲みます","新聞","林檎","bed","cup","soccer","coffee","cake","note(book)","super(market)","pão（ポルトガル語）","pen","wine","fork","party","check","file","violin"]},
 
-th:{labCons:"พยัญชนะ",labVow:"สระ",autoIll:"แสดงภาพอัตโนมัติ",illMouth:"ดูรูปปาก",illTongue:"ดูตำแหน่งลิ้น",close:"ปิด",tyMouth:"รูปปาก",tyTongue:"ภาพตัดภายในช่องปาก",noteN:"ตัวอย่าง ん ก่อน m, b, p: ริมฝีปากปิด ก่อนเสียงอื่นรูปปากจะเปลี่ยนไป",noteWo:"を ออกเสียงเหมือน お จึงใช้ภาพของ お",title:"ตารางออกเสียงคานะ",lang:"ภาษา",h1:"ตารางการออกเสียงภาษาญี่ปุ่น",
+th:{animPlay:"เล่น",animPause:"หยุด",noteAffr:"เสียงนี้จริง ๆ มี 3 ขั้น: กักลม → เสียดแทรก → สระ ที่นี่แสดงเพียง 2 ขั้น",labCons:"พยัญชนะ",labVow:"สระ",autoIll:"แสดงภาพอัตโนมัติ",illMouth:"ดูรูปปาก",illTongue:"ดูตำแหน่งลิ้น",close:"ปิด",tyMouth:"รูปปาก",tyTongue:"ภาพตัดภายในช่องปาก",noteN:"ตัวอย่าง ん ก่อน m, b, p: ริมฝีปากปิด ก่อนเสียงอื่นรูปปากจะเปลี่ยนไป",noteWo:"を ออกเสียงเหมือน お จึงใช้ภาพของ お",title:"ตารางออกเสียงคานะ",lang:"ภาษา",h1:"ตารางการออกเสียงภาษาญี่ปุ่น",
  sub:"แตะที่ตัวอักษรเพื่อฟังการออกเสียงภาษาญี่ปุ่นมาตรฐาน โรมาจิเป็นเพียงการสะกด ให้ฟังเสียงตัวอย่างแล้วออกเสียงตาม",
  progress:(n,t)=>`ฟังแล้ว <b>${n}</b> / ${t} เสียง`,
  script:"ตัวอักษร",voice:"เสียงอ่าน",speed:"ความเร็ว",show:"แสดง",slow:"ช้า",mid:"ปานกลาง",normal:"ปกติ",romaji:"โรมาจิ",
@@ -513,7 +521,7 @@ th:{labCons:"พยัญชนะ",labVow:"สระ",autoIll:"แสดงภ�
   j:"คล้าย จ แต่ให้เส้นเสียงสั่น ออกเสียงเบา ๆ",v:"คนญี่ปุ่นมักออกเสียงใกล้กับ “b” ออกเสียง “v” เบา ๆ ก็เข้าใจได้"},
  mean:["แสตมป์","โรงเรียน","ตั๋ว","แม่","พี่ชาย","อากาศ","ครู","พ่อ","ส่วนฉัน…","สวัสดี","ไปโรงเรียน","อ่านหนังสือ","ดื่มน้ำ","หนังสือพิมพ์","แอปเปิล","เตียง","ถ้วย","ฟุตบอล","กาแฟ","เค้ก","สมุด","ซูเปอร์มาร์เก็ต","ขนมปัง","ปากกา","ไวน์","ส้อม","ปาร์ตี้","ตรวจสอบ","ไฟล์","ไวโอลิน"]},
 
-ms:{labCons:"Konsonan",labVow:"Vokal",autoIll:"Papar kad automatik",illMouth:"Bentuk mulut",illTongue:"Kedudukan lidah",close:"Tutup",tyMouth:"BENTUK MULUT",tyTongue:"KERATAN RENTAS MULUT",noteN:"Contoh ん sebelum m, b atau p: bibir tertutup. Sebelum bunyi lain, bentuk mulut berubah.",noteWo:"を disebut sama seperti お, jadi kad お digunakan.",title:"Jadual Sebutan Kana",lang:"Bahasa",h1:"Jadual sebutan bahasa Jepun",
+ms:{animPlay:"Main",animPause:"Jeda",noteAffr:"Bunyi ini sebenarnya ada 3 peringkat: hentian → geseran → vokal. Di sini hanya 2 peringkat ditunjukkan.",labCons:"Konsonan",labVow:"Vokal",autoIll:"Papar kad automatik",illMouth:"Bentuk mulut",illTongue:"Kedudukan lidah",close:"Tutup",tyMouth:"BENTUK MULUT",tyTongue:"KERATAN RENTAS MULUT",noteN:"Contoh ん sebelum m, b atau p: bibir tertutup. Sebelum bunyi lain, bentuk mulut berubah.",noteWo:"を disebut sama seperti お, jadi kad お digunakan.",title:"Jadual Sebutan Kana",lang:"Bahasa",h1:"Jadual sebutan bahasa Jepun",
  sub:"Tekan mana-mana huruf untuk mendengar sebutan bahasa Jepun standard. Romaji hanya menunjukkan ejaan, jadi tiru suaranya, bukan hurufnya.",
  progress:(n,t)=>`Sudah didengar <b>${n}</b> / ${t} bunyi`,
  script:"Tulisan",voice:"Suara",speed:"Kelajuan",show:"Papar",slow:"Perlahan",mid:"Sederhana",normal:"Biasa",romaji:"Romaji",
@@ -543,7 +551,7 @@ ms:{labCons:"Konsonan",labVow:"Vokal",autoIll:"Papar kad automatik",illMouth:"Be
   j:"Seperti “j” dalam “jalan”, disebut dengan lembut.",v:"Orang Jepun biasanya menyebutnya hampir seperti “b”; “v” yang ringan juga difahami."},
  mean:["setem","sekolah","tiket","ibu","abang","udara","guru","bapa","saya pula…","helo","ke sekolah","membaca buku","minum air","surat khabar","epal","katil","cawan","bola sepak","kopi","kek","buku nota","pasar raya","roti","pen","wain","garpu","parti","semak","fail","biola"]},
 
-id:{labCons:"Konsonan",labVow:"Vokal",autoIll:"Tampilkan kartu otomatis",illMouth:"Bentuk mulut",illTongue:"Posisi lidah",close:"Tutup",tyMouth:"BENTUK MULUT",tyTongue:"PENAMPANG RONGGA MULUT",noteN:"Contoh ん sebelum m, b, atau p: bibir tertutup. Sebelum bunyi lain, bentuk mulut berubah.",noteWo:"を diucapkan sama seperti お, jadi kartu お yang dipakai.",title:"Tabel Pelafalan Kana",lang:"Bahasa",h1:"Tabel pelafalan bahasa Jepang",
+id:{animPlay:"Putar",animPause:"Jeda",noteAffr:"Bunyi ini sebenarnya punya 3 tahap: hambatan → gesekan → vokal. Di sini hanya 2 tahap yang ditampilkan.",labCons:"Konsonan",labVow:"Vokal",autoIll:"Tampilkan kartu otomatis",illMouth:"Bentuk mulut",illTongue:"Posisi lidah",close:"Tutup",tyMouth:"BENTUK MULUT",tyTongue:"PENAMPANG RONGGA MULUT",noteN:"Contoh ん sebelum m, b, atau p: bibir tertutup. Sebelum bunyi lain, bentuk mulut berubah.",noteWo:"を diucapkan sama seperti お, jadi kartu お yang dipakai.",title:"Tabel Pelafalan Kana",lang:"Bahasa",h1:"Tabel pelafalan bahasa Jepang",
  sub:"Ketuk huruf mana saja untuk mendengar pelafalan bahasa Jepang standar. Romaji hanya menunjukkan ejaan, jadi tirukan suaranya, bukan hurufnya.",
  progress:(n,t)=>`Sudah didengar <b>${n}</b> / ${t} bunyi`,
  script:"Huruf",voice:"Suara",speed:"Kecepatan",show:"Tampilkan",slow:"Lambat",mid:"Sedang",normal:"Normal",romaji:"Romaji",
@@ -999,16 +1007,51 @@ function openIll(){
   fillIllNote();
   try{dlg.showModal()}catch(e){dlg.setAttribute("open","")}
 }
+/* Consonants: one large view that switches consonant -> vowel (no tweening); the frame buttons pause on a shape */
+const isCons=id=>!!id&&!/^(a|i|u|e|o|n|wo)$/.test(id);
+const AFFR=new Set(["chi","tsu","di","du"]);
+const anim={i:0,timer:null,playing:false};
+const reducedMotion=()=>{try{return matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){return false}};
+function animShow(i){
+  anim.i=i;
+  document.querySelectorAll("#illimgs .anim-img").forEach((im,k)=>im.hidden=k!==i);
+  document.querySelectorAll("#illimgs .frame").forEach((b,k)=>b.setAttribute("aria-pressed",String(k===i)));
+  const cap=document.querySelector("#illimgs .anim-cap");if(cap)cap.textContent=cardsFor(illCur)[i].lab;
+}
+function animStop(){clearTimeout(anim.timer);anim.timer=null;anim.playing=false;const b=document.getElementById("animplay");if(b){b.setAttribute("aria-pressed","false");b.textContent="▶ "+T("animPlay")}}
+function animPlay(from){
+  animStop();anim.playing=true;
+  const b=document.getElementById("animplay");if(b){b.setAttribute("aria-pressed","true");b.textContent="⏸ "+T("animPause")}
+  const slow=rate<0.7?1.5:1,dur=[800*slow,1200*slow];
+  const step=i=>{animShow(i);anim.timer=setTimeout(()=>step(1-i),dur[i])};
+  step(from||0);
+}
 function fillIllCards(){
   if(!illCur)return;
-  document.getElementById("illimgs").innerHTML=cardsFor(illCur).map(c=>`<figure><img class="ill-img" src="${c.src}" alt="${big.textContent}: ${c.lab}"><figcaption>${c.lab}</figcaption></figure>`).join("");
+  const cards=cardsFor(illCur),box=document.getElementById("illimgs");
+  animStop();
+  if(!isCons(illCur)){
+    box.className="ill-imgs";
+    box.innerHTML=cards.map(c=>`<figure><img class="ill-img" src="${c.src}" alt="${big.textContent}: ${c.lab}"><figcaption>${c.lab}</figcaption></figure>`).join("");
+    return;
+  }
+  box.className="ill-imgs ill-anim";
+  box.innerHTML=`<figure class="anim-fig">${cards.map((c,k)=>`<img class="ill-img anim-img" src="${c.src}" alt="${big.textContent}: ${c.lab}"${k?" hidden":""}>`).join("")}<figcaption class="anim-cap">${cards[0].lab}</figcaption></figure>
+    <div class="anim-ctl"><button type="button" class="anim-btn" id="animplay" aria-pressed="false">▶ ${T("animPlay")}</button>
+    <span class="seg">${cards.map((c,k)=>`<button type="button" class="frame" data-i="${k}" aria-pressed="${k===0}">${c.lab}</button>`).join("")}</span></div>
+    ${AFFR.has(illCur)?`<p class="anim-note">${T("noteAffr")}</p>`:""}`;
+  box.querySelectorAll(".frame").forEach(b=>b.addEventListener("click",()=>{animStop();animShow(+b.dataset.i)}));
+  document.getElementById("animplay").addEventListener("click",()=>anim.playing?animStop():animPlay(anim.i));
+  animShow(0);
+  if(!reducedMotion())animPlay(0);
 }
 function fillIllNote(){if(!illCur)return;document.getElementById("illnote").innerHTML=noteFor(illCur)+(illCur==="wo"?'<p class="ill-extra">'+T("noteWo")+'</p>':"")}
-function closeIll(){const d=document.getElementById("ill");try{d.close()}catch(e){d.removeAttribute("open")}}
+function closeIll(){animStop();const d=document.getElementById("ill");try{d.close()}catch(e){d.removeAttribute("open")}}
 document.getElementById("illbtn").addEventListener("click",openIll);
 document.getElementById("illx").addEventListener("click",closeIll);
 document.getElementById("ill").addEventListener("click",e=>{if(e.target.id==="ill")closeIll()});
-document.getElementById("illplay").addEventListener("click",()=>speak(big.dataset.say||big.textContent,curId));
+document.getElementById("illplay").addEventListener("click",()=>{speak(big.dataset.say||big.textContent,curId);if(isCons(illCur)&&!reducedMotion())animPlay(0)});
+document.getElementById("ill").addEventListener("close",animStop);
 
 /* ---------- Stage ---------- */
 const big=document.getElementById("big");
