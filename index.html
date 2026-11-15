@@ -986,12 +986,13 @@ const ILL_CELLS=new Set([...BASIC.rows.flat(),...DAKU.rows.flat()].filter(Boolea
 function illId(cell){if(!cell||!ILL_CELLS.has(cell))return null;const id={"wo (o)":"wo","ji (di)":"di","zu (du)":"du"}[cell[2]]||cell[2].split(" ")[0];return ILLUS[id]?id:null}
 /* Two cards per sound: vowels (and を) = mouth shape + cross-section; ん = closed lips [m] + [ɴ]; consonants = consonant + vowel cross-sections */
 const CIPA={"ka":["k","a"],"ki":["k","i"],"ku":["k","u"],"ke":["k","e"],"ko":["k","o"],"ga":["g","a"],"gi":["g","i"],"gu":["g","u"],"ge":["g","e"],"go":["g","o"],"sa":["s","a"],"shi":["ɕ","i"],"su":["s","u"],"se":["s","e"],"so":["s","o"],"za":["z","a"],"ji":["ʑ","i"],"zu":["z","u"],"ze":["z","e"],"zo":["z","o"],"ta":["t","a"],"chi":["tɕ","i"],"tsu":["ts","u"],"te":["t","e"],"to":["t","o"],"da":["d","a"],"di":["dʑ","i"],"du":["dz","u"],"de":["d","e"],"do":["d","o"],"na":["n","ã"],"ni":["ɲ","ĩ"],"nu":["n","ũ"],"ne":["n","ẽ"],"no":["n","õ"],"ha":["h","a"],"hi":["ç","i"],"fu":["ɸ","u"],"he":["h","e"],"ho":["h","o"],"pa":["p","a"],"pi":["p","i"],"pu":["p","u"],"pe":["p","e"],"po":["p","o"],"ba":["b","a"],"bi":["b","i"],"bu":["b","u"],"be":["b","e"],"bo":["b","o"],"ma":["m","ã"],"mi":["m","ĩ"],"mu":["m","ũ"],"me":["m","ẽ"],"mo":["m","õ"],"ya":["j","a"],"yu":["j","u"],"yo":["j","o"],"ra":["ɾ","a"],"ri":["ɾ","i"],"ru":["ɾ","u"],"re":["ɾ","e"],"ro":["ɾ","o"],"wa":["w","a"]};
+/* katakana display uses the katakana versions of the cards: illus/k/ (front) and illus/xk/ (cross-sections) */
 function cardsFor(id){
-  const b=id==="wo"?"o":id;
-  if("aiueo".includes(b)&&b.length===1)return [{src:"illus/"+b+".webp",lab:T("tyMouth")},{src:"illus/x/"+b+"_x.webp",lab:T("tyTongue")}];
-  if(b==="n")return [{src:"illus/n.webp",lab:T("tyMouth")+" [m]"},{src:"illus/x/n_x.webp",lab:T("tyTongue")+" [ɴ]"}];
+  const b=id==="wo"?"o":id,F=script==="kata"?"illus/k/":"illus/",X=script==="kata"?"illus/xk/":"illus/x/";
+  if("aiueo".includes(b)&&b.length===1)return [{src:F+b+".webp",lab:T("tyMouth")},{src:X+b+"_x.webp",lab:T("tyTongue")}];
+  if(b==="n")return [{src:F+"n.webp",lab:T("tyMouth")+" [m]"},{src:X+"n_x.webp",lab:T("tyTongue")+" [ɴ]"}];
   const ip=CIPA[b]||["",""];
-  return [{src:"illus/x/"+b+"_c.webp",lab:"1 · "+T("labCons")+" ["+ip[0]+"]"},{src:"illus/x/"+b+"_v.webp",lab:"2 · "+T("labVow")+" ["+ip[1]+"]"}];
+  return [{src:X+b+"_c.webp",lab:"1 · "+T("labCons")+" ["+ip[0]+"]"},{src:X+b+"_v.webp",lab:"2 · "+T("labVow")+" ["+ip[1]+"]"}];
 }
 let illCur=null;
 function updateIllBtn(){
