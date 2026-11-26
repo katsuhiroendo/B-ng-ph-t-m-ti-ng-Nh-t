@@ -33,7 +33,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:
 .wrap{max-width:1280px;margin:20px auto;padding:0 max(16px,env(safe-area-inset-left,0px));display:grid;gap:18px}
 
 /* Header (Kanji Steps Design System) */
-header{min-height:92px;padding:16px max(3vw,24px);background:var(--surface);border-bottom:1px solid var(--border);position:relative;z-index:10;width:100%}
+header{min-height:92px;padding:16px max(3vw,24px);background:linear-gradient(115deg,#e3faf2 0%,#d4f5ee 100%);border-bottom:1px solid #c2e8dd;position:relative;z-index:10;width:100%;box-shadow:0 4px 20px rgba(0,127,112,0.05)}
 .hdr-inner{max-width:1280px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px}
 .brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink);flex-shrink:0}
 .brand-badge{font-family:var(--font-kana);font-size:34px;font-weight:700;color:var(--teal);line-height:1;display:inline-block}
@@ -41,6 +41,19 @@ header{min-height:92px;padding:16px max(3vw,24px);background:var(--surface);bord
 .brand-text h1 .jp{font-family:var(--font-kana);color:var(--teal);font-size:1.15em}
 .brand-title{font-size:20px;font-weight:700;color:var(--ink)}
 .sub{margin:2px 0 0;color:var(--muted);font-size:11px;font-family:var(--font-kana);letter-spacing:0.5px;font-weight:500}
+
+/* Dynamic floating Kana orbit (Kanji Steps style) */
+.kana-orbit{position:relative;width:175px;height:76px;flex-shrink:0;pointer-events:none;user-select:none;margin:0 auto}
+.kana-orbit::before{content:"";position:absolute;inset:12px -8px 12px;border:1.5px solid rgba(76,189,170,0.45);border-radius:50%;transform:rotate(-10deg)}
+.kana-orbit::after{content:"";position:absolute;width:9px;height:9px;border-radius:50%;background:#f6c345;right:-2px;top:18px;box-shadow:-155px 10px 0 #ff806e,-45px 48px 0 #007f70}
+.orbit-tile{position:absolute;display:grid;place-items:center;width:50px;height:56px;background:#fffefa;border:1px solid #ffffff;border-radius:14px;font-family:var(--font-kana);font-weight:700;font-size:32px;line-height:1;color:var(--ink);transition:transform .25s ease}
+.orbit-tile.tile-1{left:0px;top:14px;transform:rotate(-10deg);box-shadow:0 5px 0 #ff806e,0 12px 18px rgba(0,95,97,0.16);animation:float-kana-1 6s ease-in-out infinite}
+.orbit-tile.tile-2{left:58px;top:0px;transform:rotate(8deg);box-shadow:0 5px 0 #f6c345,0 12px 18px rgba(0,95,97,0.16);animation:float-kana-2 6s ease-in-out infinite -2s}
+.orbit-tile.tile-3{left:116px;top:16px;transform:rotate(12deg);box-shadow:0 5px 0 #2fbea0,0 12px 18px rgba(0,95,97,0.16);animation:float-kana-3 6s ease-in-out infinite -4s}
+@keyframes float-kana-1{0%,100%{transform:translateY(0px) rotate(-10deg)}50%{transform:translateY(-7px) rotate(-10deg)}}
+@keyframes float-kana-2{0%,100%{transform:translateY(0px) rotate(8deg)}50%{transform:translateY(-7px) rotate(8deg)}}
+@keyframes float-kana-3{0%,100%{transform:translateY(0px) rotate(12deg)}50%{transform:translateY(-7px) rotate(12deg)}}
+@media (max-width:1200px){.kana-orbit{display:none}}
 .hdr-right{display:flex;flex-wrap:wrap;align-items:center;gap:16px;justify-content:flex-end}
 
 /* 7-language card UI */
@@ -251,6 +264,11 @@ select{background:var(--surface-2);border:1px solid var(--border);border-radius:
         <p class="sub" id="sub">ひとつずつ、きれいに発音。</p>
       </div>
     </a>
+    <div class="kana-orbit" aria-hidden="true">
+      <span class="orbit-tile tile-1" id="orb-1">あ</span>
+      <span class="orbit-tile tile-2" id="orb-2">い</span>
+      <span class="orbit-tile tile-3" id="orb-3">う</span>
+    </div>
     <div class="hdr-right">
       <div class="language-switcher" role="group" aria-label="Language">
         <span class="language-label" data-i18n="lang">言語</span>
@@ -1341,6 +1359,10 @@ document.querySelectorAll("#show button").forEach(b=>b.addEventListener("click",
 function applyScript(){
   document.querySelectorAll("#script button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.s===script)));
   document.getElementById("h1jp").textContent=script==="kata"?"カタカナ":"ひらがな";
+  const o1=document.getElementById("orb-1"),o2=document.getElementById("orb-2"),o3=document.getElementById("orb-3");
+  if(o1)o1.textContent=script==="kata"?"ア":"あ";
+  if(o2)o2.textContent=script==="kata"?"イ":"い";
+  if(o3)o3.textContent=script==="kata"?"ウ":"う";
   document.querySelectorAll(".tab .jp").forEach(el=>el.textContent=K(el.dataset.raw));
   select(current?current.id:store.get("hira_tab","basic"));applyVis();
   const c=lastCell||BASIC.rows[0][0];lastCell=c;show(K(c[0]),c[1],c[2]);curId=idOf(c);setSrc(curId);
