@@ -8,25 +8,27 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;600;700&family=Klee+One:wght@600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;600;700&family=Klee+One:wght@600&display=swap">
 <style>
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 [hidden]{display:none!important}
 body{margin:0}
-/* Layout: sticky "sân khấu" (big kana + hint) beside a tabbed kana grid; stacks on phones */
 :root{
-  --bg:#fbf5f3; --surface:#ffffff; --surface-2:#f6eeec; --ink:#1f2a27; --muted:#5f6c67; --line:#eadcd9;
-  --leaf:#1d6b55; --leaf-soft:#e2f1ea;
+  --bg:#fbfcfd; --surface:#ffffff; --surface-2:#f4f8f8; --ink:#142536; --muted:#61717c; --line:#dce5e9; --border:#dce5e9;
+  --teal:#007f70; --teal-dark:#006459; --mint:#dff7f0;
+  --leaf:#007f70; --leaf-soft:#dff7f0;
   --lotus:#c93d66; --lotus-soft:#fbe4eb;
   --river:#22678f; --river-soft:#e1eef6;
-  --gold:#9a6512; --gold-soft:#f8ecd6;
+  --gold:#f6c345; --gold-soft:#fff7db;
   --plum:#7a4a9e; --plum-soft:#efe5f6;
-  --star:#c93d66;
-  --font-kana:"Klee One","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
-  --font-ui:"Be Vietnam Pro","Noto Sans Thai",system-ui,-apple-system,"Segoe UI","Hiragino Sans","Yu Gothic UI",sans-serif;
+  --star:#ff806e;
+  --shadow:0 12px 32px #173e4a0c;
+  --font-kana:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
+  --font-ui:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Noto Sans","Be Vietnam Pro","Noto Sans Thai",sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#141a19; --surface:#1c2422; --surface-2:#232d2a; --ink:#ecf1ef; --muted:#a3b0ab; --line:#33403c;
+  --bg:#141a19; --surface:#1c2422; --surface-2:#232d2a; --ink:#ecf1ef; --muted:#a3b0ab; --line:#33403c; --border:#33403c;
+  --teal:#4cbdaa; --teal-dark:#2fbea0; --mint:#1d3a31;
   --leaf:#5fc7a2; --leaf-soft:#1d3a31;
   --lotus:#f2829f; --lotus-soft:#432230;
   --river:#7cbde3; --river-soft:#1c3443;
@@ -34,7 +36,8 @@ body{margin:0}
   --plum:#c3a0e6; --plum-soft:#33284a;
   --star:#f2829f; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#141a19; --surface:#1c2422; --surface-2:#232d2a; --ink:#ecf1ef; --muted:#a3b0ab; --line:#33403c;
+  --bg:#141a19; --surface:#1c2422; --surface-2:#232d2a; --ink:#ecf1ef; --muted:#a3b0ab; --line:#33403c; --border:#33403c;
+  --teal:#4cbdaa; --teal-dark:#2fbea0; --mint:#1d3a31;
   --leaf:#5fc7a2; --leaf-soft:#1d3a31;
   --lotus:#f2829f; --lotus-soft:#432230;
   --river:#7cbde3; --river-soft:#1c3443;
@@ -43,170 +46,234 @@ body{margin:0}
   --star:#f2829f; color-scheme:dark}
 
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.5;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
-.wrap{max-width:1180px;margin:0 auto;display:grid;gap:18px}
-header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
-h1{margin:0;font-size:clamp(1.5rem,3.4vw,2.2rem);line-height:1.15;text-wrap:balance;font-weight:700}
-h1 .jp{font-family:var(--font-kana);color:var(--lotus);margin-right:.35em}
-.sub{margin:4px 0 0;color:var(--muted);max-width:60ch}
-.hdr-right{display:grid;gap:6px;justify-items:end}
-@media (max-width:600px){.hdr-right{justify-items:start}}
-.langsel{display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:600;color:var(--muted)}
-.langsel select{font-size:.9rem}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
+.wrap{max-width:1280px;margin:0 auto;display:grid;gap:18px}
+
+/* Header */
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:16px 22px;background:var(--surface);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--ink)}
+.brand-badge{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#009781,var(--teal-dark));color:#fff;display:grid;place-items:center;font-family:var(--font-kana);font-size:24px;font-weight:700;box-shadow:0 4px 12px #007f7025;flex-shrink:0}
+.brand-text h1{margin:0;font-family:var(--font-kana);font-size:clamp(1.2rem,2.4vw,1.5rem);line-height:1.2;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.brand-text h1 .jp{color:var(--teal);font-size:1.35em}
+.brand-title{font-family:var(--font-ui);font-size:15px;font-weight:600;color:var(--ink)}
+.sub{margin:3px 0 0;color:var(--muted);font-size:12px;max-width:54ch}
+.hdr-right{display:flex;flex-wrap:wrap;align-items:center;gap:14px;justify-content:flex-end}
+
+/* 6-language card UI */
+.language-switcher{display:flex;align-items:center;gap:10px;max-width:100%}
+.language-label{font-size:11px;color:var(--muted);white-space:nowrap;font-weight:600}
+.language-buttons{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.language-button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:68px;min-height:56px;padding:5px 6px;border:1px solid var(--border);border-radius:11px;background:var(--surface);color:var(--ink);font-weight:550;cursor:pointer;transition:transform .18s,box-shadow .18s,background .18s,border-color .18s}
+.language-button img{display:block;width:30px;height:22px;object-fit:contain;border:1px solid #dce2e6;border-radius:3px;box-shadow:0 2px 3px #1425360b}
+.language-button span{font-size:10px;line-height:1.2;text-align:center;white-space:normal}
+.language-button[aria-pressed="true"]{background:var(--mint);border:2px solid var(--teal);padding:4px 5px;color:var(--teal-dark)}
+.language-button[aria-pressed="true"]::after{content:'✓';position:absolute;right:3px;top:1px;font-size:11px;font-weight:800;color:var(--teal)}
+.language-button:hover{background:#edf9f5;border-color:#77b5a8;transform:translateY(-2px)}
+.language-button:focus-visible{outline:3px solid #d99b16;outline-offset:3px}
+
+.hdr-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.btn-jls{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:650;padding:9px 15px;border-radius:11px;background:var(--surface);color:var(--teal-dark);border:1px solid #c7d6dc;text-decoration:none;transition:transform .18s,box-shadow .18s,background .18s,border-color .18s;white-space:nowrap}
+.btn-jls:hover{background:#edf9f5;border-color:#77b5a8;box-shadow:0 4px 12px #007f7012;transform:translateY(-2px)}
+.btn-jls:focus-visible{outline:3px solid #d99b16;outline-offset:3px}
+
+.progress-box{display:flex;flex-direction:column;gap:4px;min-width:130px}
+.progress-header{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;color:var(--muted)}
+.progress{font-size:.8rem;color:var(--teal);font-variant-numeric:tabular-nums;font-weight:650;white-space:nowrap}
+progress{display:block;width:100%;height:7px;appearance:none;border:0;border-radius:20px;overflow:hidden;background:#e4ecee;accent-color:var(--teal)}
+progress::-webkit-progress-bar{background:#e4ecee;border-radius:20px}
+progress::-webkit-progress-value{background:linear-gradient(90deg,#23ac94,#007f70);border-radius:20px;transition:width .4s}
+progress::-moz-progress-bar{background:var(--teal);border-radius:20px}
+.reset{font:inherit;font-size:.72rem;color:var(--muted);background:transparent;border:1px solid var(--border);border-radius:999px;padding:1px 8px;cursor:pointer;line-height:1.4}
+.reset:hover{color:var(--ink);border-color:var(--teal)}
+.reset.arm{color:#b3261e;border-color:#b3261e;background:#fdf2f2}
+
 html:lang(th) body{line-height:1.65}
 html:lang(th) .controls label,html:lang(ja) .controls label,html:lang(th) .note h3,html:lang(ja) .note h3{letter-spacing:0}
-.progress{font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
-.progress b{color:var(--leaf)}
-.progress-row{display:flex;align-items:center;gap:8px;justify-content:flex-end}
-.reset{font:inherit;font-size:.75rem;color:var(--muted);background:transparent;border:1px solid var(--line,#ccc);border-radius:999px;padding:2px 10px;cursor:pointer;min-height:28px}
-.reset:hover{color:var(--ink,inherit)}
-.reset.arm{color:#b3261e;border-color:#b3261e}
 
-.controls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+/* Controls */
+.controls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px 18px;box-shadow:var(--shadow)}
 .controls label{font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:8px}
 select,input[type=range]{font:inherit;color:var(--ink)}
-select{background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;max-width:260px;text-transform:none;letter-spacing:0;font-weight:500;font-size:.9rem}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
-.seg button[lang=ja]{font-family:var(--font-kana);font-size:.95rem}
-.seg button{border:0;background:transparent;color:var(--ink);font:inherit;font-size:.85rem;padding:6px 12px;cursor:pointer}
-.seg button[aria-pressed="true"]{background:var(--leaf);color:var(--surface)}
+select{background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:7px 10px;max-width:260px;text-transform:none;letter-spacing:0;font-weight:550;font-size:.88rem}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:999px;overflow:hidden;background:var(--surface-2);padding:2px;gap:2px}
+.seg button[lang=ja]{font-family:var(--font-kana);font-size:.92rem}
+.seg button{border:0;background:transparent;color:var(--ink);font:inherit;font-size:.82rem;font-weight:600;padding:6px 14px;border-radius:999px;cursor:pointer;transition:background .15s,color .15s}
+.seg button[aria-pressed="true"]{background:var(--teal);color:#fff;box-shadow:0 2px 6px #007f7020}
 .warn{flex-basis:100%;margin:0;font-size:.85rem;color:var(--lotus);background:var(--lotus-soft);border-radius:8px;padding:8px 10px}
 
-.main{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;align-items:start}
+.main{display:grid;grid-template-columns:320px minmax(0,1fr);gap:20px;align-items:start}
 @media (max-width:860px){.main{grid-template-columns:minmax(0,1fr)}}
 
 /* Stage */
-.stage{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;display:grid;gap:12px;text-align:center}
-@media (max-width:860px){.stage{position:static;grid-template-columns:auto 1fr;text-align:left;align-items:center;padding:14px 16px}}
-.big{font-family:var(--font-kana);font-size:clamp(4rem,10vw,7rem);line-height:1;color:var(--ink);margin:0;min-height:1em}
+.stage{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:24px 20px;display:grid;gap:14px;text-align:center;box-shadow:0 16px 46px #007f7010}
+@media (max-width:860px){.stage{position:static;grid-template-columns:auto 1fr;text-align:left;align-items:center;padding:16px 18px}}
+.big{font-family:var(--font-kana);font-size:clamp(4.2rem,10vw,7.2rem);line-height:1;color:var(--ink);margin:0;min-height:1em}
 .big.say{animation:pop .35s ease-out}
-/* Words: shrink to fit the stage width (one em per letter), wrap at the space in phrases */
 .stage{container-type:inline-size}
 .stage>*,.meta{min-width:0}
 .big.word{grid-column:1/-1;font-size:2.4rem;font-size:clamp(1.5rem,calc((100cqi - 12px) / var(--n,4)),4.2rem);line-height:1.3;padding-block:.15em}
 .big.word .acc{flex-wrap:wrap;justify-content:center;row-gap:.25em}
 @media (max-width:860px){.big.word .acc{justify-content:flex-start}}
 .big.word .acc .mo{border-width:3px}
-@keyframes pop{0%{transform:scale(.88);color:var(--lotus)}100%{transform:scale(1)}}
+@keyframes pop{0%{transform:scale(.88);color:var(--teal)}100%{transform:scale(1)}}
 .meta{display:grid;gap:6px}
-.hint{font-size:1.6rem;font-weight:700;color:var(--lotus)}
+.hint{font-size:1.6rem;font-weight:700;color:var(--teal)}
 .romaji{color:var(--muted);font-size:.9rem}
-.src{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--leaf);font-weight:600}
+.src{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:var(--teal);font-weight:600}
 .src:empty{display:none}
 .tip{overflow-wrap:anywhere;font-size:.9rem;background:var(--surface-2);border-radius:10px;padding:8px 10px;text-align:left}
 .tip:empty{display:none}
-.replay{justify-self:center;font:inherit;font-weight:600;background:var(--lotus);color:var(--surface);border:0;border-radius:999px;padding:9px 18px;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.replay{justify-self:center;font:inherit;font-weight:650;background:linear-gradient(150deg,#009781,var(--teal-dark));color:#fff;border:1px solid var(--teal);border-radius:12px;padding:10px 20px;cursor:pointer;display:inline-flex;gap:8px;align-items:center;box-shadow:0 4px 12px #007f7020;transition:transform .15s}
+.replay:hover{transform:translateY(-2px);box-shadow:0 6px 16px #007f7030}
 @media (max-width:860px){.replay{justify-self:start}}
 .replay svg{width:16px;height:16px;fill:currentColor}
 .actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 @media (max-width:860px){.actions{justify-content:flex-start}}
-.illbtn{font:inherit;font-weight:600;background:var(--surface-2);color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
-.illbtn:hover{border-color:var(--leaf);color:var(--leaf)}
+.illbtn{font:inherit;font-weight:600;background:var(--surface-2);color:var(--teal-dark);border:1px solid var(--border);border-radius:12px;padding:8px 14px;cursor:pointer;display:inline-flex;gap:8px;align-items:center;transition:all .15s}
+.illbtn:hover{border-color:var(--teal);background:var(--mint)}
 .illbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-/* Illustration card viewer */
+
+/* Illustration card viewer - preserved structure and image proportions */
 .ill{position:fixed;inset:0;z-index:50;margin:0;border:0;padding:0;width:100%;height:100%;max-width:none;max-height:none;background:transparent;color:var(--ink)}
-.ill::backdrop{background:rgb(10 14 13 / .82)}
+.ill::backdrop{background:rgb(20 37 54 / .75);backdrop-filter:blur(3px)}
 .ill[open]{display:grid;place-items:center}
-.ill-box{width:min(1100px,100% - 32px);max-height:calc(100% - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));display:grid;gap:12px;background:var(--surface);border-radius:18px;padding:14px;box-shadow:0 20px 60px rgb(0 0 0 / .35);overflow:auto}
-.ill-imgs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:10px}
-.ill-imgs figure{margin:0;display:grid;gap:4px;min-width:0}
-.ill-img{display:block;width:100%;height:auto;max-height:40vh;object-fit:contain;border-radius:10px;background:#fff;border:1px solid var(--line)}
-.ill-imgs figcaption{font-size:.8rem;font-weight:600;color:var(--leaf);text-align:center}
+.ill-box{width:min(1100px,100% - 32px);max-height:calc(100% - 32px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));display:grid;gap:14px;background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:20px;box-shadow:0 24px 64px rgb(0 0 0 / .3);overflow:auto}
+.ill-imgs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.ill-imgs figure{margin:0;display:grid;gap:6px;min-width:0}
+.ill-img{display:block;width:100%;height:auto;max-height:40vh;object-fit:contain;border-radius:12px;background:#fff;border:1px solid var(--border)}
+.ill-imgs figcaption{font-size:.82rem;font-weight:650;color:var(--teal);text-align:center}
 .ill-anim{grid-template-columns:minmax(0,1fr);justify-items:center}
 .anim-fig{width:min(100%,760px)}
 .anim-fig .ill-img{max-height:46vh}
 .anim-cap{font-size:.95rem!important}
 .anim-ctl{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
-.anim-btn{font:inherit;font-weight:600;border:1px solid var(--leaf);background:var(--leaf-soft);color:var(--leaf);border-radius:999px;padding:7px 14px;cursor:pointer;min-width:7.5em}
+.anim-btn{font:inherit;font-weight:650;border:1px solid var(--teal);background:var(--mint);color:var(--teal-dark);border-radius:999px;padding:7px 16px;cursor:pointer;min-width:7.5em}
 .anim-ctl .seg button{font-size:.85rem}
 .anim-note{margin:0;font-size:.82rem;color:var(--muted);text-align:center;max-width:60ch}
-.ill-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.ill-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid var(--border);padding-top:12px}
 .ill-cap{display:flex;gap:12px;align-items:baseline;min-width:0}
-.ill-cap .kk{font-family:var(--font-kana);font-size:1.8rem;line-height:1}
-.ill-cap .ty{font-size:.8rem;font-weight:600;color:var(--leaf);letter-spacing:.04em}
-.ill-note{display:grid;gap:6px;font-size:.92rem;line-height:1.6;background:var(--surface-2);border-radius:12px;padding:12px 14px;max-width:80ch}
+.ill-cap .kk{font-family:var(--font-kana);font-size:2rem;line-height:1;color:var(--teal)}
+.ill-cap .ty{font-size:.82rem;font-weight:700;color:var(--teal-dark);letter-spacing:.04em}
+.ill-note{display:grid;gap:6px;font-size:.92rem;line-height:1.6;background:var(--surface-2);border-radius:14px;padding:12px 16px;max-width:80ch}
 .ill-note:empty{display:none}
 .ill-note p{margin:0}
 .ill-note b{color:var(--ink)}
-.ill-note .ill-type{font-size:1rem;color:var(--leaf)}
-.ill-note .ill-type b{color:var(--leaf);font-size:1.1rem;margin-right:.3em}
-.ill-note .ill-prac{border-top:1px dashed var(--line);padding-top:6px}
+.ill-note .ill-type{font-size:1rem;color:var(--teal)}
+.ill-note .ill-type b{color:var(--teal);font-size:1.1rem;margin-right:.3em}
+.ill-note .ill-prac{border-top:1px dashed var(--border);padding-top:6px}
 .ill-note .ill-extra{color:var(--muted);font-size:.85rem}
-.ill-x{font:inherit;font-weight:600;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:8px 16px;cursor:pointer}
+.ill-x{font:inherit;font-weight:650;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:12px;padding:8px 18px;cursor:pointer}
+.ill-x:hover{background:var(--surface-2);border-color:var(--teal)}
 
 /* Tabs */
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-.tab{font:inherit;font-weight:600;font-size:.92rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tab{font:inherit;font-weight:650;font-size:.92rem;border:1px solid var(--border);background:var(--surface);color:var(--ink);padding:9px 16px;border-radius:12px;cursor:pointer;display:inline-flex;gap:8px;align-items:center;box-shadow:var(--shadow);transition:all .18s}
 .tab .jp{font-family:var(--font-kana);font-size:1.05rem}
-.tab[aria-selected="true"]{background:var(--c);border-color:var(--c);color:var(--surface)}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;overflow-x:auto}
+.tab:hover{background:#edf9f5;border-color:#77b5a8}
+.tab[aria-selected="true"]{background:var(--teal);border-color:var(--teal);color:#fff;box-shadow:0 4px 12px #007f7025}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px;overflow-x:auto;box-shadow:var(--shadow)}
 
-.grid{display:grid;gap:6px;grid-template-columns:40px repeat(var(--cols),minmax(58px,1fr));min-width:0}
-.colhead{font-weight:700;color:var(--c);text-align:center;font-size:.85rem;padding:2px 0;text-transform:lowercase}
-.rowplay{border:0;background:transparent;color:var(--muted);cursor:pointer;border-radius:8px;display:grid;place-items:center}
-.rowplay:hover{color:var(--c);background:var(--soft)}
+/* Kana Grid */
+.grid{display:grid;gap:8px;grid-template-columns:40px repeat(var(--cols),minmax(58px,1fr));min-width:0}
+.colhead{font-weight:700;color:var(--teal);text-align:center;font-size:.85rem;padding:3px 0;text-transform:lowercase;font-family:var(--font-kana)}
+.rowplay{border:1px solid var(--border);background:var(--surface-2);color:var(--teal-dark);cursor:pointer;border-radius:10px;display:grid;place-items:center;transition:all .15s}
+.rowplay:hover{color:var(--teal);background:var(--mint);border-color:var(--teal)}
 .rowplay svg{width:18px;height:18px;fill:currentColor}
-.k{font:inherit;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:8px 2px 6px;cursor:pointer;display:grid;justify-items:center;gap:1px;position:relative;transition:transform .12s,background .12s,border-color .12s}
-.k:hover{background:var(--soft);border-color:var(--c)}
-.k:active{transform:scale(.95)}
-.k .kk{font-family:var(--font-kana);font-size:clamp(1.5rem,3vw,2rem);line-height:1.15}
-.k .vi{font-size:.85rem;font-weight:600;color:var(--c)}
-.k .ro{font-size:.7rem;color:var(--muted)}
-.k.heard::after{content:"";position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--c);opacity:.55}
-.k.on{background:var(--c);border-color:var(--c)}
-.k.on .kk,.k.on .vi,.k.on .ro{color:var(--surface)}
-.empty{border:1px dashed var(--line);border-radius:12px}
-.gnote{margin:0 0 12px;font-size:.88rem;color:var(--muted);background:var(--soft);border-radius:10px;padding:8px 12px;max-width:70ch}
-.gnote b{color:var(--c)}
+.k{font:inherit;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:14px;padding:10px 2px 7px;cursor:pointer;display:grid;justify-items:center;gap:2px;position:relative;transition:transform .15s,background .15s,border-color .15s,box-shadow .15s;box-shadow:0 2px 6px #173e4a06}
+.k:hover{background:#edf9f5;border-color:#77b5a8;transform:translateY(-2px);box-shadow:0 6px 14px #007f7012}
+.k:active{transform:translateY(0) scale(.97)}
+.k .kk{font-family:var(--font-kana);font-size:clamp(1.6rem,3.2vw,2.1rem);line-height:1.15;font-weight:700}
+.k .vi{font-size:.82rem;font-weight:600;color:var(--teal)}
+.k .ro{font-size:.72rem;color:var(--muted)}
+.k.heard::after{content:"";position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--teal)}
+.k.on{background:var(--mint);border:2px solid var(--teal);color:var(--teal-dark)}
+.k.on .kk,.k.on .vi,.k.on .ro{color:var(--teal-dark)}
+.empty{border:1px dashed var(--border);border-radius:14px}
+.gnote{margin:0 0 14px;font-size:.88rem;color:var(--muted);background:var(--mint);border:1px solid #c0eada;border-radius:12px;padding:10px 14px;max-width:70ch}
+.gnote b{color:var(--teal-dark)}
 .hide-ro .ro{display:none}
 .hide-vi .vi{display:none}
 .star{color:var(--star)}
-.k.on .star{color:var(--surface)}
 
 /* Special */
-.special{display:grid;gap:10px}
-.sp{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:12px}
+.special{display:grid;gap:12px}
+.sp{display:grid;grid-template-columns:110px minmax(0,1fr);gap:14px;align-items:center;border:1px solid var(--border);border-radius:16px;padding:14px;background:var(--surface)}
 @media (max-width:520px){.sp{grid-template-columns:minmax(0,1fr)}}
-.sp .mark{font-family:var(--font-kana);font-size:1.6rem;color:var(--c)}
+.sp .mark{font-family:var(--font-kana);font-size:1.8rem;color:var(--teal)}
 .sp p{margin:0 0 8px;font-size:.92rem}
 .ex{display:flex;flex-wrap:wrap;gap:8px}
-.chip{font:inherit;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:10px;padding:6px 10px;cursor:pointer;display:inline-flex;gap:8px;align-items:baseline}
-.chip:hover{border-color:var(--c);background:var(--soft)}
-.chip .jp{font-family:var(--font-kana);font-size:1.15rem}
-/* pitch line: top border = high, bottom border = low, side border = change */
+.chip{font:inherit;border:1px solid var(--border);background:var(--surface-2);color:var(--ink);border-radius:11px;padding:7px 12px;cursor:pointer;display:inline-flex;gap:8px;align-items:baseline;transition:all .15s}
+.chip:hover{border-color:var(--teal);background:var(--mint)}
+.chip .jp{font-family:var(--font-kana);font-size:1.15rem;font-weight:700}
 .acc{display:inline-flex;align-items:stretch}
-.acc .mo{padding:2px .04em;border-color:var(--c,var(--lotus))}
+.acc .mo{padding:2px .04em;border-color:var(--teal)}
 .acc .hi{border-top:2px solid}
 .acc .lo{border-bottom:2px solid}
 .acc .turn{border-left:2px solid}
 .acc .aw{display:inline-flex;white-space:nowrap}
 .acc{column-gap:.45em}
 .big .acc .mo{border-width:4px;padding:4px .03em}
-.sp-head{margin:0 0 12px;font-size:.88rem;color:var(--muted);background:var(--soft);border-radius:10px;padding:8px 12px;max-width:70ch;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.sp-head{margin:0 0 12px;font-size:.88rem;color:var(--muted);background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:10px 14px;max-width:70ch;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .sp-head .acc{font-family:var(--font-kana);font-size:1.2rem;color:var(--ink)}
 .chip small{color:var(--muted)}
 
 /* Notes */
-.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
-.note{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:.88rem}
-.note h3{margin:0 0 6px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--leaf)}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.note{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px 16px;font-size:.88rem;box-shadow:var(--shadow)}
+.note h3{margin:0 0 6px;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:var(--teal);font-weight:700}
 .note p{margin:0}
-:focus-visible{outline:3px solid var(--river);outline-offset:2px}
+
+:focus-visible{outline:3px solid #d99b16;outline-offset:3px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* Responsive */
+@media (max-width:1100px){
+  header{flex-direction:column;align-items:stretch;gap:12px}
+  .hdr-right{width:100%;justify-content:space-between}
+}
+@media (max-width:768px){
+  .language-buttons{grid-template-columns:repeat(4,minmax(0,1fr));width:100%}
+  .language-switcher{width:100%;flex-direction:column;align-items:flex-start}
+  .hdr-actions{width:100%;justify-content:space-between}
+}
+@media (max-width:480px){
+  .language-buttons{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .language-button{min-width:0;min-height:52px;padding:4px 3px}
+  .language-button img{width:26px;height:18px}
+  .language-button span{font-size:9.5px}
+  .btn-jls{font-size:12px;padding:8px 10px}
+}
 </style>
 </head>
 <body>
 
 <div class="wrap">
   <header>
-    <div>
-      <h1><span class="jp" id="h1jp">ひらがな</span><span id="h1t">Bảng phát âm tiếng Nhật</span></h1>
-      <p class="sub" id="sub">Bấm vào từng chữ để nghe giọng Nhật chuẩn. Phần chữ Việt chỉ là gợi âm gần đúng, đọc không thêm thanh điệu.</p>
-    </div>
+    <a href="./" class="brand">
+      <span class="brand-badge">音</span>
+      <div class="brand-text">
+        <h1><span class="jp" id="h1jp">ひらがな</span><span class="brand-title" id="h1t">Bảng phát âm tiếng Nhật</span></h1>
+        <p class="sub" id="sub">ひとつずつ、きれいに発音。</p>
+      </div>
+    </a>
     <div class="hdr-right">
-      <label class="langsel" for="lang"><span data-i18n="lang">Ngôn ngữ</span> <select id="lang"></select></label>
-      <div class="progress-row"><div class="progress" id="progress">Đã nghe <b>0</b> / 0 chữ</div><button type="button" class="reset" id="reset" data-i18n="reset">Đặt lại</button></div>
+      <div class="language-switcher" role="group" aria-label="Language">
+        <span class="language-label" data-i18n="lang">言語</span>
+        <div class="language-buttons" id="language-buttons"></div>
+      </div>
+      <div class="hdr-actions">
+        <a href="https://jls-prod.xendouk.workers.dev/" class="btn-jls" target="_self" data-i18n="backToJls">← JLSへ戻る</a>
+        <div class="progress-box">
+          <div class="progress-header">
+            <span class="progress-title" data-i18n="heardProgress">進捗</span>
+            <span class="progress" id="progress">0 / 104</span>
+          </div>
+          <progress id="prog-bar" value="0" max="104"></progress>
+          <button type="button" class="reset" id="reset" data-i18n="reset">リセット</button>
+        </div>
+      </div>
+      <select id="lang" hidden></select>
     </div>
   </header>
 
@@ -407,10 +474,10 @@ const GROUPS=[
 const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 /* ---------- UI languages ---------- */
-const LANGS=[["vi","Tiếng Việt"],["en","English"],["ja","日本語"],["th","ไทย"],["ms","Bahasa Melayu"],["id","Bahasa Indonesia"]];
+const LANGS=[["ja","日本語"],["en","English"],["vi","Tiếng Việt"],["ms","Bahasa Melayu"],["id","Bahasa Indonesia"],["es","Español"],["th","ไทย"]];
 const WIDS=["w-kitte","w-gakkou","w-kippu","w-okaasan","w-oniisan","w-kuuki","w-sensei","w-otousan","w-watashiwa","w-konnichiwa","w-gakkoue","w-hon-o-yomimasu","w-mizu-o-nomimasu","w-shinbun","w-ringo","w-beddo","w-kappu","w-sakkaa","w-koohii","w-keeki","w-nooto","w-suupaa","w-pan","w-pen","w-wain","w-fooku","w-paatii","w-chekku","w-fairu","w-vaiorin"];
 const I18N={
-vi:{animPlay:"Phát",animPause:"Dừng",noteAffr:"Thực tế âm này gồm 3 bước: chặn hơi → xát → nguyên âm. Ở đây chỉ hiển thị 2 bước.",labCons:"Phụ âm",labVow:"Nguyên âm",autoIll:"Tự hiện thẻ minh họa",illMouth:"Xem khẩu hình",illTongue:"Xem vị trí lưỡi",close:"Đóng",tyMouth:"KHẨU HÌNH MIỆNG",tyTongue:"MẶT CẮT KHOANG MIỆNG",noteN:"Ví dụ khi ん đứng trước m, b, p: hai môi khép lại. Trước các âm khác, khẩu hình sẽ thay đổi.",noteWo:"を đọc giống お, nên dùng chung hình của お.",title:"Bảng Hiragana Phát Âm",lang:"Ngôn ngữ",h1:"Bảng phát âm tiếng Nhật",
+vi:{backToJls:"← Về JLS",heardProgress:"Đã nghe",animPlay:"Phát",animPause:"Dừng",noteAffr:"Thực tế âm này gồm 3 bước: chặn hơi → xát → nguyên âm. Ở đây chỉ hiển thị 2 bước.",labCons:"Phụ âm",labVow:"Nguyên âm",autoIll:"Tự hiện thẻ minh họa",illMouth:"Xem khẩu hình",illTongue:"Xem vị trí lưỡi",close:"Đóng",tyMouth:"KHẨU HÌNH MIỆNG",tyTongue:"MẶT CẮT KHOANG MIỆNG",noteN:"Ví dụ khi ん đứng trước m, b, p: hai môi khép lại. Trước các âm khác, khẩu hình sẽ thay đổi.",noteWo:"を đọc giống お, nên dùng chung hình của お.",title:"Bảng Hiragana Phát Âm",lang:"Ngôn ngữ",h1:"Bảng phát âm tiếng Nhật",
  sub:"Bấm vào từng chữ để nghe giọng Nhật chuẩn. Phần chữ Việt chỉ là gợi âm gần đúng, đọc không thêm thanh điệu.",
  progress:(n,t)=>`Đã nghe <b>${n}</b> / ${t} chữ`,
  script:"Chữ",voice:"Giọng đọc",speed:"Tốc độ",show:"Hiện",slow:"Chậm",mid:"Vừa",normal:"Bình thường",hint:"Gợi âm Việt",romaji:"Romaji",
@@ -435,7 +502,7 @@ vi:{animPlay:"Phát",animPause:"Dừng",noteAffr:"Thực tế âm này gồm 3 b
   vu:["Âm v","Dùng cho từ nước ngoài có âm v; người Nhật thường đọc gần như “b”."]},
  mean:["con tem","trường học","vé tàu","mẹ","anh trai","không khí","giáo viên","bố","tôi thì…","xin chào","đến trường","đọc sách","uống nước","báo","quả táo","giường","cái cốc","bóng đá","cà phê","bánh ngọt","quyển vở","siêu thị","bánh mì","cây bút","rượu vang","cái nĩa","bữa tiệc","kiểm tra","tập tin","đàn violin"]},
 
-en:{animPlay:"Play",animPause:"Pause",noteAffr:"This sound really has three stages: closure → friction → vowel. Only two are shown here.",labCons:"Consonant",labVow:"Vowel",autoIll:"Auto-show card",illMouth:"Mouth shape",illTongue:"Tongue position",close:"Close",tyMouth:"MOUTH SHAPE",tyTongue:"INSIDE THE MOUTH",noteN:"Example of ん before m, b or p: the lips close. Before other sounds the mouth shape changes.",noteWo:"を sounds the same as お, so it uses the お card.",title:"Japanese Kana Pronunciation",lang:"Language",h1:"Japanese pronunciation chart",
+en:{backToJls:"← Back to JLS",heardProgress:"Heard",animPlay:"Play",animPause:"Pause",noteAffr:"This sound really has three stages: closure → friction → vowel. Only two are shown here.",labCons:"Consonant",labVow:"Vowel",autoIll:"Auto-show card",illMouth:"Mouth shape",illTongue:"Tongue position",close:"Close",tyMouth:"MOUTH SHAPE",tyTongue:"INSIDE THE MOUTH",noteN:"Example of ん before m, b or p: the lips close. Before other sounds the mouth shape changes.",noteWo:"を sounds the same as お, so it uses the お card.",title:"Japanese Kana Pronunciation",lang:"Language",h1:"Japanese pronunciation chart",
  sub:"Tap any letter to hear standard Japanese pronunciation. Romaji shows the spelling only, so copy the voice rather than the letters.",
  progress:(n,t)=>`Heard <b>${n}</b> / ${t} sounds`,
  script:"Script",voice:"Voice",speed:"Speed",show:"Show",slow:"Slow",mid:"Medium",normal:"Normal",romaji:"Romaji",
@@ -465,7 +532,7 @@ en:{animPlay:"Play",animPause:"Pause",noteAffr:"This sound really has three stag
   j:"Like the “j” in “jeans”, said softly.",v:"Japanese speakers usually say it close to “b”; a light “v” is also understood."},
  mean:["stamp","school","ticket","mother","older brother","air","teacher","father","as for me…","hello","to school","read a book","drink water","newspaper","apple","bed","cup","soccer","coffee","cake","notebook","supermarket","bread","pen","wine","fork","party","check","file","violin"]},
 
-ja:{animPlay:"再生",animPause:"停止",noteAffr:"破擦音は実際には「閉鎖→摩擦→母音」の3段階です。ここでは2段階で示しています。",labCons:"子音",labVow:"母音",autoIll:"カードを自動表示",illMouth:"口の形を見る",illTongue:"舌の位置を見る",close:"閉じる",tyMouth:"口の形",tyTongue:"口の中の断面",noteN:"m・b・p の前の「ん」の例（唇を閉じる）。ほかの音の前では口の形が変わります。",noteWo:"「を」は「お」と同じ音なので、「お」のカードを表示しています。",title:"かな発音表",lang:"言語",h1:"日本語の発音表",
+ja:{backToJls:"← JLSへ戻る",heardProgress:"学習済み",animPlay:"再生",animPause:"停止",noteAffr:"破擦音は実際には「閉鎖→摩擦→母音」の3段階です。ここでは2段階で示しています。",labCons:"子音",labVow:"母音",autoIll:"カードを自動表示",illMouth:"口の形を見る",illTongue:"舌の位置を見る",close:"閉じる",tyMouth:"口の形",tyTongue:"口の中の断面",noteN:"m・b・p の前の「ん」の例（唇を閉じる）。ほかの音の前では口の形が変わります。",noteWo:"「を」は「お」と同じ音なので、「お」のカードを表示しています。",title:"かな発音表",lang:"言語",h1:"日本語の発音表",
  sub:"文字を押すと、標準的な日本語の発音を聞けます。ローマ字は綴りの目安なので、文字ではなく音声をまねてください。",
  progress:(n,t)=>`聞いた音 <b>${n}</b> / ${t}`,
  script:"文字",voice:"音声",speed:"速さ",show:"表示",slow:"ゆっくり",mid:"やや遅め",normal:"標準",romaji:"ローマ字",
@@ -495,7 +562,7 @@ ja:{animPlay:"再生",animPause:"停止",noteAffr:"破擦音は実際には「�
   j:"「ち」と同じ舌の構えで、声帯を振動させてやわらかく出します（ち＋声＝じ）。",v:"実際には「ブ」に近く発音されることが多く、軽い v でも通じます。"},
  mean:["切手","学校","切符","お母さん","お兄さん","空気","先生","お父さん","私は","あいさつ","学校へ","本を読みます","水を飲みます","新聞","林檎","bed","cup","soccer","coffee","cake","note(book)","super(market)","pão（ポルトガル語）","pen","wine","fork","party","check","file","violin"]},
 
-th:{animPlay:"เล่น",animPause:"หยุด",noteAffr:"เสียงนี้จริง ๆ มี 3 ขั้น: กักลม → เสียดแทรก → สระ ที่นี่แสดงเพียง 2 ขั้น",labCons:"พยัญชนะ",labVow:"สระ",autoIll:"แสดงภาพอัตโนมัติ",illMouth:"ดูรูปปาก",illTongue:"ดูตำแหน่งลิ้น",close:"ปิด",tyMouth:"รูปปาก",tyTongue:"ภาพตัดภายในช่องปาก",noteN:"ตัวอย่าง ん ก่อน m, b, p: ริมฝีปากปิด ก่อนเสียงอื่นรูปปากจะเปลี่ยนไป",noteWo:"を ออกเสียงเหมือน お จึงใช้ภาพของ お",title:"ตารางออกเสียงคานะ",lang:"ภาษา",h1:"ตารางการออกเสียงภาษาญี่ปุ่น",
+th:{backToJls:"← กลับสู่ JLS",heardProgress:"ฟังแล้ว",animPlay:"เล่น",animPause:"หยุด",noteAffr:"เสียงนี้จริง ๆ มี 3 ขั้น: กักลม → เสียดแทรก → สระ ที่นี่แสดงเพียง 2 ขั้น",labCons:"พยัญชนะ",labVow:"สระ",autoIll:"แสดงภาพอัตโนมัติ",illMouth:"ดูรูปปาก",illTongue:"ดูตำแหน่งลิ้น",close:"ปิด",tyMouth:"รูปปาก",tyTongue:"ภาพตัดภายในช่องปาก",noteN:"ตัวอย่าง ん ก่อน m, b, p: ริมฝีปากปิด ก่อนเสียงอื่นรูปปากจะเปลี่ยนไป",noteWo:"を ออกเสียงเหมือน お จึงใช้ภาพของ お",title:"ตารางออกเสียงคานะ",lang:"ภาษา",h1:"ตารางการออกเสียงภาษาญี่ปุ่น",
  sub:"แตะที่ตัวอักษรเพื่อฟังการออกเสียงภาษาญี่ปุ่นมาตรฐาน โรมาจิเป็นเพียงการสะกด ให้ฟังเสียงตัวอย่างแล้วออกเสียงตาม",
  progress:(n,t)=>`ฟังแล้ว <b>${n}</b> / ${t} เสียง`,
  script:"ตัวอักษร",voice:"เสียงอ่าน",speed:"ความเร็ว",show:"แสดง",slow:"ช้า",mid:"ปานกลาง",normal:"ปกติ",romaji:"โรมาจิ",
@@ -525,7 +592,7 @@ th:{animPlay:"เล่น",animPause:"หยุด",noteAffr:"เสียง�
   j:"คล้าย จ แต่ให้เส้นเสียงสั่น ออกเสียงเบา ๆ",v:"คนญี่ปุ่นมักออกเสียงใกล้กับ “b” ออกเสียง “v” เบา ๆ ก็เข้าใจได้"},
  mean:["แสตมป์","โรงเรียน","ตั๋ว","แม่","พี่ชาย","อากาศ","ครู","พ่อ","ส่วนฉัน…","สวัสดี","ไปโรงเรียน","อ่านหนังสือ","ดื่มน้ำ","หนังสือพิมพ์","แอปเปิล","เตียง","ถ้วย","ฟุตบอล","กาแฟ","เค้ก","สมุด","ซูเปอร์มาร์เก็ต","ขนมปัง","ปากกา","ไวน์","ส้อม","ปาร์ตี้","ตรวจสอบ","ไฟล์","ไวโอลิน"]},
 
-ms:{animPlay:"Main",animPause:"Jeda",noteAffr:"Bunyi ini sebenarnya ada 3 peringkat: hentian → geseran → vokal. Di sini hanya 2 peringkat ditunjukkan.",labCons:"Konsonan",labVow:"Vokal",autoIll:"Papar kad automatik",illMouth:"Bentuk mulut",illTongue:"Kedudukan lidah",close:"Tutup",tyMouth:"BENTUK MULUT",tyTongue:"KERATAN RENTAS MULUT",noteN:"Contoh ん sebelum m, b atau p: bibir tertutup. Sebelum bunyi lain, bentuk mulut berubah.",noteWo:"を disebut sama seperti お, jadi kad お digunakan.",title:"Jadual Sebutan Kana",lang:"Bahasa",h1:"Jadual sebutan bahasa Jepun",
+ms:{backToJls:"← Kembali ke JLS",heardProgress:"Didengar",animPlay:"Main",animPause:"Jeda",noteAffr:"Bunyi ini sebenarnya ada 3 peringkat: hentian → geseran → vokal. Di sini hanya 2 peringkat ditunjukkan.",labCons:"Konsonan",labVow:"Vokal",autoIll:"Papar kad automatik",illMouth:"Bentuk mulut",illTongue:"Kedudukan lidah",close:"Tutup",tyMouth:"BENTUK MULUT",tyTongue:"KERATAN RENTAS MULUT",noteN:"Contoh ん sebelum m, b atau p: bibir tertutup. Sebelum bunyi lain, bentuk mulut berubah.",noteWo:"を disebut sama seperti お, jadi kad お digunakan.",title:"Jadual Sebutan Kana",lang:"Bahasa",h1:"Jadual sebutan bahasa Jepun",
  sub:"Tekan mana-mana huruf untuk mendengar sebutan bahasa Jepun standard. Romaji hanya menunjukkan ejaan, jadi tiru suaranya, bukan hurufnya.",
  progress:(n,t)=>`Sudah didengar <b>${n}</b> / ${t} bunyi`,
  script:"Tulisan",voice:"Suara",speed:"Kelajuan",show:"Papar",slow:"Perlahan",mid:"Sederhana",normal:"Biasa",romaji:"Romaji",
@@ -555,7 +622,7 @@ ms:{animPlay:"Main",animPause:"Jeda",noteAffr:"Bunyi ini sebenarnya ada 3 pering
   j:"Seperti “j” dalam “jalan”, disebut dengan lembut.",v:"Orang Jepun biasanya menyebutnya hampir seperti “b”; “v” yang ringan juga difahami."},
  mean:["setem","sekolah","tiket","ibu","abang","udara","guru","bapa","saya pula…","helo","ke sekolah","membaca buku","minum air","surat khabar","epal","katil","cawan","bola sepak","kopi","kek","buku nota","pasar raya","roti","pen","wain","garpu","parti","semak","fail","biola"]},
 
-id:{animPlay:"Putar",animPause:"Jeda",noteAffr:"Bunyi ini sebenarnya punya 3 tahap: hambatan → gesekan → vokal. Di sini hanya 2 tahap yang ditampilkan.",labCons:"Konsonan",labVow:"Vokal",autoIll:"Tampilkan kartu otomatis",illMouth:"Bentuk mulut",illTongue:"Posisi lidah",close:"Tutup",tyMouth:"BENTUK MULUT",tyTongue:"PENAMPANG RONGGA MULUT",noteN:"Contoh ん sebelum m, b, atau p: bibir tertutup. Sebelum bunyi lain, bentuk mulut berubah.",noteWo:"を diucapkan sama seperti お, jadi kartu お yang dipakai.",title:"Tabel Pelafalan Kana",lang:"Bahasa",h1:"Tabel pelafalan bahasa Jepang",
+id:{backToJls:"← Kembali ke JLS",heardProgress:"Didengar",animPlay:"Putar",animPause:"Jeda",noteAffr:"Bunyi ini sebenarnya punya 3 tahap: hambatan → gesekan → vokal. Di sini hanya 2 tahap yang ditampilkan.",labCons:"Konsonan",labVow:"Vokal",autoIll:"Tampilkan kartu otomatis",illMouth:"Bentuk mulut",illTongue:"Posisi lidah",close:"Tutup",tyMouth:"BENTUK MULUT",tyTongue:"PENAMPANG RONGGA MULUT",noteN:"Contoh ん sebelum m, b, atau p: bibir tertutup. Sebelum bunyi lain, bentuk mulut berubah.",noteWo:"を diucapkan sama seperti お, jadi kartu お yang dipakai.",title:"Tabel Pelafalan Kana",lang:"Bahasa",h1:"Tabel pelafalan bahasa Jepang",
  sub:"Ketuk huruf mana saja untuk mendengar pelafalan bahasa Jepang standar. Romaji hanya menunjukkan ejaan, jadi tirukan suaranya, bukan hurufnya.",
  progress:(n,t)=>`Sudah didengar <b>${n}</b> / ${t} bunyi`,
  script:"Huruf",voice:"Suara",speed:"Kecepatan",show:"Tampilkan",slow:"Lambat",mid:"Sedang",normal:"Normal",romaji:"Romaji",
@@ -584,6 +651,37 @@ id:{animPlay:"Putar",animPause:"Jeda",noteAffr:"Bunyi ini sebenarnya punya 3 tah
   n:"Bunyi sengau sepanjang satu ketukan; berubah menjadi m, n, atau ng tergantung bunyi berikutnya.",dz:"Ucapkan dz bersambung sebagai satu bunyi.",
   j:"Seperti “j” pada “jalan”, diucapkan dengan lembut.",v:"Orang Jepang biasanya mengucapkannya mirip “b”; “v” yang ringan juga dimengerti."},
  mean:["perangko","sekolah","tiket","ibu","kakak laki-laki","udara","guru","ayah","saya…","halo","ke sekolah","membaca buku","minum air","koran","apel","tempat tidur","cangkir","sepak bola","kopi","kue","buku catatan","supermarket","roti","pulpen","anggur (minuman)","garpu","pesta","periksa","berkas","biola"]}
+,
+
+es:{backToJls:"← Volver a JLS",heardProgress:"Escuchado",animPlay:"Reproducir",animPause:"Pausa",noteAffr:"Este sonido tiene 3 fases: oclusión → fricción → vocal. Aquí solo se muestran 2 fases.",labCons:"Consonante",labVow:"Vocal",autoIll:"Mostrar tarjeta automáticamente",illMouth:"Forma de la boca",illTongue:"Posición de la lengua",close:"Cerrar",tyMouth:"FORMA DE LA BOCA",tyTongue:"CORTE SAGITAL DE LA BOCA",noteN:"Ejemplo de ん antes de m, b, p: los labios se cierran. Ante otros sonidos, la boca cambia de forma.",noteWo:"を suena igual que お, por lo que se usa la tarjeta de お.",title:"Tabla de Pronunciación de Kana",lang:"Idioma",h1:"Tabla de pronunciación en japonés",
+  sub:"Toca cada letra para escuchar la pronunciación japonesa estándar. Copia la voz real en vez de fiarte de las letras.",
+  progress:(n,t)=>`Escuchado <b>${n}</b> / ${t} sonidos`,
+  script:"Escritura",voice:"Voz",speed:"Velocidad",show:"Mostrar",slow:"Lento",mid:"Medio",normal:"Normal",romaji:"Romaji",
+  reset:"Restablecer",resetArm:"Toca de nuevo para borrar",replay:"Repetir",loading:"Cargando voz…",noVoice:"No se encontró voz en japonés",
+  srcRec:"Voz real",srcAI:"Voz IA",srcTTS:"Voz del sistema",optRec:"Voz real (grabación) ★",optAI:"Voz IA de alta calidad (Google)",grpTTS:"Voz del sistema (dispositivo)",
+  warnNoSynth:"Este navegador no admite síntesis de voz. Por favor usa Chrome, Edge o Safari moderno.",
+  warnNoJa:"No hay voz en japonés instalada en tu dispositivo. En Windows: Configuración > Hora e idioma > Voz > Agregar voz 'Japonés'. En móvil: añade idioma japonés en Texto a voz.",
+  rowPlay:"Escuchar fila",tabs:{basic:"Básicos",daku:"Sonoros · Semi-sonoros",yoon:"Combinados",gairai:"Extranjeros",special:"Especiales"},
+  gairaiNote:"<b>Solo en katakana.</b> Usado para palabras extranjeras (ej. パーティー, フォーク). Los dos caracteres se leen juntos como un solo tiempo.",
+  accLegend:"Línea <b>superior</b> = tono <b>alto</b>, línea <b>inferior</b> = tono <b>bajo</b>. El japonés usa acento tonal (alto/bajo).",
+  notes:[["Pistas fonéticas","Son aproximaciones para ayudarte a empezar. Escucha siempre la voz nativa y reproduce su sonido."],
+   ["Vocales y r","<b>u</b>: labios relajados y casi planos, no redondeados. <b>r</b>: un toque suave de la lengua detrás de los dientes superiores, sin vibrar como la rr española."],
+   ["Marca *","Sonidos que requieren atención especial. Toca las letras con * para ver consejos detallados."]],
+  marks:{wa_e:"は → wa,  へ → e",wo:"を → o"},
+  sp:{sokuon:["Pausa corta (tsu pequeño)","Pausa de un tiempo completo; no pronuncies 'tsu'. La consonante siguiente se sostiene."],
+   long:["Vocales largas","Alarga la vocal dos tiempos. えい suele sonar como e larga y おう como o larga."],
+   wa_e:["Como partículas","は se lee 'wa' cuando es partícula de tema; へ se lee 'e' cuando indica dirección."],
+   wo:["Partícula de objeto","を solo se usa como partícula gramatical y suena igual que お."],
+   n:["N moraica variable","Antes de m/b/p suena como 'm', antes de n/t/d como 'n', y antes de k/g en el velo del paladar."],
+   chouon:["Signo de vocal larga","En katakana, las vocales largas se escriben con ー. Alarga la vocal anterior un tiempo más."],
+   small:["Vocales pequeñas (extranjeras)","Se combinan con el carácter anterior en un solo tiempo para reproducir sonidos de otros idiomas."],
+   vu:["Sonido v","Para palabras extranjeras con v; los japoneses suelen pronunciarlo similar a 'b'."]},
+  tips:{shi:"Sonido suave entre 's' y 'sh', con el dorso de la lengua.",sh:"Sonido suave parecido a 'sh', labios relajados.",ch:"Parecido a la 'ch' española pero muy suave.",
+   ts:"t y s unidas en un solo golpe de voz continuo.",hi:"El aire pasa por el dorso de la lengua; lengua más alta que con la j española.",
+   f:"Soplo suave entre ambos labios sin tocar los dientes.",r:"Toque simple y muy suave de la punta de la lengua tras los dientes superiores (como la r simple en 'pero').",
+   n:"Sonido nasal de un tiempo completo; varía según el sonido siguiente.",dz:"Pronuncia dz continuo como un solo sonido.",
+   j:"Parecido a la j inglesa o 'll' argentina suave.",v:"Los japoneses lo pronuncian casi como 'b'; una 'v' suave también se comprende."},
+  mean:["sello","escuela","billete","madre","hermano mayor","aire","profesor","padre","yo…","hola","ir a la escuela","leer un libro","beber agua","periódico","manzana","cama","taza","fútbol","café","pastel","cuaderno","supermercado","pan","bolígrafo","vino","tenedor","fiesta","comprobación","archivo","violín"]}
 };
 function pickLang(){
   const ok=c=>LANGS.some(l=>l[0]===c);
@@ -876,6 +974,8 @@ function updateProgress(){
   const all=new Set([BASIC,DAKU,YOON,GAIRAI].flatMap(g=>g.rows.flat().filter(Boolean).map(x=>x[0])));
   const n=[...heard].filter(k=>all.has(k)).length;
   document.getElementById("progress").innerHTML=T("progress")(n,TOTAL);
+  const bar=document.getElementById("prog-bar");
+  if(bar){bar.value=n;bar.max=TOTAL;}
 }
 /* reset the "heard" record: first tap arms the button, second tap within 3 s clears it */
 let resetTimer=null;
@@ -1186,8 +1286,33 @@ function applyScript(){
 document.querySelectorAll("#script button").forEach(b=>b.addEventListener("click",()=>{
   script=b.dataset.s;store.set("hira_script",script);applyScript();speak(big.dataset.say,curId);
 }));
+
+const FLAG_FILES={ja:"jp",en:"gb",vi:"vn",ms:"my",id:"id",es:"es",th:"th"};
+function renderLangButtons(){
+  const box=document.getElementById("language-buttons");
+  if(!box)return;
+  box.innerHTML=LANGS.map(([c,n])=>{
+    const act=c===LANG;
+    const flag=FLAG_FILES[c]||c;
+    return `<button type="button" class="language-button${act?" is-active":""}" data-lang="${c}" aria-pressed="${act}">`+
+      `<img src="assets/flags/${flag}.svg" alt="" width="32" height="22" loading="lazy" />`+
+      `<span>${n}</span></button>`;
+  }).join("");
+  box.querySelectorAll(".language-button").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const code=btn.dataset.lang;
+      if(code&&code!==LANG){
+        LANG=code;
+        store.set("hira_lang",LANG);
+        try{history.replaceState(null,"","#"+LANG)}catch(e){}
+        applyLang();
+      }
+    });
+  });
+}
+
 function applyLang(){
-  document.documentElement.lang=LANG;document.title=T("title");
+  document.documentElement.lang=LANG;document.title=T("title");renderLangButtons();
   document.querySelectorAll("[data-i18n]").forEach(el=>{const v=T(el.dataset.i18n);if(typeof v==="string")el.textContent=v});
   document.getElementById("h1t").textContent=T("h1");document.getElementById("sub").textContent=T("sub");
   document.getElementById("notes").innerHTML=T("notes").map(([h,p])=>`<div class="note"><h3>${h}</h3><p>${p}</p></div>`).join("");
