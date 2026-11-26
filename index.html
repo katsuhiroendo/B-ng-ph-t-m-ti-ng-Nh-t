@@ -83,6 +83,13 @@ select{background:var(--surface-2);border:1px solid var(--border);border-radius:
 .seg button[lang=ja]{font-family:var(--font-kana);font-size:.92rem}
 .seg button{border:0;background:transparent;color:var(--ink);font:inherit;font-size:.82rem;font-weight:600;padding:6px 14px;border-radius:999px;cursor:pointer;transition:background .15s,color .15s}
 .seg button[aria-pressed="true"]{background:var(--teal);color:#fff;box-shadow:0 2px 6px #007f7020}
+.vol-box{display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--border);border-radius:999px;padding:3px 10px 3px 6px}
+.vol-btn{background:transparent;border:0;color:var(--teal);cursor:pointer;padding:3px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,color .15s}
+.vol-btn:hover{background:var(--mint);color:var(--teal-dark)}
+.vol-btn:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.vol-icon{width:18px;height:18px;fill:currentColor}
+.vol-box input[type=range]{width:80px;accent-color:var(--teal);cursor:pointer;margin:0}
+.vol-val{font-size:.78rem;color:var(--ink);font-weight:600;min-width:38px;text-align:right;font-variant-numeric:tabular-nums}
 .warn{flex-basis:100%;margin:0;font-size:.85rem;color:var(--lotus);background:var(--lotus-soft);border-radius:8px;padding:8px 10px}
 
 .main{display:grid;grid-template-columns:320px minmax(0,1fr);gap:20px;align-items:start}
@@ -275,6 +282,15 @@ select{background:var(--surface-2);border:1px solid var(--border);border-radius:
         <button type="button" data-rate="1" aria-pressed="false" data-i18n="normal">Bình thường</button>
       </span>
     </label>
+    <label class="vol-label"><span data-i18n="volume">音量</span>
+      <span class="vol-box">
+        <button type="button" class="vol-btn" id="vol-mute-btn" aria-label="ミュート切替" title="ミュート切替">
+          <svg class="vol-icon" id="vol-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        </button>
+        <input type="range" id="vol-range" min="0" max="100" value="100" step="1" aria-label="音量">
+        <span class="vol-val" id="vol-val">100%</span>
+      </span>
+    </label>
     <label><span data-i18n="show">Hiện</span>
       <span class="seg" id="show">
         <button type="button" data-k="vi" aria-pressed="true" data-i18n="hint">Gợi âm Việt</button>
@@ -463,7 +479,7 @@ const I18N={
 vi:{backToJls:"← Về JLS",heardProgress:"Đã nghe",animPlay:"Phát",animPause:"Dừng",noteAffr:"Thực tế âm này gồm 3 bước: chặn hơi → xát → nguyên âm. Ở đây chỉ hiển thị 2 bước.",labCons:"Phụ âm",labVow:"Nguyên âm",autoIll:"Tự hiện thẻ minh họa",illMouth:"Xem khẩu hình",illTongue:"Xem vị trí lưỡi",close:"Đóng",tyMouth:"KHẨU HÌNH MIỆNG",tyTongue:"MẶT CẮT KHOANG MIỆNG",noteN:"Ví dụ khi ん đứng trước m, b, p: hai môi khép lại. Trước các âm khác, khẩu hình sẽ thay đổi.",noteWo:"を đọc giống お, nên dùng chung hình của お.",title:"Bảng Hiragana Phát Âm",lang:"Ngôn ngữ",h1:"Bảng phát âm tiếng Nhật",
  sub:"Bấm vào từng chữ để nghe giọng Nhật chuẩn. Phần chữ Việt chỉ là gợi âm gần đúng, đọc không thêm thanh điệu.",
  progress:(n,t)=>`Đã nghe <b>${n}</b> / ${t} chữ`,
- script:"Chữ",voice:"Giọng đọc",speed:"Tốc độ",show:"Hiện",slow:"Chậm",mid:"Vừa",normal:"Bình thường",hint:"Gợi âm Việt",romaji:"Romaji",
+ script:"Chữ",voice:"Giọng đọc",speed:"Tốc độ",volume:"Âm lượng",mute:"Bật/tắt tiếng",show:"Hiện",slow:"Chậm",mid:"Vừa",normal:"Bình thường",hint:"Gợi âm Việt",romaji:"Romaji",
  reset:"Đặt lại",resetArm:"Bấm lần nữa để xoá",replay:"Nghe lại",loading:"Đang tải giọng…",noVoice:"Không tìm thấy giọng Nhật",
  srcRec:"Giọng người thật",srcAI:"Giọng AI",srcTTS:"Giọng máy",optRec:"Giọng người thật (ghi âm) ★",optAI:"Giọng AI chất lượng cao (Google)",grpTTS:"Giọng máy (trên thiết bị)",
  warnNoSynth:"Trình duyệt này không hỗ trợ đọc giọng nói. Hãy mở bằng Chrome, Edge hoặc Safari bản mới.",
@@ -488,7 +504,7 @@ vi:{backToJls:"← Về JLS",heardProgress:"Đã nghe",animPlay:"Phát",animPaus
 en:{backToJls:"← Back to JLS",heardProgress:"Heard",animPlay:"Play",animPause:"Pause",noteAffr:"This sound really has three stages: closure → friction → vowel. Only two are shown here.",labCons:"Consonant",labVow:"Vowel",autoIll:"Auto-show card",illMouth:"Mouth shape",illTongue:"Tongue position",close:"Close",tyMouth:"MOUTH SHAPE",tyTongue:"INSIDE THE MOUTH",noteN:"Example of ん before m, b or p: the lips close. Before other sounds the mouth shape changes.",noteWo:"を sounds the same as お, so it uses the お card.",title:"Japanese Kana Pronunciation",lang:"Language",h1:"Japanese pronunciation chart",
  sub:"Tap any letter to hear standard Japanese pronunciation. Romaji shows the spelling only, so copy the voice rather than the letters.",
  progress:(n,t)=>`Heard <b>${n}</b> / ${t} sounds`,
- script:"Script",voice:"Voice",speed:"Speed",show:"Show",slow:"Slow",mid:"Medium",normal:"Normal",romaji:"Romaji",
+ script:"Script",voice:"Voice",speed:"Speed",volume:"Volume",mute:"Mute/Unmute",show:"Show",slow:"Slow",mid:"Medium",normal:"Normal",romaji:"Romaji",
  reset:"Reset",resetArm:"Tap again to clear",replay:"Play again",loading:"Loading voices…",noVoice:"No Japanese voice found",
  srcRec:"Native speaker",srcAI:"AI voice",srcTTS:"Device voice",optRec:"Native speaker (recorded) ★",optAI:"High-quality AI voice (Google)",grpTTS:"Device voices",
  warnNoSynth:"This browser cannot play speech. Please open the page in a recent version of Chrome, Edge or Safari.",
@@ -518,7 +534,7 @@ en:{backToJls:"← Back to JLS",heardProgress:"Heard",animPlay:"Play",animPause:
 ja:{backToJls:"← JLSへ戻る",heardProgress:"学習済み",animPlay:"再生",animPause:"停止",noteAffr:"破擦音は実際には「閉鎖→摩擦→母音」の3段階です。ここでは2段階で示しています。",labCons:"子音",labVow:"母音",autoIll:"カードを自動表示",illMouth:"口の形を見る",illTongue:"舌の位置を見る",close:"閉じる",tyMouth:"口の形",tyTongue:"口の中の断面",noteN:"m・b・p の前の「ん」の例（唇を閉じる）。ほかの音の前では口の形が変わります。",noteWo:"「を」は「お」と同じ音なので、「お」のカードを表示しています。",title:"かな発音表",lang:"言語",h1:"日本語の発音表",
  sub:"文字を押すと、標準的な日本語の発音を聞けます。ローマ字は綴りの目安なので、文字ではなく音声をまねてください。",
  progress:(n,t)=>`聞いた音 <b>${n}</b> / ${t}`,
- script:"文字",voice:"音声",speed:"速さ",show:"表示",slow:"ゆっくり",mid:"やや遅め",normal:"標準",romaji:"ローマ字",
+ script:"文字",voice:"音声",speed:"速さ",volume:"音量",mute:"ミュート切替",show:"表示",slow:"ゆっくり",mid:"やや遅め",normal:"標準",romaji:"ローマ字",
  reset:"リセット",resetArm:"もう一度押すと消去",replay:"もう一度",loading:"音声を読み込み中…",noVoice:"日本語の音声が見つかりません",
  srcRec:"ネイティブの録音",srcAI:"AI音声",srcTTS:"端末の音声",optRec:"ネイティブの録音 ★",optAI:"高品質AI音声（Google）",grpTTS:"端末の音声",
  warnNoSynth:"このブラウザは音声の読み上げに対応していません。最新版の Chrome、Edge、Safari で開いてください。",
@@ -548,7 +564,7 @@ ja:{backToJls:"← JLSへ戻る",heardProgress:"学習済み",animPlay:"再生",
 th:{backToJls:"← กลับสู่ JLS",heardProgress:"ฟังแล้ว",animPlay:"เล่น",animPause:"หยุด",noteAffr:"เสียงนี้จริง ๆ มี 3 ขั้น: กักลม → เสียดแทรก → สระ ที่นี่แสดงเพียง 2 ขั้น",labCons:"พยัญชนะ",labVow:"สระ",autoIll:"แสดงภาพอัตโนมัติ",illMouth:"ดูรูปปาก",illTongue:"ดูตำแหน่งลิ้น",close:"ปิด",tyMouth:"รูปปาก",tyTongue:"ภาพตัดภายในช่องปาก",noteN:"ตัวอย่าง ん ก่อน m, b, p: ริมฝีปากปิด ก่อนเสียงอื่นรูปปากจะเปลี่ยนไป",noteWo:"を ออกเสียงเหมือน お จึงใช้ภาพของ お",title:"ตารางออกเสียงคานะ",lang:"ภาษา",h1:"ตารางการออกเสียงภาษาญี่ปุ่น",
  sub:"แตะที่ตัวอักษรเพื่อฟังการออกเสียงภาษาญี่ปุ่นมาตรฐาน โรมาจิเป็นเพียงการสะกด ให้ฟังเสียงตัวอย่างแล้วออกเสียงตาม",
  progress:(n,t)=>`ฟังแล้ว <b>${n}</b> / ${t} เสียง`,
- script:"ตัวอักษร",voice:"เสียงอ่าน",speed:"ความเร็ว",show:"แสดง",slow:"ช้า",mid:"ปานกลาง",normal:"ปกติ",romaji:"โรมาจิ",
+ script:"ตัวอักษร",voice:"เสียงอ่าน",speed:"ความเร็ว",volume:"ระดับเสียง",mute:"เปิด/ปิดเสียง",show:"แสดง",slow:"ช้า",mid:"ปานกลาง",normal:"ปกติ",romaji:"โรมาจิ",
  reset:"รีเซ็ต",resetArm:"กดอีกครั้งเพื่อล้าง",replay:"ฟังอีกครั้ง",loading:"กำลังโหลดเสียง…",noVoice:"ไม่พบเสียงภาษาญี่ปุ่น",
  srcRec:"เสียงเจ้าของภาษา",srcAI:"เสียง AI",srcTTS:"เสียงของอุปกรณ์",optRec:"เสียงเจ้าของภาษา (บันทึกเสียง) ★",optAI:"เสียง AI คุณภาพสูง (Google)",grpTTS:"เสียงของอุปกรณ์",
  warnNoSynth:"เบราว์เซอร์นี้อ่านออกเสียงไม่ได้ กรุณาเปิดด้วย Chrome, Edge หรือ Safari เวอร์ชันล่าสุด",
@@ -578,7 +594,7 @@ th:{backToJls:"← กลับสู่ JLS",heardProgress:"ฟังแล้�
 ms:{backToJls:"← Kembali ke JLS",heardProgress:"Didengar",animPlay:"Main",animPause:"Jeda",noteAffr:"Bunyi ini sebenarnya ada 3 peringkat: hentian → geseran → vokal. Di sini hanya 2 peringkat ditunjukkan.",labCons:"Konsonan",labVow:"Vokal",autoIll:"Papar kad automatik",illMouth:"Bentuk mulut",illTongue:"Kedudukan lidah",close:"Tutup",tyMouth:"BENTUK MULUT",tyTongue:"KERATAN RENTAS MULUT",noteN:"Contoh ん sebelum m, b atau p: bibir tertutup. Sebelum bunyi lain, bentuk mulut berubah.",noteWo:"を disebut sama seperti お, jadi kad お digunakan.",title:"Jadual Sebutan Kana",lang:"Bahasa",h1:"Jadual sebutan bahasa Jepun",
  sub:"Tekan mana-mana huruf untuk mendengar sebutan bahasa Jepun standard. Romaji hanya menunjukkan ejaan, jadi tiru suaranya, bukan hurufnya.",
  progress:(n,t)=>`Sudah didengar <b>${n}</b> / ${t} bunyi`,
- script:"Tulisan",voice:"Suara",speed:"Kelajuan",show:"Papar",slow:"Perlahan",mid:"Sederhana",normal:"Biasa",romaji:"Romaji",
+ script:"Tulisan",voice:"Suara",speed:"Kelajuan",volume:"Kelantangan",mute:"Bisu/Nyahbisu",show:"Papar",slow:"Perlahan",mid:"Sederhana",normal:"Biasa",romaji:"Romaji",
  reset:"Set semula",resetArm:"Tekan sekali lagi untuk padam",replay:"Dengar semula",loading:"Memuatkan suara…",noVoice:"Tiada suara bahasa Jepun",
  srcRec:"Penutur asli",srcAI:"Suara AI",srcTTS:"Suara peranti",optRec:"Penutur asli (rakaman) ★",optAI:"Suara AI berkualiti tinggi (Google)",grpTTS:"Suara peranti",
  warnNoSynth:"Pelayar ini tidak dapat memainkan suara. Sila buka dengan Chrome, Edge atau Safari versi terkini.",
@@ -608,7 +624,7 @@ ms:{backToJls:"← Kembali ke JLS",heardProgress:"Didengar",animPlay:"Main",anim
 id:{backToJls:"← Kembali ke JLS",heardProgress:"Didengar",animPlay:"Putar",animPause:"Jeda",noteAffr:"Bunyi ini sebenarnya punya 3 tahap: hambatan → gesekan → vokal. Di sini hanya 2 tahap yang ditampilkan.",labCons:"Konsonan",labVow:"Vokal",autoIll:"Tampilkan kartu otomatis",illMouth:"Bentuk mulut",illTongue:"Posisi lidah",close:"Tutup",tyMouth:"BENTUK MULUT",tyTongue:"PENAMPANG RONGGA MULUT",noteN:"Contoh ん sebelum m, b, atau p: bibir tertutup. Sebelum bunyi lain, bentuk mulut berubah.",noteWo:"を diucapkan sama seperti お, jadi kartu お yang dipakai.",title:"Tabel Pelafalan Kana",lang:"Bahasa",h1:"Tabel pelafalan bahasa Jepang",
  sub:"Ketuk huruf mana saja untuk mendengar pelafalan bahasa Jepang standar. Romaji hanya menunjukkan ejaan, jadi tirukan suaranya, bukan hurufnya.",
  progress:(n,t)=>`Sudah didengar <b>${n}</b> / ${t} bunyi`,
- script:"Huruf",voice:"Suara",speed:"Kecepatan",show:"Tampilkan",slow:"Lambat",mid:"Sedang",normal:"Normal",romaji:"Romaji",
+ script:"Huruf",voice:"Suara",speed:"Kecepatan",volume:"Volume",mute:"Bisu/Bunyikan",show:"Tampilkan",slow:"Lambat",mid:"Sedang",normal:"Normal",romaji:"Romaji",
  reset:"Atur ulang",resetArm:"Tekan lagi untuk menghapus",replay:"Dengar lagi",loading:"Memuat suara…",noVoice:"Suara bahasa Jepang tidak ditemukan",
  srcRec:"Penutur asli",srcAI:"Suara AI",srcTTS:"Suara perangkat",optRec:"Penutur asli (rekaman) ★",optAI:"Suara AI berkualitas tinggi (Google)",grpTTS:"Suara perangkat",
  warnNoSynth:"Peramban ini tidak dapat memutar suara. Silakan buka dengan Chrome, Edge, atau Safari versi terbaru.",
@@ -639,7 +655,7 @@ id:{backToJls:"← Kembali ke JLS",heardProgress:"Didengar",animPlay:"Putar",ani
 es:{backToJls:"← Volver a JLS",heardProgress:"Escuchado",animPlay:"Reproducir",animPause:"Pausa",noteAffr:"Este sonido tiene 3 fases: oclusión → fricción → vocal. Aquí solo se muestran 2 fases.",labCons:"Consonante",labVow:"Vocal",autoIll:"Mostrar tarjeta automáticamente",illMouth:"Forma de la boca",illTongue:"Posición de la lengua",close:"Cerrar",tyMouth:"FORMA DE LA BOCA",tyTongue:"CORTE SAGITAL DE LA BOCA",noteN:"Ejemplo de ん antes de m, b, p: los labios se cierran. Ante otros sonidos, la boca cambia de forma.",noteWo:"を suena igual que お, por lo que se usa la tarjeta de お.",title:"Tabla de Pronunciación de Kana",lang:"Idioma",h1:"Tabla de pronunciación en japonés",
   sub:"Toca cada letra para escuchar la pronunciación japonesa estándar. Copia la voz real en vez de fiarte de las letras.",
   progress:(n,t)=>`Escuchado <b>${n}</b> / ${t} sonidos`,
-  script:"Escritura",voice:"Voz",speed:"Velocidad",show:"Mostrar",slow:"Lento",mid:"Medio",normal:"Normal",romaji:"Romaji",
+  script:"Escritura",voice:"Voz",speed:"Velocidad",volume:"Volumen",mute:"Silenciar/Activar sonido",show:"Mostrar",slow:"Lento",mid:"Medio",normal:"Normal",romaji:"Romaji",
   reset:"Restablecer",resetArm:"Toca de nuevo para borrar",replay:"Repetir",loading:"Cargando voz…",noVoice:"No se encontró voz en japonés",
   srcRec:"Voz real",srcAI:"Voz IA",srcTTS:"Voz del sistema",optRec:"Voz real (grabación) ★",optAI:"Voz IA de alta calidad (Google)",grpTTS:"Voz del sistema (dispositivo)",
   warnNoSynth:"Este navegador no admite síntesis de voz. Por favor usa Chrome, Edge o Safari moderno.",
@@ -1025,13 +1041,18 @@ document.getElementById("voice").addEventListener("change",e=>{
   speak(document.getElementById("big").dataset.say||"あ",curId);
 });
 
+let volume=store.get("hira_volume",1);
+if(typeof volume!=="number"||isNaN(volume))volume=1;
+volume=Math.max(0,Math.min(1,volume));
+let prevVolume=volume>0?volume:1;
+
 function utter(text){
   const u=new SpeechSynthesisUtterance(text);
-  u.lang="ja-JP";if(voice)u.voice=voice;u.rate=rate;u.pitch=1;return u;
+  u.lang="ja-JP";if(voice)u.voice=voice;u.rate=rate;u.pitch=1;u.volume=volume;return u;
 }
 /* Recorded audio (audio/manifest.json) is preferred; speech synthesis is the fallback */
 let tok=0;
-const player=new Audio();player.preload="auto";
+const player=new Audio();player.preload="auto";player.volume=volume;
 for(const k of ["rec","ai"]){try{fetch(SRC[k].dir+"manifest.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{if(j&&Array.isArray(j.files)){SRC[k].set=new Set(j.files);loadVoices();setSrc(curId)}}).catch(()=>{})}catch(e){}}
 function idOf(cell){return cell[2]==="wo (o)"?"o":cell[2].split(" ")[0]}
 function hasRec(id){const m=SRC[mode];return !!(m&&m.set&&id&&m.set.has(id))}
@@ -1043,6 +1064,7 @@ function once(say,id){
   if(!hasRec(id))return ttsOnce(say);
   return new Promise(res=>{
     player.onended=res;player.onerror=()=>ttsOnce(say).then(res);
+    player.volume=volume;
     player.src=fileOf(id);
     try{player.preservesPitch=true}catch(e){}
     player.playbackRate=rate<0.7?0.75:1;
@@ -1056,6 +1078,7 @@ function playRow(rid,items,onEach){
   onEach(items[0]);curId=items[0].id;setSrc(rid);
   player.onended=()=>{player.ontimeupdate=null};
   player.onerror=()=>{if(t===tok)speakSeq(items,onEach)};
+  player.volume=volume;
   player.ontimeupdate=()=>{
     if(t!==tok)return;const d=player.duration;if(!d||!isFinite(d))return;
     const i=Math.min(items.length-1,Math.floor(player.currentTime/d*items.length));
@@ -1251,6 +1274,49 @@ document.querySelectorAll("#speed button").forEach(b=>{
   b.addEventListener("click",()=>{rate=+b.dataset.rate;store.set("hira_rate",rate);
     document.querySelectorAll("#speed button").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));speak(big.dataset.say||"あ",curId)});
 });
+const volRange=document.getElementById("vol-range");
+const volVal=document.getElementById("vol-val");
+const volMuteBtn=document.getElementById("vol-mute-btn");
+const volIcon=document.getElementById("vol-icon");
+
+const SVG_UNMUTE='<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>';
+const SVG_MUTE='<path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>';
+
+function updateVolUI(v){
+  const pct=Math.round(v*100);
+  if(volRange)volRange.value=pct;
+  if(volVal)volVal.textContent=pct+"%";
+  if(volIcon)volIcon.innerHTML=pct===0?SVG_MUTE:SVG_UNMUTE;
+}
+
+function setVolume(v){
+  volume=Math.max(0,Math.min(1,v));
+  player.volume=volume;
+  store.set("hira_volume",volume);
+  updateVolUI(volume);
+}
+
+updateVolUI(volume);
+
+if(volRange){
+  volRange.addEventListener("input",()=>{
+    const v=+volRange.value/100;
+    if(v>0)prevVolume=v;
+    setVolume(v);
+  });
+}
+
+if(volMuteBtn){
+  volMuteBtn.addEventListener("click",()=>{
+    if(volume>0){
+      prevVolume=volume;
+      setVolume(0);
+    }else{
+      setVolume(prevVolume>0?prevVolume:1);
+      speak(big.dataset.say||"あ",curId);
+    }
+  });
+}
 const vis=Object.assign({vi:true,ro:true,ill:true},store.get("hira_vis",{})); /* ill: open the illustration card automatically (default on) */
 function applyVis(){
   const hb=document.querySelector('#show [data-k="vi"]');if(hb)hb.hidden=LANG!=="vi";
