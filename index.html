@@ -25,25 +25,8 @@ body{margin:0}
   --shadow:0 12px 32px #173e4a0c;
   --font-kana:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic","Noto Sans JP",sans-serif;
   --font-ui:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Noto Sans","Be Vietnam Pro","Noto Sans Thai",sans-serif;
+  color-scheme: light !important;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#141a19; --surface:#1c2422; --surface-2:#232d2a; --ink:#ecf1ef; --muted:#a3b0ab; --line:#33403c; --border:#33403c;
-  --teal:#4cbdaa; --teal-dark:#2fbea0; --mint:#1d3a31;
-  --leaf:#5fc7a2; --leaf-soft:#1d3a31;
-  --lotus:#f2829f; --lotus-soft:#432230;
-  --river:#7cbde3; --river-soft:#1c3443;
-  --gold:#e6b45e; --gold-soft:#3d301a;
-  --plum:#c3a0e6; --plum-soft:#33284a;
-  --star:#f2829f; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#141a19; --surface:#1c2422; --surface-2:#232d2a; --ink:#ecf1ef; --muted:#a3b0ab; --line:#33403c; --border:#33403c;
-  --teal:#4cbdaa; --teal-dark:#2fbea0; --mint:#1d3a31;
-  --leaf:#5fc7a2; --leaf-soft:#1d3a31;
-  --lotus:#f2829f; --lotus-soft:#432230;
-  --river:#7cbde3; --river-soft:#1c3443;
-  --gold:#e6b45e; --gold-soft:#3d301a;
-  --plum:#c3a0e6; --plum-soft:#33284a;
-  --star:#f2829f; color-scheme:dark}
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.6;
